@@ -5,7 +5,7 @@
         <?php foreach($data['motherboards'] as $mb) : ?>
         <?php $MBCikkszam = $mb->cikkszam; ?>
             <div class="col-md-4">
-                <div class="card mb-5">                    
+                <div id="mbCard" class="card mb-5">                    
                     <img src="<?php echo $mb->picUrl[0]; ?>" class="card-img-top">
                     <div class="card-body">
                         <h4 class="card-title"><?php echo $mb->MBName;?></h4>

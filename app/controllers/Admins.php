@@ -120,7 +120,6 @@
             }else{
                 die('Semmi keresni valód itt more!!! Eredj innen!!!!!!');
             }
-            //$this->view('admin/cpu_input',$data); Ez nem kell mert akkor nem müxik a flas message.
         }
 
         // Processzor törlése

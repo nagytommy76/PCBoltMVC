@@ -84,16 +84,25 @@
                 }                
                 
                 if (empty($data['passwords']) && empty($data['email_err'])) {
+                    $code = generateCode(10);
                     // Hash password, visszafele password-verify
-                    $data['password'] = password_hash($data['password'],PASSWORD_DEFAULT);
-                    // Register user, Call model function                
-                if($this->userModel->register($data)){
-                    // Ha regisztrálás sikeres
-                    flash('register_success','A regisztráció sikeres volt! És be tud jelentkezni!');
-                    redirect('users/login');
-                }else{
-                    die('A regisztráció sikerteleln');
-                }
+                    //$data['password'] = password_hash($data['password'],PASSWORD_DEFAULT);
+                    // Sending email to register
+                    if(confirmRegistration($data['email'],$data['username'], $code)){
+                        
+                    }
+
+                      
+
+                    // Register user, Call model function           
+                    /*if($this->userModel->register($data)){
+                        // Ha regisztrálás sikeres
+                        flash('register_success','A regisztráció sikeres volt! És be tud jelentkezni!');
+                        redirect('users/login');
+                    }else{
+                        flash('register_success','A regisztráció sikertelen volt!');
+                        redirect('users/register');
+                    }*/
                 }              
                 $this->view('users/register',$data);
                 

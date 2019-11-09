@@ -96,6 +96,53 @@
         
         
       </li>
+      <li class="nav-item">
+        <button class="btn btn-outline-secondary mr-3" data-target="#cartModal" data-toggle="modal" type="button" id="cartBTN" aria-labelledby="cartModal">Kosár</button>
+      </li>
+      <li class="nav-item">
+        <button class="btn btn-outline-success my-2 my-sm-0" data-target="#searchModal" data-toggle="modal" type="button" id="searchModalBTN" aria-labelledby="searchModal">Keresés</button>
+      </li>
+      
     </ul>
-  </div>
+      
+    <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Keresés a weboldalon!</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+          </div>
+          <div class="modal-body">
+            <form class="p-3" method="GET">
+              <label for="category">Kategória: </label>
+              <select class="form-control" name="category" id="category">
+                <option value="cpu">CPU</option>
+                <option value="motherboard" selected>Alaplap</option>
+              </select>
+              <label for="manufacturer">Gyártó: </label>
+              <select class="form-control" name="manufacture" id="manufacture">
+                <option value="" selected>Nincs megadva</option>
+                <option value="intel">Intel</option>
+                <option value="amd">AMD</option>
+                <option value="gigabyte">Gigabyte</option>
+                <option value="asus">ASUS</option>
+                <option value="msi">MSI</option>
+              </select>
+              <label for="modalInput">Termék típus </label>
+              <input class="form-control" type="text" name="modalInput" id="modalInput">
+              <!-- <input type="submit" class="btn btn-danger" value="Bezárás"> -->
+            </form>
+            <!-- MODAL OUTPUT -->
+            <div class="pt-3 pb-4" id="modalOutput">
+
+            </div>
+          <div class="modal-footer">            
+            <button type="button" class="btn btn-warning" data-dismiss="modal">Bezárás</button>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- MODAL FADE OVER -->
+  </div>  <!-- collapse navbar-collapse OVER -->
 </nav>
