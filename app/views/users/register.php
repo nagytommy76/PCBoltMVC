@@ -1,7 +1,7 @@
 <?php require APPROOT . '/views/inc/header.php'; ?>
 
-<div class="row">
-    <div class="col-md-6 mx-auto pb-5 pt-5">
+<div class="row pb-5">
+    <div class="col-lg-6 mx-auto pt-5">
         <div class="card card-body bg-dark text-white">
             <?php flash('register_success'); ?>
             <h2>Regisztráció</h2>
