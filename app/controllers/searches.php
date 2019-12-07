@@ -10,11 +10,23 @@ class Searches extends Controller{
         $category = $_GET["category"];
         $manufact = $_GET["manufacture"];
         $input = $_GET['modalInput'];
-        
-        if (!empty($this->searchModel->searchResult($input,$manufact,$category))) {
-            $res = $this->searchModel->searchResult($input,$manufact,$category);
-            echo json_encode($res);
-        }       
+
+        $input = trim($input);
+
+        switch ($category) {
+            case 'cpu':
+                $res = $this->searchModel->cpuSearch($input, $manufact);
+                echo json_encode($res);
+                break;
+            case 'motherboard':
+                $res = $this->searchModel->motherboardSearch($input,$manufact);
+                echo json_encode($res);
+                break;
+            case 'ram':
+                $res = $this->searchModel->ramSearch($input,$manufact);
+                echo json_encode($res);
+                break;
+        }      
     }
 
 }

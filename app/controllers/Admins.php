@@ -7,11 +7,12 @@
             $this->cpuModel = $this->model('Cpu');
             $this->userModel = $this->model('User');
             $this->mbModel = $this->model('Mb');
+            $this->ramModel = $this->model('Ram');
         }
         // CPU műveletek-----------------------------------------------------------------------------
         // Proci bevitlel:
         public function cpu_input($cikksz = ''){ 
-            if ($_SESSION['jog'] == 'admin' || $_SESSION['jog'] == 'eladó') {                                
+            if (bothAdminSeller($_SESSION["jog"])) {                                
                 $result = $this->adminModel->foglalatok();
                 $data = [
                     'main_title' => 'Processzor bevitele',
@@ -109,7 +110,9 @@
                                 flash('modify_success','Sikeres volt a(z) '.$inputs['tipus'].' processzor módosítása!' );                                
                                 redirect('admins/cpu_input');                                
                             }else{
-                                die('valami nem sikerült a cpu módosítás közben');
+                                //die('valami nem sikerült a cpu módosítás közben');
+                                flash('modify_success','Sikertelen volt a(z) '.$inputs['tipus'].' processzor módosítása!','alert alert-danger');       
+                                redirect('admins/cpu_input'); 
                             }
                         }
                     }
@@ -118,7 +121,7 @@
                     $this->view('admin/cpu_input',$data);
                 }
             }else{
-                die('Semmi keresni valód itt more!!! Eredj innen!!!!!!');
+               redirect("pages/index");
             }
         }
 
@@ -132,7 +135,7 @@
                     }
                 }
             }else{
-                die('Semmi keresnivalója nincs itt, kérem távozzon!!!!');
+                redirect("pages/index");
             }
         }
 
@@ -141,24 +144,31 @@
             $data = [
                 'main_title' => 'Felhasználók kezelése'
             ];
-            if (isset($_SESSION['jog']) && $_SESSION['jog'] == 'admin') {
+            if (bothAdminSeller($_SESSION["jog"])) {
+                $userInfo = $this->userModel->showUserInfo();
                 $users = $this->userModel->showUsers();
+                $checkedUsers = [];
+                foreach($users as $user){
+                    if ($this->userModel->checkUserData($user->email) == null) {
+                       array_push($checkedUsers,$user);
+                    }
+                }
                 $data = [
                     'main_title' => 'Felhasználók kezelése',
-                    'userinfo' => $users
+                    'userinfo' => $userInfo,
+                    'noDataUsers' => $checkedUsers
                 ];
                 $this->view('admin/userHandling', $data); 
             }else{
-                die('Semmi keresnivalója nincs itt!');
-            }
-            //$this->view('admin/userHandling', $data);          
+                redirect("pages/index");
+            }      
         }        
 
         // Felhasználó módosítása
         public function editUser($email,$username){
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);            
-                if (isset($_SESSION["jog"]) && $_SESSION['jog'] == 'admin') {
+                if (bothAdminSeller($_SESSION["jog"])) {
                     $userinfo = $this->userModel->getDataByEmail($email);
                     $data = [
                         'main_title' => 'Felhasználó módosítása',
@@ -178,7 +188,7 @@
                     ];
                     $this->view('admin/userEdit',$data);                 
                 }else{
-                    die('Semmi keresnivalója nincs itt!!!!');
+                    redirect("pages/index");
                 }
             
             }
@@ -187,7 +197,7 @@
         public function adminEditUser($email){
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-                if (isset($_SESSION['jog']) && $_SESSION['jog'] == 'admin') {                      
+                if (isAdmin($_SESSION["jog"])) {                      
                     $finalData = [
                         'email' => $email,                    
                         'veznev' => trim($_POST['veznev']),
@@ -213,9 +223,9 @@
         }
 
         // Felhasználó törlése!
-        public function deleteUser($email,$username,$telefon){
+        public function deleteUser($email,$username,$telefon=''){
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
-                if (isset($_SESSION['jog']) && $_SESSION['jog'] == 'admin') {
+                if (isAdmin($_SESSION["jog"])) {
                     if ($this->userModel->deleteUserByAdmin($email,$telefon) && $this->userModel->deleteUserByAdmin0($email)) {           
                         flash('deleted','A '.$username.' felhasználó törlése sikeres volt!','alert alert-danger');
                         redirect('admins/userHandler');
@@ -229,20 +239,24 @@
         // ALAPLAP MŰVELETEK ADMIN-------------------------------------------------------------------
         public function mb_input($cikkszam = ''){
             $finalCikkszam = $cikkszam;
-            if ($_SESSION['jog'] == 'admin' || $_SESSION['jog'] == 'eladó') {
+            if (bothAdminSeller($_SESSION["jog"])) {
                 $ramtipus = $this->adminModel->RAMtipus();
                 $foglalatok = $this->adminModel->foglalatok();
                 $mbMeret = $this->mbModel->MBFormat();
+                $warranity = $this->adminModel->getWarranity();
+                $manufact = $this->mbModel->mbMan();
                 $data = [
                     'main_title' => 'Alaplap bevitele (Admin)',
                     'foglalatok' => $foglalatok,
                     'RAM' => $ramtipus,
                     'formats' => $mbMeret,
                     'price' => 0,
+                    'warr' => $warranity,
                     'mbcikkszam' => $cikkszam,
                     'mbtipus' => '',
                     'garancia' => '',
                     'chipset' => '',
+                    'man' => $manufact,
                     'gyarto' => '',
                     'cpufoglalat' => '',
                     'ramfoglalat' => '',
@@ -277,6 +291,7 @@
                             'ramtipus' => trim($_POST['ramtipus']),
                             'mbtipus' => trim($_POST['mbtipus']),
                             'chipset' => trim($_POST['chipset']),
+                            'man' => $manufact,
                             'gyarto' => trim($_POST['gyarto']),
                             'cpufoglalat' => trim($_POST['cpufoglalat']),
                             'ramfoglalat' => trim($_POST['ramtipus']),
@@ -312,6 +327,7 @@
                                 'price' => $result->price,
                                 'RAM' => $ramtipus,
                                 'foglalatok' => $foglalatok,
+                                'warr' => $warranity,
                                 'garancia' => $result->garancia,
                                 'formats' => $mbMeret,
                                 'mbcikkszam' => $finalCikkszam,
@@ -319,6 +335,7 @@
                                 'intlan' => $result->intLAN,
                                 'inthang' => $result->intHang,
                                 'chipset' => $result->chipset,
+                                'man' => $manufact,
                                 'gyarto' => $result->gyarto,
                                 'cpufoglalat' => $result->foglalat,
                                 'ramtipus' => $result->ramType,
@@ -380,7 +397,131 @@
                 }
             
         }else{
-            die('Kérem távozzon, semmi keresnibvalója nincs itt!!!!');
+            redirect("pages/index");
         }
+    }
+
+    // RAM INPUT 
+    public function ram_input($cikk =''){
+        if (bothAdminSeller($_SESSION["jog"])) {
+            $warranity = $this->adminModel->getWarranity();
+            $data = [
+                'main_title' => 'RAM-ok bevitele',
+                'cikkszam' => $cikk,
+                'ram_cikkszam' => '',
+                'socets' => $this->ramModel->ramSocets(),
+                'warr' => $warranity,
+                'manufacts' => $this->ramModel->manufacturers(),
+                'manufacturer' => '',
+                'warranity' => '',
+                'price' => '',
+                'type' => '',
+                'man_type' => '',
+                'capacity' => '',
+                'timing' => '',
+                'voltage' => '',
+                'clock' => '',
+                'kit' => '',
+                'xmp' => 0,
+                'man_url' => '',
+                'picUrl' => '',
+                'disabledIn' => '',
+                'disabledMod' => 'disabled'
+            ];
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+                if (isset($_POST['ram_input'])) {
+                    $data = [
+                        'main_title' => 'RAM-ok bevitele',
+                        'cikkszam' => $cikk,
+                        'ram_cikkszam' => trim($_POST["ram_cikkszam"]),
+                        'socets' => $this->ramModel->ramSocets(),
+                        'selected_socket' => trim($_POST["foglalat"]),
+                        'warr' => $warranity,
+                        'warranity' => trim($_POST["warranity"]),
+                        'price' => trim($_POST["price"]),
+                        'manufacts' => $this->ramModel->manufacturers(),
+                        'manufacturer' =>trim($_POST["manufacturer"]),
+                        'type' => trim($_POST["type"]),
+                        'man_type' => trim($_POST["man_type"]),
+                        'capacity' => trim($_POST["capacity"]),
+                        'timing' => trim($_POST["timing"]),
+                        'voltage' => trim($_POST["voltage"]),
+                        'clock' => trim($_POST["clock"]),
+                        'kit' => trim($_POST["kit"]),
+                        'xmp' => trim($_POST["xmp"]),
+                        'man_url' => trim($_POST["man_url"]),
+                        'picUrl' => trim($_POST["picUrl"]),
+                        'disabledIn' => '',
+                        'disabledMod' => 'disabled'
+                    ];
+                    if ($this->ramModel->ramProductInput($data) && $this->ramModel->manUrl($data["ram_cikkszam"],$data["man_url"]) && $this->ramModel->picUrl($data["ram_cikkszam"],$data["picUrl"]) && $this->ramModel->priceInput($data["ram_cikkszam"],$data["price"])) {
+                        flash("ramInputSuccess","A (".$data["type"].") típusú RAM bevitele sikeres volt");
+                        redirect("admins/ram_input");
+                    }else{
+                        flash("ramInputFail","A (".$data["type"].") típusú RAM bevitele sikertelen volt", "alert alert-danger");
+                        redirect("admins/ram_input");
+                    }
+                }elseif(isset($_POST["editRAM"])){
+                    $item = $this->ramModel->ramByCikkszam($cikk);
+                    $data = [
+                        'main_title' => $cikk.' Módosítása',
+                        'cikkszam' => $cikk,
+                        'ram_cikkszam' => $item->cikkszam,
+                        'socets' => $this->ramModel->ramSocets(),
+                        'selected_socket' => $item->tipus,
+                        'warr' => $warranity,
+                        'warranity' => $item->WMonth,
+                        'price' => $item->ramPrice,
+                        'manufacts' => $this->ramModel->manufacturers(),
+                        'manufacturer' => $item->manufacturer,
+                        'type' => $item->type,
+                        'man_type' => $item->typeCode,
+                        'capacity' => $item->capacity,
+                        'timing' => $item->timing,
+                        'voltage' => $item->voltage,
+                        'clock' => $item->clock,
+                        'kit' => $item->kit,
+                        'xmp' => $item->is_xmp,
+                        'man_url' => $item->Url,
+                        'picUrl' => $item->picUrl,
+                        'disabledIn' => 'disabled',
+                        'disabledMod' => ''
+                    ];
+                }
+                elseif (isset($_POST["ram_modify"])) {
+                    $data = [
+                        'cikkszam' => $cikk,
+                        'selected_socket' => trim($_POST["foglalat"]),
+                        'warranity' => trim($_POST["warranity"]),
+                        'price' => trim($_POST["price"]),
+                        'manufacturer' =>trim($_POST["manufacturer"]),
+                        'type' => trim($_POST["type"]),
+                        'man_type' => trim($_POST["man_type"]),
+                        'capacity' => trim($_POST["capacity"]),
+                        'timing' => trim($_POST["timing"]),
+                        'voltage' => trim($_POST["voltage"]),
+                        'clock' => trim($_POST["clock"]),
+                        'kit' => trim($_POST["kit"]),
+                        'xmp' => trim($_POST["xmp"]),
+                        'man_url' => trim($_POST["man_url"]),
+                        'picUrl' => trim($_POST["picUrl"]),
+                    ];
+                    if ($this->ramModel->ramProductModify($data) &&$this->ramModel->picUrlModify($data["cikkszam"], $data["picUrl"]) && $this->ramModel->manUrlModify($data["cikkszam"],$data["man_url"]) && $this->ramModel->ramPriceModify($data["cikkszam"], $data["price"]))
+                {
+                    flash('ramModifySuccess','A ('.$data["type"].' '.$data["typeCode"].') Módosítása sikeres volt!');
+                    redirect("admins/ram_input");
+                }else{
+                    flash("ramModifyFail", 'A ('.$data["type"].' '.$data["typeCode"].') Módosítása sikertelen volt!', 'alert alert-danger');
+                    redirect("admins/ram_input");
+                }
+                } 
+            
+            }
+            $this->view('admin/ram_input',$data);
+        }else{
+            redirect('pages/index');
+        }
+        
     }
 }

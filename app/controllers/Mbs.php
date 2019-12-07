@@ -15,6 +15,7 @@
                 'main_title' => 'Összes Termék',
                 'motherboards' => $result
             ]; 
+            //die(var_dump($_COOKIE["Testing"]));
             $this->view('mb/mb_list',$data);  
         }
 
@@ -73,6 +74,13 @@
                 'motherboard' => $result
             ];
             $this->view('mb/details',$data);
+        }
+
+
+        // MB manufacturers
+        public function mbManufacturers(){
+            $res = $this->mbModel->mbMan();
+            echo json_encode($res);
         }
 
     }
