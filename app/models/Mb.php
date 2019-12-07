@@ -7,14 +7,24 @@
         }
         // Összes alaplap
         public function allMB(){
-            $this->db->query('SELECT chipset,cikkszam, picUrl, motherboard.gyarto, cpufoglalatok.gyarto AS MBGyarto, cpufoglalatok.foglalat, maxMemMHz, memfoglalat, mbformats.format AS Meret, MBtipus AS MBName, mbprices.price, tipus AS ramType FROM motherboard INNER JOIN ram ON motherboard.memtipusID = ram.foglalatId INNER JOIN cpufoglalatok ON cpufoglalatID = cpufoglalatok.foglalatID INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam INNER JOIN mbformats ON mbformats.Id = motherboard.meret ORDER BY price ASC');
+            $this->db->query('SELECT chipset,cikkszam, picUrl, manufacturer, cpufoglalatok.gyarto AS MBGyarto, cpufoglalatok.foglalat, maxMemMHz, memfoglalat, mbformats.format AS Meret, MBtipus AS MBName, mbprices.price, tipus AS ramType FROM motherboard 
+            INNER JOIN ram ON motherboard.memtipusID = ram.foglalatId 
+            INNER JOIN cpufoglalatok ON cpufoglalatID = cpufoglalatok.foglalatID INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam 
+            INNER JOIN mbformats ON mbformats.Id = motherboard.meret 
+            INNER JOIN motherboard_man ON motherboard.gyarto = motherboard_man.man_id
+            ORDER BY price ASC');
             $result = $this->db->resultSet();
 
             return $result;
         }
         // Összes Intel alaplap
         public function allIntelMB(){
-            $this->db->query('SELECT chipset,cikkszam, picUrl, motherboard.gyarto, cpufoglalatok.gyarto AS MBGyarto, cpufoglalatok.foglalat, maxMemMHz, memfoglalat, mbformats.format AS Meret, MBtipus AS MBName, mbprices.price, tipus AS ramType FROM motherboard INNER JOIN ram ON motherboard.memtipusID = ram.foglalatId INNER JOIN cpufoglalatok ON cpufoglalatID = cpufoglalatok.foglalatID INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam INNER JOIN mbformats ON mbformats.Id = motherboard.meret  WHERE cpufoglalatok.gyarto LIKE "intel"; ORDER BY price ASC');
+            $this->db->query('SELECT chipset,cikkszam, picUrl, manufacturer, cpufoglalatok.gyarto AS MBGyarto, cpufoglalatok.foglalat, maxMemMHz, memfoglalat, mbformats.format AS Meret, MBtipus AS MBName, mbprices.price, tipus AS ramType FROM motherboard 
+            INNER JOIN ram ON motherboard.memtipusID = ram.foglalatId 
+            INNER JOIN cpufoglalatok ON cpufoglalatID = cpufoglalatok.foglalatID INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam 
+            INNER JOIN mbformats ON mbformats.Id = motherboard.meret 
+            INNER JOIN motherboard_man ON motherboard.gyarto = motherboard_man.man_id
+            WHERE cpufoglalatok.gyarto LIKE "intel"; ORDER BY price ASC');
             $result = $this->db->resultSet();
 
             return $result;
@@ -22,14 +32,24 @@
 
         // ÖSSZES AMD LAP
         public function allAmdMB(){
-            $this->db->query('SELECT chipset,cikkszam, picUrl, motherboard.gyarto, cpufoglalatok.gyarto AS MBGyarto, cpufoglalatok.foglalat, maxMemMHz, memfoglalat, mbformats.format AS Meret, MBtipus AS MBName, mbprices.price, tipus AS ramType FROM motherboard INNER JOIN ram ON motherboard.memtipusID = ram.foglalatId INNER JOIN cpufoglalatok ON cpufoglalatID = cpufoglalatok.foglalatID INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam INNER JOIN mbformats ON mbformats.Id = motherboard.meret  WHERE cpufoglalatok.gyarto LIKE "AMD" ORDER BY price ASC;');
+            $this->db->query('SELECT chipset,cikkszam, picUrl, manufacturer, cpufoglalatok.gyarto AS MBGyarto, cpufoglalatok.foglalat, maxMemMHz, memfoglalat, mbformats.format AS Meret, MBtipus AS MBName, mbprices.price, tipus AS ramType FROM motherboard 
+            INNER JOIN ram ON motherboard.memtipusID = ram.foglalatId 
+            INNER JOIN cpufoglalatok ON cpufoglalatID = cpufoglalatok.foglalatID INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam 
+            INNER JOIN mbformats ON mbformats.Id = motherboard.meret 
+            INNER JOIN motherboard_man ON motherboard.gyarto = motherboard_man.man_id
+            WHERE cpufoglalatok.gyarto LIKE "AMD" ORDER BY price ASC;');
             $result = $this->db->resultSet();
 
             return $result;
         }
         // FOGLALAT SZERINT SZŰRVE
         public function MbBySocket($foglalat){
-            $this->db->query('SELECT chipset,cikkszam, picUrl, motherboard.gyarto, cpufoglalatok.gyarto AS MBGyarto, cpufoglalatok.foglalat, maxMemMHz, memfoglalat, mbformats.format AS Meret, MBtipus AS MBName, mbprices.price, tipus AS ramType FROM motherboard INNER JOIN ram ON motherboard.memtipusID = ram.foglalatId INNER JOIN cpufoglalatok ON cpufoglalatID = cpufoglalatok.foglalatID INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam INNER JOIN mbformats ON mbformats.Id = motherboard.meret WHERE cpufoglalatok.foglalat LIKE :foglalat ORDER BY price ASC ;');
+            $this->db->query('SELECT chipset,cikkszam, picUrl, manufacturer, cpufoglalatok.gyarto AS MBGyarto, cpufoglalatok.foglalat, maxMemMHz, memfoglalat, mbformats.format AS Meret, MBtipus AS MBName, mbprices.price, tipus AS ramType FROM motherboard 
+            INNER JOIN ram ON motherboard.memtipusID = ram.foglalatId 
+            INNER JOIN cpufoglalatok ON cpufoglalatID = cpufoglalatok.foglalatID INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam 
+            INNER JOIN mbformats ON mbformats.Id = motherboard.meret 
+            INNER JOIN motherboard_man ON motherboard.gyarto = motherboard_man.man_id
+            WHERE cpufoglalatok.foglalat LIKE :foglalat ORDER BY price ASC ;');
             $this->db->bind(':foglalat',$foglalat);
             $result = $this->db->resultSet();
 
@@ -38,7 +58,14 @@
 
         // Cikkszám szerint megkeresem az alaplapot a részletes megjelenítéshez
         public function getItemByCikkszam($cikkszam){
-            $this->db->query('SELECT gyartourl.Url AS GyartoURL, garancia, chipset,cikkszam, picUrl, motherboard.gyarto, cpufoglalatok.gyarto AS MBGyarto, cpufoglalatok.foglalat, intHang, intLAN, m2, maxMemMHz, memfoglalat, memMeret, mbformats.format AS Meret, pcie16, sata3, MBtipus AS MBName, usb30, usb31, mbprices.price, tipus AS ramType FROM motherboard INNER JOIN ram ON motherboard.memtipusID = ram.foglalatId INNER JOIN cpufoglalatok ON cpufoglalatID = cpufoglalatok.foglalatID INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam INNER JOIN mbformats ON mbformats.Id = motherboard.meret INNER JOIN gyartourl ON gyartourl.itemCikkszam = motherboard.cikkszam WHERE cikkszam LIKE :cikkszam;');
+            $this->db->query('SELECT gyartourl.Url AS GyartoURL, warranity.warr_months, garancia, chipset,cikkszam, picUrl, motherboard.gyarto, manufacturer, cpufoglalatok.gyarto AS MBGyarto, cpufoglalatok.foglalat, intHang, intLAN, m2, maxMemMHz, memfoglalat, memMeret, mbformats.format AS Meret, pcie16, sata3, MBtipus AS MBName, usb30, usb31, mbprices.price, tipus AS ramType FROM motherboard 
+            INNER JOIN ram ON motherboard.memtipusID = ram.foglalatId 
+            INNER JOIN cpufoglalatok ON cpufoglalatID = cpufoglalatok.foglalatID INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam 
+            INNER JOIN mbformats ON mbformats.Id = motherboard.meret 
+            INNER JOIN gyartourl ON gyartourl.itemCikkszam = motherboard.cikkszam 
+            INNER JOIN warranity ON motherboard.garancia = warranity.warr_id
+            INNER JOIN motherboard_man ON motherboard.gyarto = motherboard_man.man_id
+            WHERE cikkszam LIKE :cikkszam;');
             $this->db->bind(':cikkszam',$cikkszam);
             $result = $this->db->single();
 
@@ -48,11 +75,40 @@
         // ALAPLAP MÉRETEK LEKÉRDEZÉSE
         public function MBFormat(){
             $this->db->query('SELECT Id, format FROM mbformats');
-
-            $result = $this->db->resultSet();
-
-            return $result;
+            return $this->db->resultSet();
         }
+
+        // Get MB data FOR cart
+        // public function getCartMBData($cikk){
+        //     $this->db->query('
+        //         SELECT  cikkszam, picUrl, warr_months, manufacturer, mbformats.format AS Meret, MBtipus AS MBName, mbprices.price FROM motherboard 
+        //         INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam 
+        //         INNER JOIN mbformats ON mbformats.Id = motherboard.meret  
+        //         INNER JOIN warranity ON motherboard.garancia = warranity.warr_id
+        //         INNER JOIN motherboard_man ON motherboard.gyarto = motherboard_man.man_id
+        //         WHERE cikkszam LIKE :cikkszam;
+        //     ');
+        //     $this->db->bind(':cikkszam',$cikk);
+        //     return $this->db->single();
+        // }
+
+        // GET multiple mb data
+        public function getCartMBSData($cikk){
+            $text = 'WHERE cikkszam LIKE "'.$cikk[0].'" ';
+            for ($i = 1; $i<count($cikk); $i++) {
+                $text .= 'OR cikkszam LIKE "'.$cikk[$i].'" ';
+            }
+            $this->db->query('
+                SELECT  cikkszam, picUrl, warr_months, manufacturer, mbformats.format AS Meret, MBtipus AS MBName, mbprices.price FROM motherboard 
+                INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam 
+                INNER JOIN mbformats ON mbformats.Id = motherboard.meret  
+                INNER JOIN warranity ON motherboard.garancia = warranity.warr_id
+                INNER JOIN motherboard_man ON motherboard.gyarto = motherboard_man.man_id '.$text);
+                $result =  $this->db->resultSet();
+                return $result;
+        }
+
+
 
         // ADMIN--------------------------------- ALAPLAP MÓDOSÍTÁSA------------------------
         public function modifyMB($data,$cikkszam){
@@ -100,6 +156,10 @@
         }
 
 
-        
+        // Motherboard Manufacturers
+        public function mbMan(){
+            $this->db->query("SELECT man_id, manufacturer FROM motherboard_man ORDER BY manufacturer ASC");
+            return $this->db->resultSet();
+        }
     }
 

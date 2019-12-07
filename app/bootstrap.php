@@ -2,10 +2,16 @@
     // Load config
     require_once 'config/config.php';
     require_once 'helpers/url_helper.php';
-
     require_once 'helpers/session_helper.php';
 
+    // Splitting into img src - ;
     require_once 'helpers/string_split.php';
+
+    // Generating a random code for new users to confirm their registration
+    require_once 'helpers/generate_code.php';
+
+    require_once 'helpers/email/email_sending.php';
+
     // betöltjük a könyvtárakat
     /*require_once 'libraries/Core.php';
     require_once 'libraries/Controller.php';

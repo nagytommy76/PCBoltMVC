@@ -82,18 +82,24 @@
                         $data['email_err'] = "Az email cím már regisztrálva van!";
                     }
                 }                
-                
                 if (empty($data['passwords']) && empty($data['email_err'])) {
                     // Hash password, visszafele password-verify
                     $data['password'] = password_hash($data['password'],PASSWORD_DEFAULT);
-                    // Register user, Call model function                
-                if($this->userModel->register($data)){
-                    // Ha regisztrálás sikeres
-                    flash('register_success','A regisztráció sikeres volt! És be tud jelentkezni!');
-                    redirect('users/login');
-                }else{
-                    die('A regisztráció sikerteleln');
-                }
+
+                    // Save temporary the user info
+                    $this->temporarySession($data["username"],$data["password"],$data["email"]);                  
+                    if(!isset($_SESSION["code"])){
+                        $_SESSION["code"] = generateCode(10);
+                        // EZT ÁTTENNI COOCKIE BA, mert ha a user nem használja fel nem törlődik??? 
+                    }
+                    // Sending email to register
+                    if(confirmRegistration($data['email'],$data['username'],$_SESSION["code"])){
+                        redirect('users/login');
+
+                    }else{
+                        flash('register_success','Az email nem lett elküldve, kérem     próbálja újra!!');
+                        redirect('users/register');
+                    }
                 }              
                 $this->view('users/register',$data);
                 
@@ -108,9 +114,48 @@
                     'email_err' => ''
                 ];
                 $this->view('users/register',$data);
-            }           
-            
+            }                      
         }
+        // Register a user
+        public function codeControll($incomingCodeFromEmail = ''){
+            $data = [
+                'main_title' => 'Regisztrációs kód ellenőrzése',
+                'fromEmailCode' => $incomingCodeFromEmail
+            ];
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                // Sanitize post data
+                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+                $data["fromEmailCode"] = $_POST['code'];
+                
+                if ($this->confirmCode($data["fromEmailCode"])) {
+                    if($this->userModel->register($_SESSION['temp_email'],$_SESSION['temp_password'], $_SESSION['temp_username'])){
+                        $this->destroyTempSessions();
+                        // Ha regisztrálás sikeres
+                        flash('register_success','A regisztráció sikeres volt! És be tud jelentkezni!');
+                        redirect('users/login');
+                    }else{
+                        $this->destroyTempSessions();
+                        flash('register_success','A regisztráció sikertelen volt!');
+                        redirect('users/register');
+                    }
+                }else{
+                    die("Hibás kód AMI: ".$_SESSION['code']);
+                    $this->destroyTempSessions();
+                }
+            }
+            $this->view('users/codeControll',$data);
+        }
+
+        // If $this->code === the email code
+        private function confirmCode($incomingFromEmail){
+            if ($_SESSION["code"] == $incomingFromEmail) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+       
         
         public function createUserSession($user){
             $_SESSION['email'] = $user->email;
@@ -219,6 +264,12 @@
         }
 
         public function logout(){
+            if (isset($_COOKIE['Cart'])) {
+                setcookie("Cart","",time()-3600,"/");
+            }
+            if (isset($_COOKIE['cart_session'])) {
+                setcookie("cart_session","",time()-3600,"/");
+            }
             unset($_SESSION['email']);
             unset($_SESSION['username']);
             unset($_SESSION['jog']);
@@ -226,6 +277,28 @@
             redirect('pages/index');
         }
 
+        // Destroy temp sessions
+        private function destroyTempSessions(){
+            unset($_SESSION['temp_email']);
+            unset($_SESSION['temp_password']);
+            unset($_SESSION['temp_username']);
+            unset($_SESSION["code"]);
+            session_destroy();
+        }
+
+         // Set temporary session variables
+         private function temporarySession($username,$hashedPass,$email){
+            if (!isset($_SESSION['temp_username']) && !isset($_SESSION['temp_email']) && !isset($_SESSION['temp_password'])) {
+                $_SESSION['temp_username'] = $username;
+                $_SESSION['temp_email'] = $email;
+                $_SESSION['temp_password'] = $hashedPass;
+            }          
+        }
+
+        // SET coockie for email
+        private function temporaryCoockie(){
+
+        }
         
     }
 

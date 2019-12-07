@@ -12,7 +12,11 @@
                 </div><!-- COL-SM-3 CIKKSZÁM VÉGE -->
                 <div class="col">
                     <label for="">Garancia (Hó): <sup>*</sup></label>
-                    <input class="form-control" type="number" max="9999" name="garancia" value="<?php echo $data['garancia']; ?>" required>
+                    <select class="form-control" type="number" max="9999" name="garancia" value="<?php //echo $data['garancia']; ?>" required>
+                        <?php foreach($data["warr"] as $warr) : ?>
+                            <option value="<?php echo $warr->warr_id ?>" <?php echo ($warr->warr_id == $data["garancia"] ? "selected" : '') ?> ><?php echo $warr->warr_months; ?> Hónap</option>
+                        <?php endforeach; ?>
+                    </select>
                 </div><!-- COL-SM-3 GARANCIA VÉGE -->
                 <div class="col">
                     <label >Ár: <sup>*</sup></label>
@@ -36,11 +40,9 @@
                 <div class="col">
                     <label for="gyarto">Gyártó: <sup>*</sup></label>
                     <select class="form-control" name="gyarto">
-                        <option <?php if($data['gyarto'] == 'ASRock') echo 'selected' ?> value="ASRock">ASRock</option>
-                        <option <?php if($data['gyarto'] == 'ASUS') echo 'selected' ?> value="ASUS">ASUS</option>
-                        <option <?php if($data['gyarto'] == 'Gigabyte') echo 'selected' ?> value="Gigabyte">Gigabyte</option>
-                        <option <?php if($data['gyarto'] == 'Biostar') echo 'selected' ?> value="Biostar">Biostar</option>
-                        <option <?php if($data['gyarto'] == 'MSI') echo 'selected' ?> value="MSI">MSI</option>
+                        <?php foreach($data["man"] as $man) : ?>
+                            <option value="<?php echo $man->man_id; ?>"<?php echo ($man->man_id == $data["gyarto"]) ? 'selected' :'' ?>><?php echo $man->manufacturer ?></option>
+                        <?php endforeach; ?>
                     </select>
                 </div><!-- COL-SM-3 ALAPLAP GYÁRTÓ VÉGE -->
                 <div class="col">
@@ -54,7 +56,7 @@
                     <label for="">Méret: <sup>*</sup></label>
                     <select class="form-control" name="meret" value="<?php echo $data['meret']; ?>" required>                        
                         <?php foreach($data['formats'] as $format) : ?>
-                            <option value="<?php echo $format->Id;?>"<?php if($format->format == $data['meret']) echo 'select';?>><?php echo $format->format;?> </option>
+                            <option value="<?php echo $format->Id;?>"<?php echo ($format->format == $data['meret']) ? 'selected' : ''; ?>><?php echo $format->format;?> </option>
                         <?php endforeach; ?>
                     </select>
                 </div><!-- COL-SM-3 TÍPUS VÉGE -->

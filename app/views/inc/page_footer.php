@@ -1,4 +1,4 @@
-<footer class="page-footer font-small pt-5 bg-dark">
+<footer class="page-footer font-small pt-5 ">
     <div class="container text-center text-md-left">        
             <div class="row d-flex justify-content-center">
                 <div class="col-md-6">
@@ -30,6 +30,6 @@
     <hr class="clearfix w-100 d-md-none">
 
     
-    <div class="text-center py-3 text-white bg-secondary">&copy; <?php echo date('Y'); ?> Készítette: Nagy Tamás. Budapest
+    <div class="text-center py-3 text-white bg-secondary">&copy; <?php echo '2019-09 - '.date('Y-M-d-D'); ?> Készítette: Nagy Tamás. Budapest
     </div>
 </footer>

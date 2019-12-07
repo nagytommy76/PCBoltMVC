@@ -157,6 +157,9 @@
             }
         }
 
-
+        public function getWarranity(){
+            $this->db->query("SELECT warr_id, warr_months FROM warranity");
+            return $this->db->resultSet();
+        }
         
     }

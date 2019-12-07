@@ -1,5 +1,34 @@
-nav a{
+body{
+    background-color: #34495E !important;
+    color: white !important;
+}
+
+#ModalLinkToItem .notLink{
+    text-decoration: none;
+    color: black;
+}
+#ModalLinkToItem a:hover{
+    text-shadow: 1px 1px 3px red;
+}
+
+.modal-backdrop {
+    position:unset !important;
+}
+#ModalCard{
+    width: 70%;
+}
+
+footer{
+    background-color: #D68910 !important;
+}
+
+.navbar{
+   background-color: #D68910 !important;
+}
+
+nav a {
     font-family: 'Raleway', sans-serif;
+    color: #212121 !important;
 }
 .container{
     font-family: 'Raleway', sans-serif;
@@ -10,6 +39,12 @@ nav a{
     width: 100%;
     height: 100%;
 }
+
+#mediaPicture{
+    max-height: 6.6rem;
+    max-width: 6.6rem;
+}
+
 .picture{
     width: 100%;
     max-width: 450px;
@@ -25,6 +60,11 @@ nav a{
     
 }
 
+.titleLink{
+    text-decoration: none !important;
+    color: #212121;
+}
+
 /* Az oldal alján lévő footer szerkesztése: */
 /* ÁR SZÍNE */
 .priceColor{
@@ -38,8 +78,8 @@ nav a{
     font-family: sans-serif;
     background-image: url("../img/background-2462431_1920.jpg");
     background-repeat: no-repeat;
-    min-height: 880px;
-    width: 100%;
+    min-height: 80rem;
+    min-width: 100%;
     /*position: fixed;*/
 }
 .belso{

@@ -80,13 +80,13 @@
                         <div class="form-group row p-3 text-white">
                             <label for="jogosultsag">Jogosultság: </label>
                             <select class="form-control form-control-lg" name="jogosultsag" type="text" >   
-                            <?php if(isset($_SESSION['jog']) && $_SESSION['jog'] == 'admin') : ?>
+                            <?php if(isAdmin($_SESSION["jog"])) : ?>
                                 <!-- Ha admin a jogosultság : -->                                
                                 <option <?php if(isset($data['jogosultsag']) && $data['jogosultsag'] == 'felhasználó') echo 'selected';  ?> value="felhasználó">Felhasználó</option>
                                 <option <?php if(isset($data['jogosultsag']) && $data['jogosultsag'] == 'eladó') echo 'selected';  ?> value="eladó">Eladó</option>
                                 <option <?php if(isset($data['jogosultsag']) && $data['jogosultsag'] == 'admin') echo 'selected';  ?> value="admin">Admin</option>
                             <?php else : ?>
-                                <option value="felhasználó" selected>Felhasználó</option>
+                                <option value=<?php $data["jogosultsag"] ?>><?php echo $data["jogosultsag"] ?></option>
                             <?php endif; ?>
                             </select>
                         </div>

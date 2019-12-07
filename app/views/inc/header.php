@@ -9,14 +9,24 @@
 
     <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
 
-    <link href="/open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="<?php echo URLROOT; ?>/css/main.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
+    <!-- Saját SCRIPT JS -->
+    
+    <script defer src="<?php echo URLROOT;?>/js/cartFunctions/modalCartText.js"></script>
+    <script defer src="<?php echo URLROOT;?>/js/cartFunctions/cookieQuery.js"></script>
+    <script defer src="<?php echo URLROOT;?>/js/cartFunctions/cookie.js"></script>
+    
+    <script defer src="<?php echo URLROOT;?>/js/Storage.js"></script>
+    <script defer src="<?php echo URLROOT;?>/js/createOutputText.js"></script>
+    <script defer src="<?php echo URLROOT;?>/js/search.js"></script>
+
+    <script defer src="<?php echo URLROOT;?>/js/cartFunctions/cartFunctions.js"></script>
+    <script defer src="<?php echo URLROOT;?>/js/main.js"></script>
     
 
 </head>
 <body>
 <?php require APPROOT.'/views/inc/navbar.php'; ?>
-    
-    

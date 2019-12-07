@@ -11,9 +11,8 @@
         </ol>
         <div class="carousel-inner">
             <?php for($i=0;$i<count($data['motherboard']->picUrl);$i++) : ?>
-            <?php echo '<div class="carousel-item '.(($i==0) ? 'active' : '').'">'; ?>
-                
-                    <a href="<?php echo $data['motherboard']->picUrl[$i]; ?>" target="_blank"><img src="<?php echo $data['motherboard']->picUrl[$i];?>" class="d-block img-fluid"></a>
+            <?php echo '<div class="carousel-item '.(($i==0) ? 'active' : '').'">'; ?> 
+                <a href="<?php echo $data['motherboard']->picUrl[$i]; ?>" target="_blank"><img src="<?php echo $data['motherboard']->picUrl[$i];?>" class="d-block img-fluid"></a>
             <?php echo '</div>';?>
             <?php endfor; ?>
             
@@ -30,8 +29,8 @@
         <h1 class="pt-5">Ár: <?php echo $data['motherboard']->price; ?> Ft</h1>
     </div> <!-- COL VÉGE -->
         <div class="col pt-5">
-            <h1 class="text-warning"><?php echo $data['motherboard']->gyarto.' '.$data['motherboard']->MBName;?></h1>
-            <table class="table table-hover">
+            <h1 class="text-warning"><?php echo $data['motherboard']->manufacturer.' '.$data['motherboard']->MBName;?></h1>
+            <table class="table table-hover text-white">
                 <thead>
                     <tr>
                         <th scope="col">Tulajdonságok: </th>
@@ -39,13 +38,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                <tr>
+                    <tr>
                         <th scope="row">Garancia: </th>
-                        <td><?php echo $data['motherboard']->garancia; ?> Hónap</td>
+                        <td><?php echo $data['motherboard']->warr_months; ?> Hónap</td>
                     </tr>
                     <tr>
                         <th scope="row">Gyártó: </th>
-                        <td><?php echo $data['motherboard']->gyarto; ?></td>
+                        <td><?php echo $data['motherboard']->manufacturer; ?></td>
                     </tr>
                     <tr>
                         <th scope="row">Típus: </th>
