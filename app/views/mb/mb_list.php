@@ -7,9 +7,9 @@
             <div class="col-md-4">
                 <div id="mbCard" class="card mb-5">                    
                     <img src="<?php echo $mb->picUrl[0]; ?>" class="card-img-top">
-                    <div class="card-body">
-                        <h4 class="card-title"><?php echo $mb->MBName;?></h4>
-                        <p class="mb-0">Gyártó: <?php echo $mb->gyarto; ?></p>
+                    <div class="card-body bg-info">
+                        <a class="titleLink" target="_blank" href="<?php echo URLROOT;?>/mbs/details/<?php echo $MBCikkszam?>"><h4 class="card-title"><?php echo $mb->MBName;?></h4></a>
+                        <p class="mb-0">Gyártó: <?php echo $mb->manufacturer; ?></p>
                         <p class="mb-0">Chipset: <?php echo $mb->chipset; ?></p>
                         <p class="mb-0">Chipset gyártó: <?php echo $mb->MBGyarto; ?></p>
                         <p class="mb-0">Tokozás: <?php echo $mb->foglalat; ?></p>
@@ -20,27 +20,31 @@
                         <h4 class="priceColor"><?php echo $mb->price;?> Ft</h4>   
                         <div class="form-row">    
                             <form action="<?php echo URLROOT;?>/mbs/details/<?php echo $MBCikkszam?>" method="POST">
-                                <input type="submit" value="Részletek" name="details" class="btn btn-success" title="Részletek megtekintése">
+                                <input type="submit" value="Részletek" name="details" class="btn btn-success mr-1" title="Részletek megtekintése">
                             </form>
 
-
                             <?php if(isset($_SESSION['jog'])) : ?>                          
-                                <?php if($_SESSION['jog'] == 'admin' ||  $_SESSION['jog'] ==    'eladó') : ?>
+                                <?php if(bothAdminSeller($_SESSION["jog"])) : ?>
                                 <!-- ALAPLAP MÓDOSÍTÁSA ADMIN/ELADÓ -->
                                     <form action="<?php echo URLROOT;?>/admins/mb_input/<?php echo  $MBCikkszam;?>" method="POST">
-                                        <input type="submit" name="editMB" value="Módosítás"        class="btn btn-warning">
+                                        <input type="submit" name="editMB" value="Módosítás" class="btn btn-warning mr-1">
                                     </form>
                                 <!-- ALAPLAP TÖRLÉSE ADMIN/ELADÓ -->
                                     <form action="<?php echo URLROOT;?>/admins/deleteMB/<?php echo  $MBCikkszam;?>" method="POST">
-                                        <input type="submit" name="deleteMB" value="Törlés"         class="btn btn-danger">
+                                        <input type="submit" name="deleteMB" value="Törlés" class="btn btn-danger">
                                     </form>
-                                        <?php endif; ?>                            
+                                        <?php endif; ?>       
                             <?php endif; ?>
+                            <!-- <form action="<?php echo URLROOT?>/mbs/getMbItemsCookie" method="GET"> -->
+                                <button name="Cart" id="addToCart" class="btn btn-dark" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo $MBCikkszam; ?> >Kosárba</button> 
+                                <input type="hidden" name="CartBTN" value="<?php echo $MBCikkszam; ?>">
+                                <input type="hidden" name="mbCartQuantity" id="mbCartQuantity" value="">
+                            <!-- </form>  -->
                         </div><!-- FORM GROUP END -->
                     </div> <!-- CARD BODY END -->
                 </div>
-            </div>
-        <?php endforeach; ?>
+            </div> 
+                                <?php /*die(var_dump(json_decode($_COOKIE['mbCart'])));*/ endforeach; ?>
     </div>
 </div>
 
