@@ -5,11 +5,11 @@
             $this->db = new Database;
         }
         // A felhasználó bevitele
-        public function register($data = []){
+        public function register($email,$hashedPass,$username){
             $this->db->query('INSERT INTO users (email,pass,username) VALUES (:email,:pass,:username)');
-            $this->db->bind(':email',$data['email']);
-            $this->db->bind(':pass',$data['password']);
-            $this->db->bind(':username',$data['username']);
+            $this->db->bind(':email',$email);
+            $this->db->bind(':pass',$hashedPass);
+            $this->db->bind(':username',$username);
 
             if ($this->db->execute()) {
                 return true;
@@ -133,11 +133,24 @@
 
         // ESETLEGES ADMIN FUKCIÓK!!! ------------------------------------------------------------------------------------------------
         // Táblában megjeleníteni:
-        public function showUsers(){
+        public function showUserInfo(){
             $this->db->query('SELECT email1, jogosultsag, username, telefon FROM userinfo INNER JOIN users ON userinfo.email1 = users.email');
             $result = $this->db->resultSet();
 
             return $result;
+        }
+
+        // Check if a user not filled his data
+        public function checkUserData($email){
+            $this->db->query("SELECT email1 FROM userinfo WHERE email1 LIKE :email");
+            $this->db->bind(":email",$email);
+            return $this->db->single();
+
+        }
+
+        public function showUsers(){
+            $this->db->query("SELECT email, username FROM users");
+            return $this->db->resultSet();
         }
 
         // Felhasználók adatai, az ADMIN módosításhoz!
