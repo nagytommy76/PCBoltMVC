@@ -23,5 +23,9 @@
     // HEADER
     define('HEADER', APPROOT . '/views/inc/header.php');
 
+    // Define the cookies expire days
+    define('COOKIESEXPIRE', 2);
+    
+
 
 
