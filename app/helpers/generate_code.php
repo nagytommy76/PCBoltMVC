@@ -1,4 +1,7 @@
 <?php
+/**
+ * This is a code generator for registration
+ */
     function generateCode($length){
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $code = '';
