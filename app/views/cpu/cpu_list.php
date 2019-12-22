@@ -1,4 +1,4 @@
-<?php require APPROOT . '/views/inc/header.php'; ?>
+<?php require HEADER; ?>
 
 <div class="container"> 
 <?php flash('delete_success'); ?>
@@ -25,22 +25,25 @@
                   <p class="mb-0">L3Cache: <?php echo $cpu->l3cache; ?> Mb</p>
                   <p class="mb-0">L2cache: <?php echo $cpu->l2cache; ?> Mb</p>
                   <h4 class="mb-1 priceColor">Ár: <?php echo $cpu->ar; ?> Ft</h4>
-                  
                   <!-- Ha adminként vagyok belépve, tudjam módosítani a terméket --> 
+
+                  <div class="form-row"> 
                   <?php if(isset($_SESSION['jog'])) : ?> 
                     <?php if($_SESSION['jog'] == 'admin' || $_SESSION['jog'] == 'eladó') : ?>
-                      <div class="form-row">                
+                                     
                         <form method="POST" action="<?php echo URLROOT;?>/admins/cpu_input/<?php echo $cpu->cikkszam;?>">                    
                           <input type="hidden" name="cikkszam" value="<?php echo $cpu->cikkszam;?>"> 
-                          <input type="submit" name="modifyBTN" value="Módosítás" class="btn btn-md btn-warning mt-2 mr-2" />                    
+                          <input type="submit" name="modifyBTN" value="Módosítás" class="btn btn-warning mt-2 mr-2" />                    
                         </form>
                         <form action="<?php echo URLROOT;?>/admins/deleteCpu/<?php echo $cpu->cikkszam;?>" method="POST">                    
-                          <input type="submit" name="deleteBTN" value="Törlés" class="btn btn-md btn-danger mt-2" />                      
+                          <input type="submit" name="deleteBTN" value="Törlés" class="btn btn-danger mt-2 mr-2" />                      
                         </form>
-                        
-                    </div><!-- FORM-ROW END -->
                     <?php endif; ?>  
                   <?php endif; ?> 
+                        
+                        <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-dark" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'cpu_'.$cpu->cikkszam; ?> >Kosárba</button> 
+                    </div><!-- FORM-ROW END -->
+                    
 
                 </div> <!-- COL VÉGE -->                               
               </div><!-- ROW VÉGE -->
@@ -51,4 +54,4 @@
     </div>        
 </div> 
 </div>
-<?php require APPROOT . '/views/inc/footer.php'; ?>
+<?php require FOOTER; ?>

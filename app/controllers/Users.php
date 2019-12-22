@@ -142,8 +142,10 @@
                     die("Hibás kód AMI: ".$_SESSION['code']);
                     $this->destroyTempSessions();
                 }
-            }
-            $this->view('users/codeControll',$data);
+                $this->view('users/codeControll',$data);
+            }else{
+                redirect('pages/index');
+            }            
         }
 
         // If $this->code === the email code

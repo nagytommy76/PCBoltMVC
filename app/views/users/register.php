@@ -6,7 +6,7 @@
             <?php flash('register_success'); ?>
             <h2>Regisztráció</h2>
             <p>Ha még nem rendelkezik felhasználói fiókkal kérem töltse ki a beviteli mezőket</p>
-            <form action="<?php echo URLROOT; ?>/users/register" onsubmit="return Validate()" method="POST">
+            <form action="<?php echo URLROOT; ?>/users/register" method="POST">
                 <div class="form-group row p-3">
                     <label for="username">Felhasználónév <sup>*</sup></label>
                     <input class="form-control form-control-lg" name="username"  value="<?php echo $data['username']; ?>"  placeholder="Felhasználónév..." type="text" required>        

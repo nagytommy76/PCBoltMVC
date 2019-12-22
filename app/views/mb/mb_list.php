@@ -35,11 +35,10 @@
                                     </form>
                                         <?php endif; ?>       
                             <?php endif; ?>
-                            <!-- <form action="<?php echo URLROOT?>/mbs/getMbItemsCookie" method="GET"> -->
-                                <button name="Cart" id="addToCart" class="btn btn-dark" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo $MBCikkszam; ?> >Kosárba</button> 
+                            
+                                <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-dark" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'mb_'.$MBCikkszam; ?> >Kosárba</button> 
                                 <input type="hidden" name="CartBTN" value="<?php echo $MBCikkszam; ?>">
                                 <input type="hidden" name="mbCartQuantity" id="mbCartQuantity" value="">
-                            <!-- </form>  -->
                         </div><!-- FORM GROUP END -->
                     </div> <!-- CARD BODY END -->
                 </div>

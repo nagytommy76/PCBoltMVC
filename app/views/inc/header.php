@@ -30,3 +30,4 @@
 </head>
 <body>
 <?php require APPROOT.'/views/inc/navbar.php'; ?>
+<div id="wrap">
