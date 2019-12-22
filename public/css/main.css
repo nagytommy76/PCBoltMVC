@@ -1,6 +1,11 @@
+#wrap{
+    min-height: 65.8%;
+}
+
 body{
     background-color: #34495E !important;
     color: white !important;
+    /*padding-bottom: 70px;*/
 }
 
 #ModalLinkToItem .notLink{
@@ -18,7 +23,7 @@ body{
     width: 70%;
 }
 
-footer{
+#footer{
     background-color: #D68910 !important;
 }
 
