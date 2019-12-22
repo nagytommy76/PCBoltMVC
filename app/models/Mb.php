@@ -78,37 +78,6 @@
             return $this->db->resultSet();
         }
 
-        // Get MB data FOR cart
-        // public function getCartMBData($cikk){
-        //     $this->db->query('
-        //         SELECT  cikkszam, picUrl, warr_months, manufacturer, mbformats.format AS Meret, MBtipus AS MBName, mbprices.price FROM motherboard 
-        //         INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam 
-        //         INNER JOIN mbformats ON mbformats.Id = motherboard.meret  
-        //         INNER JOIN warranity ON motherboard.garancia = warranity.warr_id
-        //         INNER JOIN motherboard_man ON motherboard.gyarto = motherboard_man.man_id
-        //         WHERE cikkszam LIKE :cikkszam;
-        //     ');
-        //     $this->db->bind(':cikkszam',$cikk);
-        //     return $this->db->single();
-        // }
-
-        // GET multiple mb data
-        public function getCartMBSData($cikk){
-            $text = 'WHERE cikkszam LIKE "'.$cikk[0].'" ';
-            for ($i = 1; $i<count($cikk); $i++) {
-                $text .= 'OR cikkszam LIKE "'.$cikk[$i].'" ';
-            }
-            $this->db->query('
-                SELECT  cikkszam, picUrl, warr_months, manufacturer, mbformats.format AS Meret, MBtipus AS MBName, mbprices.price FROM motherboard 
-                INNER JOIN mbprices ON motherboard.cikkszam = mbprices.MBcikkszam 
-                INNER JOIN mbformats ON mbformats.Id = motherboard.meret  
-                INNER JOIN warranity ON motherboard.garancia = warranity.warr_id
-                INNER JOIN motherboard_man ON motherboard.gyarto = motherboard_man.man_id '.$text);
-                $result =  $this->db->resultSet();
-                return $result;
-        }
-
-
 
         // ADMIN--------------------------------- ALAPLAP MÓDOSÍTÁSA------------------------
         public function modifyMB($data,$cikkszam){

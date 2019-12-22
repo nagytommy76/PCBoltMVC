@@ -21,7 +21,7 @@ class Ram{
 
     // 1 RAM
     public function ramByCikkszam($cikk){
-        $this->db->query('SELECT cikkszam, manufacturer, rammanufatctureurl.Url, tipus, timing, type, typeCode, voltage, capacity, clock, is_xmp, kit, picUrl, ramPrice, warranity.warr_id AS WMonth 
+        $this->db->query('SELECT cikkszam, manufacturer, rammanufatctureurl.Url, tipus, timing, type, typeCode, voltage, capacity, clock, is_xmp, kit, picUrl, ramPrice, warranity.warr_months AS WMonth 
         FROM ram_products
         INNER JOIN ram_price ON ram_products.cikkszam = ram_price.ramCikkszam
         LEFT JOIN rampictureurl ON ram_products.cikkszam = rampictureurl.cikkszamPicUrl
@@ -127,13 +127,6 @@ class Ram{
         $this->db->bind(':price', $price);
         return $this->db->execute();
     }
-
-
-
-
-
-
-
 
     // RETURN all RAM manufacturer
     public function manufacturers(){
