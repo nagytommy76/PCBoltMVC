@@ -2,7 +2,7 @@
   <a title="Vissza a főoldalra" class="navbar-brand" href="<?php echo URLROOT ?>" >
   <img class="" src="<?php echo ICONROOT?>/ownIcons/supermarket.png">
   Főoldal</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+  <button class="navbar-toggler bg-dark text-white" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
@@ -114,6 +114,9 @@
       <!-- Cart MODAL -->
       <li class="nav-item">
         <button class="btn btn-secondary mr-3" data-target="#cartModal" data-toggle="modal" type="button" id="cartBTN" aria-labelledby="cartModal">Kosár</button>
+        <form action="<?php echo URLROOT; ?>/carts/getItemsCookie" method="POST">
+          <input type="hidden" name="cartBTN">
+        </form>
       </li>
 
       <!-- CART MODAL END -->
@@ -137,12 +140,16 @@
           <div class="modal-body">
             <h4><?php echo (!isset($_SESSION["jog"]) ? 'A vásárláshoz be kell jelentkezni' : 'Ez a funkció jelenleg fejlesztés alatt áll!') ?></h4>
             <!-- MODAL OUTPUT -->
-            <div class="pt-3 pb-4" id="modalCartOutput">
-
-            </div>
+            <form action="<?php echo URLROOT?>/carts/summaryCartItems" method="POST">
+            <div class="pt-3 pb-4" id="modalCartOutput"></div>
+            <div id="modalCartPrice"></div>
+            
           <div class="modal-footer">            
             <button type="button" class="btn btn-danger" data-dismiss="modal">Bezárás</button>
-            <button type="button" class="btn btn-success" data-dismiss="modal">Tovább az összesítéshez</button>
+            
+              <input type="submit" class="btn btn-success" value="Tovább az összesítéshez!">
+            </form>
+            
         </div>
         </div>
       </div>
