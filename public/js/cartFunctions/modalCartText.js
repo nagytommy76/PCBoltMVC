@@ -1,5 +1,5 @@
 class ModalCartText{
-    static TextForMb(picUrl,manufacturer,productName,price,cikksz,urlToProductDetails = '#'){
+    static TextForMb(picUrl,manufacturer,productName,price,cikksz,urlToProductDetails = '', quantity){
         // Create Media DIV
         let mediaDiv = document.createElement('div');
         mediaDiv.classList = 'media border border-white mt-1';
@@ -16,7 +16,7 @@ class ModalCartText{
 
         // Create H5 and a tag
         let a = document.createElement('a');
-        a.href = urlToProductDetails;
+        a.href = `http://localhost/PCBoltMVC/${urlToProductDetails}s/details/${cikksz}`;
         a.target = '_blank';
         a.classList = 'text-white'
         let h5 = document.createElement('h5');
@@ -31,13 +31,26 @@ class ModalCartText{
         let formControlDiv = document.createElement('div');
         formControlDiv.className = 'form-group';
 
+        // Create a form to modify the quantity
+        let form = document.createElement('form');
+        form.action = 'http://localhost/PCBoltMVC/carts/summaryCartItems';
+        form.method = 'POST';
+
+
         // Create a number of products
         let number = document.createElement('input');
         number.type = 'number';
         number.step = 1;
-        number.max = 10;
+        number.max = 20;
         number.min = 1;
-        number.className = '';
+        number.name = 'numberOfItems[]';
+        number.value = quantity;
+
+        // CREATE another input (HIDDEN) for the cikkszam
+        let hiddenCikk = document.createElement('input');
+        hiddenCikk.type = 'hidden';
+        hiddenCikk.name = 'hiddenCikkszam[]';
+        hiddenCikk.value = cikksz;
 
         // Create a delete BTN
         let deleteBtn = document.createElement('button');
@@ -47,19 +60,31 @@ class ModalCartText{
 
         // Chain together
         formControlDiv.appendChild(number);
-        formControlDiv.appendChild(deleteBtn);
+        formControlDiv.appendChild(hiddenCikk);
+
+        //form.appendChild(number);
+        form.appendChild(deleteBtn);
 
         a.appendChild(h5);
         mediaBodyDiv.appendChild(a);
         mediaBodyDiv.appendChild(priceP);
         mediaBodyDiv.appendChild(formControlDiv);
+        //mediaBodyDiv.appendChild(form);
 
-        
 
         mediaDiv.appendChild(img);
         mediaDiv.appendChild(mediaBodyDiv);
+        //mediaDiv.append(priceSum);
 
         return mediaDiv;
+    }
 
+    static showPrice(price, text = ''){
+
+        let priceSum = document.createElement('h5');
+        priceSum.className = 'priceColor';
+        priceSum.innerHTML = `${text}: ${price} Ft`;
+
+        return priceSum;
     }
 }

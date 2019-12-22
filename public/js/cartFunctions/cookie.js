@@ -1,20 +1,27 @@
 class Cookie{
     session;
     constructor(){
-        if (this.getCookie('Cart') === undefined) {
-            this.CartArray = [];
-        }else{
-            this.CartArray = JSON.parse(this.getCookie('Cart'));
-        }
-    }
-    // Itt Majd eltárolom localStorage ban is mert különben pgae reloadnál újra inicializálódik... MEGOLDVA? ^
-    setCookie(cName,cValue, exDays, session_cookie = ''){
-        const days = this.expires(exDays);
-        this.CartArray.push((`${cValue}`));
-        document.cookie = `${cName}=${JSON.stringify(this.CartArray)}; expires=${days}; path=/`;
-        document.cookie = `cart_session=${session_cookie}; expires=${days}; path=/`;
+        // if (this.getCookie('Cart_') === undefined) {
+        //     this.CartArray = [];
+        // }else{
+        //     this.CartArray = JSON.parse(this.getCookie('Cart'));
+        // }
     }
 
+    setCookie(cName,cValue, exDays, session_cookie = ''){
+        let CartArray = [];
+        const days = this.expires(exDays);
+
+        if (this.getCookie(`${cName}`) !== undefined) {
+            CartArray = JSON.parse(this.getCookie(`${cName}`));
+            CartArray.push((cValue));
+        }else{
+            CartArray.push(cValue);
+        }
+        document.cookie = `${cName}=${JSON.stringify(CartArray)}; expires=${days}; path=/`;     
+    }
+    
+    // GET the current user's cookie
     getCookie(name) {
         let value = "; " + document.cookie;
         let parts = value.split("; " + name + "=");
@@ -23,7 +30,6 @@ class Cookie{
 
     destroyCookie(cName){
         document.cookie = `${cName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
-        //this.CartArray = [];
     }
 
     expires(exDays){
@@ -32,11 +38,5 @@ class Cookie{
         let expires = d.toUTCString();
 
         return expires;
-    }
-    setSessionEmail(){
-        CookieQuery.getSessionEmail()
-        .then(response => response)
-        .catch(err => err);
-    }
-    
+    }    
 }
