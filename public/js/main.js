@@ -6,8 +6,7 @@ const search = new Search();
 const cText = new CreateText(urlRoot);
 // Init storage
 const ls = new Storage();
-// Cookie
-const cookie = new Cookie();
+
 
 
 
@@ -98,71 +97,102 @@ document.getElementById('modalInput').addEventListener('keyup',() => {
 
 const addToCart = document.querySelectorAll("#addToCart");
 const cartOutput = document.querySelector("#modalCartOutput");
+const cartPriceOutput = document.querySelector("#modalCartPrice");
 const cartBTN = document.getElementById('cartBTN');
-const routeToProductDetails = urlRoot;
+
+let sessionEmail = '';
+
+// Cookie
+const cookie = new Cookie();
 
 addToCart.forEach((e) =>{
-    e.addEventListener('click', () =>{      
-        //console.log(e.id);        
-        //ls.setLocalStorage(e.value, e.name);
-        CookieQuery.getSessionEmail().then(res => {
-            cookie.setCookie(e.name,e.value,1,res.session);
-                CookieQuery.mbsQuery()
-                .then(response =>{
-                    console.log(response);
-                    response.forEach(res => {
-                        cartOutput.append(ModalCartText.TextForMb(res.picUrl[0],res.manufacturer,res.MBName,res.price,e.value));
-                    });  
-                })
-                .catch(err => console.log(err));
-            
-            $('#cartModal').modal('show');
-            cartOutput.innerHTML = '';
-            setTimeout(() =>{
-                $('#cartModal').modal('hide');
-            }, 2500);
+    let priceSum = 0;
+    e.addEventListener('click', () =>{   
+        // let Cart = e.name.split('_');  
+        // sessionEmail = Cart[1];
+        CookieQuery.getSessionEmail()
+        .then(email => {
+            cookie.setCookie(e.name,e.value,1);
+            if (cookie.getCookie('Cart_'+email) !== undefined) {
+                CookieQuery.queryCartItems()
+                .then(response => {
+                    cartOutput.innerHTML = '';
+                    response.forEach(res =>{
+                        if (email === res.sessEmail) {
+                            priceSum += parseInt(res.price * res.quantity);
+                            cartOutput.append(ModalCartText.TextForMb(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam, res.product_type ,res.quantity));
+                            //console.log(res.sessEmail);
+                        }
+                    })
+                    cartOutput.append(ModalCartText.showPrice(priceSum,'A Fizetendő végösszeg'));
+                }).catch(error => console.log(error))
+            }
         }).catch(err => console.log(err));
+        
+        $('#cartModal').modal('show');
+        cartOutput.innerHTML = '';
+        setTimeout(() =>{
+            $('#cartModal').modal('hide');
+        }, 2000);
         
     });
 });
 
 cartBTN.addEventListener('click', () =>{
-    let currentCookie;
-    if (cookie.getCookie('Cart') !== undefined) {
-        currentCookie = JSON.parse(cookie.getCookie('Cart'));
-    }
+    let priceSum = 0;
     CookieQuery.getSessionEmail()
-    .then(session_response => {
-        if (currentCookie !== undefined) {
-            if (session_response !== undefined) {        
-                if (session_response.session !== 'unset') {
-                    if(cookie.getCookie('cart_session') === session_response.session){
-                        // if the output is an empty string i don't make a request, because it's     unnecessary
-                        CookieQuery.mbsQuery()
-                        .then(response => {
-                            console.log(response);
-                            cartOutput.innerHTML = '';
-                            response.forEach(res => {
-                                cartOutput.append(ModalCartText.TextForMb(res.picUrl[0],         res.manufacturer,res.MBName,res.price,res.cikkszam,        routeToProductDetails+`mbs/details/${res.cikkszam}`));
-                            });              
-                        })
-                        .catch(err => console.log(err));
-                    }
-                }
-        }
-        }else{
-            cartOutput.innerHTML = `<h3>A kosár jelenleg üres!</h3>`;
-        }
-    })
-});
+    .then(email => {
+        if (cookie.getCookie('Cart_'+email) !== undefined) {
+            CookieQuery.queryCartItems()
+            .then(response => {
+                cartOutput.innerHTML = '';
+                    response.forEach(res =>{
+                        if (email === res.sessEmail) {
+                            priceSum += parseInt(res.price * res.quantity);
+                            cartOutput.append(ModalCartText.TextForMb(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam, res.product_type ,res.quantity));
+                        }
+                    })
+                cartOutput.append(ModalCartText.showPrice(priceSum,'A Fizetendő végösszeg'));
+            }).catch(error => console.log(error))
+        }            
+    }).catch(err => console.log(err));
+})
 
 
 
 
 
 
+// CHANGE THE ELEMENTS PRICE FOLYT KÖV!!!!----------------
+//console.log(document.querySelectorAll('#numberOfItemsInSummary'));
+
+const numberOfItems = document.querySelectorAll('#numberOfItemsInSummary');
+
+numberOfItems.forEach((e, index) =>{
+    let itemPrice = document.querySelectorAll('#itemPriceHidden');
+    e.addEventListener('change',(e) => {
+        console.log(e.target.value);
+        let itemPricesText = document.querySelectorAll('#itemPrices');
+        
+
+        //console.log(itemPrice[index].value);
+        itemPricesText[index].innerHTML = `Ár: ${(parseInt(e.target.value) * parseInt(itemPrice[index].value))} Ft`;
+        itemPricesText[index].name = `${(parseInt(e.target.value) * parseInt(itemPrice[index].value))}`;
+
+        let finalPrice = document.getElementById('finalPriceValue');
+
+        console.log(finalPrice.innerHTML);
+    });
+    
+})
 
 
 
 
+
+
+//console.log(document.getElementsByClassName('numberOfItems'));
+// numberChange.addEventListener('change', (e) =>{
+//     alert(e.value);
+// });
 
