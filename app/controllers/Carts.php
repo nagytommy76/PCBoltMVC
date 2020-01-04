@@ -2,8 +2,10 @@
 
 class Carts extends Controller{
     protected $currentCartItems;
+    protected $pdf;
     public function __construct()
     {
+        $this->pdf = new PDF();
         $this->currentCartItems = array();
         $this->cartModel = $this->model('cart');
         $this->userModel = $this->model('user');
@@ -15,8 +17,8 @@ class Carts extends Controller{
         }
         if (isset($_SESSION['email'])) {
             if (isset($cikkszam) && count($cikkszam) > 0) {
+                if ($_SERVER['REQUEST_METHOD'] === 'GET') {               
                 $numberOfItems = array_count_values($cikkszam);
-               //die(var_dump(($cikkszam)));
                 $res = array();
 
                 foreach ($numberOfItems as $cikksz => $number) {
@@ -36,7 +38,6 @@ class Carts extends Controller{
                     foreach ($temp as $re) {
                         pictureSplitting($re,';');
                     }
-                    //die(var_dump($temp));
                     $merged = $this->createMergedObjects($test, $temp[0]);
                     $merged = $this->createMergedObjects($merged, ['sessEmail' => sha1($_SESSION['email'])]);
                     $merged = $this->createMergedObjects($merged, ['product_type' => $cikk[0]]);
@@ -45,25 +46,7 @@ class Carts extends Controller{
                 }
 
                 echo json_encode($res);
-                //die(); // DIEOLVA CVAN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                // if (!empty($res)) {
-                //     $date = date('Y-m-d H:i:s',time());
-                //     if (!$this->cartModel->isInCart(end($res)->cikkszam, $_SESSION['email'])){
-                //         $this->cartModel->insertUserCartItem(end($res)->cikkszam, 1, $_SESSION['email'], $date);                  
-                //     }else{
-                //         $lastAddedCikk = end($cikkszam);
-                //         $lastAddedCikk = explode('_', $lastAddedCikk);
-                //         //$currentQuantity =(int) ($this->cartModel->isInCart($lastAddedCikk    [1], $_SESSION['email'])->quantity);
-                //         //die(var_dump($currentQuantity));
-
-
-                //         $this->cartModel->updateQuantity($this->number_of_items($res,$lastAddedCikk[1]),$lastAddedCikk[1],$_SESSION['email'],$date);
-                //     }
-                // }  
-                // else{
-                //     // If the $res array is empty, fill it with the user_cart_item table
-
-                // }
+                }
 
             }else{
                 // If there's nothing in the cart Cookie, load the items into the cart from the users_cart_items table....
@@ -76,70 +59,128 @@ class Carts extends Controller{
 
 
     public function summaryCartItems(){
+        //unset($_SESSION['current']);
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $changedQuantities = array(); 
-
-            for ($i=0; $i < count($_POST['hiddenCikkszam']); $i++) { 
-                $temp = [$_POST['hiddenCikkszam'][$i] => (int)$_POST['numberOfItems'][$i]];
-                $changedQuantities = $this->createMergedObjects($changedQuantities, $temp);
-            }
-
-            $currentCartItems = $_SESSION['current'];
-            $finalPrice = 0;
-            //die(var_dump($changedQuantities));
-            foreach ($changedQuantities as $key => $value) {
-                foreach ($currentCartItems as $item) {
-                    if ($item->cikkszam == $key) {
-                        $item->quantity = $value;
-                        $finalPrice += ($value * $item->price);
+            if (isset($_COOKIE['Cart_'.sha1($_SESSION['email'])])) {
+                
+                $changedQuantities = array(); 
+                if(isset($_POST['hiddenCikkszam']) && isset($_POST['numberOfItemsInSummary']))
+                {
+                    for ($i=0; $i < count($_POST['hiddenCikkszam']); $i++) { 
+                        $temp = [$_POST['hiddenCikkszam'][$i] => (int)$_POST['numberOfItemsInSummary'][$i]];
+                        $changedQuantities = $this->createMergedObjects($changedQuantities, $temp);
                     }
+     
+                    $finalPrice = $this->changeTheItemsQuantity($changedQuantities, $_SESSION['current']);
+    
+                    $userDetails = $this->userModel->getDataByEmail($_SESSION['email']);
+    
+                    $data = [
+                        'main_title' => 'A korsár tartalmának összesítése',
+                        'cartItems' => $_SESSION['current'],
+                        'finalPrice' => $finalPrice,
+                        'userDetails' => $userDetails,
+                    ];
+                    $this->view('cart/summaryCart',$data);
                 }
             }
-            $_SESSION['current'] = $currentCartItems;
-            $data = [
-                'main_title' => 'A korsár tartalmának összesítése',
-                'cartItems' => $currentCartItems,
-                'finalPrice' => $finalPrice
-            ];
-            $this->view('cart/summaryCart',$data);
         }else{
             redirect('pages/index');
         }
     }
 
-    // Check the order and add/modify/apply the postal information------------------------
-    public function checkOrder(){
+    // Check the order and add/modify/apply the postal information create PDF------------------------
+    public function confirmOrders(){
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $data = [
-                'main_title' => 'Az adatok ellenőrzése',
-                'cartItems' => $_SESSION['current']
+            $currentCartItems = $_SESSION['current'];
+            // This is an array
+            $anItemOverallPrice = $_POST['itemPricesHidden'];
+            // Overall price
+            $overallPrice = (int)$_POST['finalPriceValue'];
+            // Billing data
+            $billingData = [
+                'veznev' => trim($_POST['veznev']),
+                'kernev' => trim($_POST['kernev']),
+                'varos' => trim($_POST['varos']),
+                'irszam' => trim($_POST['irszam']),
+                'utca' => trim($_POST['utca']),
+                'hazszam' => trim($_POST['hazszam']),
+                'emeletajto' => trim($_POST['emeletajto']),
+                'szulido' => trim($_POST['szulido']),
             ];
+            // if the delivery checkbox is set
+            if (!isset($_POST['deliveryAddress'])) {
+                $deliveryData = [
+                    'veznev' => trim($_POST['Dveznev']),
+                    'kernev' => trim($_POST['Dkernev']),
+                    'varos' => trim($_POST['Dvaros']),
+                    'irszam' => trim($_POST['Dirszam']),
+                    'utca' => trim($_POST['Dutca']),
+                    'hazszam' => trim($_POST['Dhazszam']),
+                    'emeletajto' => trim($_POST['Demeletajto']),
+                    'szulido' => trim($_POST['Dszulido']),
+                ];
+            }
+            if (isset($_POST['anyMessage'])) {
+                if (empty($_POST['messageBox'])) {
+                    echo 'Folytatni kell valami szar....';
+                    $anyMessage = '';
+                }else{
+                    $anyMessage = $_POST['messageBox'];
+                }
+            }
 
-            $this->view('cart/checkOrder',$data);
+
+            var_dump($overallPrice);
+            echo '<br><br>';
+            var_dump($currentCartItems);
+
         }else{
-            redirect('pages/index');
+          redirect('pages/index');
         }
         
     }
 
 
-
-
-
-
-    // az adott elem hányszor van meg az arrayben
-    private function number_of_items($array, $cikkszam){
-        $result = 0;
-        foreach ($array as $arr) {
-            if ($arr->cikkszam === $cikkszam) {
-                $result++;
-            }
-        }
-        return $result;
-    }
-
     public function getSessionEmail(){
         echo json_encode(sha1($_SESSION['email']));
+    }
+
+    public function getTheCurrentUserData(){
+        echo json_encode($this->userModel->getDataByEmail($_SESSION['email']));
+    }
+
+    public function changeSessionsQuantity(){
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            foreach ($_SESSION['current'] as $current) {
+                if ($current->cikkszam == $_GET['cikksz']) {
+                    $current->quantity = (int)$_GET['quantity'];
+                }
+            }
+        }
+    }
+
+    public function test(){
+        $this->pdf->AddPage();
+
+        $this->pdf->createOrderPdf($_SESSION['current'],$this->userModel->getDataByEmail($_SESSION['email']));
+        $this->pdf->Output('I',APPROOT.'/helpers/PDF/test.pdf',true);
+    }
+
+
+    // PRIVATE FUNCTIONS------------------------------------------------------------------------
+
+    private function changeTheItemsQuantity($changedQuantities, &$currentCartItems){
+        $finalPrice = 0;
+        foreach ($changedQuantities as $key => $value) {
+            foreach ($currentCartItems as $item) {
+                if ($item->cikkszam == $key) {
+                    $item->quantity = $value;
+                    $finalPrice += ($value * $item->price);
+                }
+            }
+        }
+        return $finalPrice;
     }
 
     /**
@@ -150,13 +191,3 @@ class Carts extends Controller{
         return (object) array_merge((array) $array1, (array) $array2);
     }
 }
-
-
-
-
-
-
-
-
-
-
