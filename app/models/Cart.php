@@ -62,7 +62,7 @@ class Cart{
 
     // RAM CART -------------------------------------------------------
     public function getCartRAMData($cikk){
-        $this->db->query('SELECT cikkszam, manufacturer, type AS product_name, picUrl, ramPrice AS price 
+        $this->db->query('SELECT cikkszam, manufacturer, type AS product_name, picUrl, ramPrice AS price, warr_months
         FROM ram_products
         INNER JOIN ram_price ON ram_products.cikkszam = ram_price.ramCikkszam
         LEFT JOIN rampictureurl ON ram_products.cikkszam = rampictureurl.cikkszamPicUrl
@@ -77,7 +77,7 @@ class Cart{
 
     // CPU CART---------------------------------------------------
     public function getCartCPUData($cikk){
-        $this->db->query('SELECT cikkszam, cpufoglalatok.gyarto AS manufacturer, tipus AS product_name, kepurl AS picUrl, ar AS price FROM cpu LEFT JOIN cpufoglalatok ON cpu.foglalatId = cpufoglalatok.foglalatID LEFT JOIN cpuarak1 ON cpu.cikkszam = cpuarak1.cikkszamcpu WHERE cikkszam LIKE :cikk');
+        $this->db->query('SELECT cikkszam, cpufoglalatok.gyarto AS manufacturer, tipus AS product_name, kepurl AS picUrl, garancia AS warr_months, ar AS price FROM cpu LEFT JOIN cpufoglalatok ON cpu.foglalatId = cpufoglalatok.foglalatID LEFT JOIN cpuarak1 ON cpu.cikkszam = cpuarak1.cikkszamcpu WHERE cikkszam LIKE :cikk');
         $this->db->bind(':cikk',$cikk);
         return $this->db->resultSet();
     }
