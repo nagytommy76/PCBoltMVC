@@ -4,9 +4,6 @@ const urlRoot = 'http://localhost/PCBoltMVC/';
 const search = new Search();
 // Init Create text
 const cText = new CreateText(urlRoot);
-// Init storage
-const ls = new Storage();
-
 
 
 
@@ -53,7 +50,6 @@ document.getElementById("category").addEventListener('change', () => {
             man.innerHTML += `
                 <option value="intel">Intel</option>
             `;
-
         break;
 
 
@@ -77,12 +73,7 @@ document.getElementById('modalInput').addEventListener('keyup',() => {
                     modalOutput.innerHTML = cText.textForSearchModalCpu(response);
                     break;
                 case 'motherboard':
-                    modalOutput.innerHTML = cText.textForSearchModalMotherboard(response);
-                    // console.log(response[0].manufacturer);
-                    // modalOutput.innerHTML = cText.createModalText(response.MBtipus,{
-                    //     man: response.manufacturer
-                    // });
-                    
+                    modalOutput.innerHTML = cText.textForSearchModalMotherboard(response);      
                     break;
                 case 'ram':
                     modalOutput.innerHTML = cText.textForSearchModalRAM(response);
@@ -139,50 +130,83 @@ addToCart.forEach((e) =>{
 });
 
 cartBTN.addEventListener('click', () =>{
-    let priceSum = 0;
-    CookieQuery.getSessionEmail()
-    .then(email => {
-        if (cookie.getCookie('Cart_'+email) !== undefined) {
-            CookieQuery.queryCartItems()
-            .then(response => {
-                cartOutput.innerHTML = '';
-                    response.forEach(res =>{
-                        if (email === res.sessEmail) {
-                            priceSum += parseInt(res.price * res.quantity);
-                            cartOutput.append(ModalCartText.TextForMb(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam, res.product_type ,res.quantity));
-                        }
-                    })
-                cartOutput.append(ModalCartText.showPrice(priceSum,'A Fizetendő végösszeg'));
-            }).catch(error => console.log(error))
-        }            
-    }).catch(err => console.log(err));
-})
+    ModalCartText.getCartTextAndData(cartOutput);
+
+});
+
+const checkbox = document.querySelector('#deliveryAddress');
+const deliveryOutput = document.querySelector('.deliveryAdressOutput');
+
+    checkbox.addEventListener('change', () =>{
+        if (checkbox.checked) {
+            deliveryOutput.removeChild(document.getElementById('DeliveryBillingAdress'));
+        }else{
+            ModalCartText.showDeliveryAdress(deliveryOutput);
+        }
+    })
+
+
+const messageCheckbox = document.getElementById('anyMessage');    
+messageCheckbox.addEventListener('change', () =>{
+    if (messageCheckbox.checked) {
+        deliveryOutput.append(ModalCartText.createMessageBox());
+    }else{
+        deliveryOutput.removeChild(ModalCartText.removeMessageBox());
+    }
+});
 
 
 
 
 
 
-// CHANGE THE ELEMENTS PRICE FOLYT KÖV!!!!----------------
-//console.log(document.querySelectorAll('#numberOfItemsInSummary'));
+// CHANGE THE ELEMENTS PRICE FOLYT KÖV!!!!----------------------------------------------
+
+//const numberOfItemsInSummary = document.querySelectorAll('#numberOfItemsInSummary');
 
 const numberOfItems = document.querySelectorAll('#numberOfItemsInSummary');
+// A látható végösszeg
+let overallPrice = document.querySelector('#finalPriceValue');
+// a rejtett végösszeg, hogy POST-on eresztül le tudjam klérdezni
+let overallPriceHidden = document.querySelector('#finalPriceValueHidden');
 
-numberOfItems.forEach((e, index) =>{
+
+
+numberOfItems.forEach((e,index) =>{
     let itemPrice = document.querySelectorAll('#itemPriceHidden');
+    
     e.addEventListener('change',(e) => {
-        console.log(e.target.value);
+        //console.log(e.target.value);
+        CookieQuery.getSessionEmail()
+        .then(email =>{
+            let itemType = document.querySelectorAll('#itemType');
+            //console.log(itemType[index].value);
+            cookie.modifyNumberOfItemsCookie('Cart_'+email,itemType[index].value,1, e.target.value);
+
+            CookieQuery.changeAnItemQuantity(itemType[index].value.split('_')[1],e.target.value);
+        })
+        .catch(err => console.log(err));
+
         let itemPricesText = document.querySelectorAll('#itemPrices');
+        let itemPricesHidden = document.querySelectorAll('#itemPricesHidden');
+
+        let priceCounter = (parseInt(e.target.value) * parseInt(itemPrice[index].value));
         
 
-        //console.log(itemPrice[index].value);
-        itemPricesText[index].innerHTML = `Ár: ${(parseInt(e.target.value) * parseInt(itemPrice[index].value))} Ft`;
-        itemPricesText[index].name = `${(parseInt(e.target.value) * parseInt(itemPrice[index].value))}`;
+        itemPricesText[index].innerHTML = `${priceCounter}`;
+        itemPricesHidden[index].value = priceCounter;
+        //console.log(itemPricesHidden[index].value);
+        //itemPricesText[index].value = `${priceCounter}`;
+        
+        let test = 0;
+        itemPricesText.forEach(price =>{
+            test += parseInt(price.innerHTML);
+        });
 
-        let finalPrice = document.getElementById('finalPriceValue');
-
-        console.log(finalPrice.innerHTML);
-    });
+        overallPriceHidden.value = test;
+        //console.log(overallPriceHidden.value);
+        (overallPrice.innerHTML = test);        
+     }); 
     
 })
 
@@ -191,8 +215,5 @@ numberOfItems.forEach((e, index) =>{
 
 
 
-//console.log(document.getElementsByClassName('numberOfItems'));
-// numberChange.addEventListener('change', (e) =>{
-//     alert(e.value);
-// });
+
 
