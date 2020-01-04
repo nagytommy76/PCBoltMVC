@@ -21,7 +21,7 @@
             $url = $this->getUrl();
             // megnézzük a controllerben, mi az első érték
             // ucwords: Az első karaktert negy betűsség teszi
-            
+
             if (file_exists('../app/controllers/' .ucwords($url[0]). '.php')) {
                 // ha létezik a file, beállítjuk kontrollerként
                 $this->currentController = ucwords($url[0]);
