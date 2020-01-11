@@ -91,7 +91,7 @@
                     // Save temporary the user info
                     $this->temporarySession($data["username"],$data["password"],$data["email"]);                  
                     if(!isset($_SESSION["code"])){
-                        $_SESSION["code"] = generateCode(10);
+                        $_SESSION["code"] = $this->mail->generateCode(10);
                         // EZT ÁTTENNI COOCKIE BA, mert ha a user nem használja fel nem törlődik??? 
                     }
                     //die(var_dump($_SESSION['code']));
@@ -268,12 +268,6 @@
         }
 
         public function logout(){
-            if (isset($_COOKIE['Cart'])) {
-                setcookie("Cart","",time()-3600,"/");
-            }
-            if (isset($_COOKIE['cart_session'])) {
-                setcookie("cart_session","",time()-3600,"/");
-            }
             unset($_SESSION['email']);
             unset($_SESSION['username']);
             unset($_SESSION['jog']);
