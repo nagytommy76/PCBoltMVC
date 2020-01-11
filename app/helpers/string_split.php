@@ -14,16 +14,30 @@
                   $pictureArray = explode_string($array[$i]->picUrl, $delimiter);               $array[$i]->picUrl = $pictureArray; 
                   return $array; 
                }*/
-               foreach ($array as $mb) {
-                  $pictureArray = explode_string($mb->picUrl,$delimiter);
-                  $mb->picUrl = $pictureArray;
-                  return $mb;
-               }                 
+               // foreach ($array as $mb) {
+               //    $pictureArray = explode_string($mb->picUrl,$delimiter);
+               //    $mb->picUrl = $pictureArray;
+               //    return $mb;
+               // }                 
             }
          }
          else{
+            // EZT KELL MAJD EGY FOREACH-BE TENNI A TÖBBI FELESLEGES?
                $picture = explode_string($array->picUrl, $delimiter);
                return $array->picUrl = $picture;
          }
+   }
+
+   function splittingPictures($array, $delimiter){
+      if (!is_array($array) || count($array) == 1) {
+         $picture = explode_string($array->picUrl, $delimiter);
+         return $array->picUrl = $picture;
+      }else{
+         foreach ($array as $array) {
+            $picture = explode_string($array->picUrl, $delimiter);
+            return $array->picUrl = $picture;
+         }
       }
+      
+   }
    
