@@ -151,6 +151,7 @@ class ModalCartText{
      */
     static createBillingAndDeliveryAdress(userData, outputElement, theFormType, deliveryOrBilling = ''){
         // CREATE A CONTAINING DIV
+        //console.log(userData);
         let div = document.createElement('div');
         div.id = 'DeliveryBillingAdress';
         // create a header
@@ -333,9 +334,6 @@ class ModalCartText{
         outputElement.appendChild(div);
 
     }
-
-
-
 
     // CREATE MESSAGE BOX
     static createMessageBox(){
