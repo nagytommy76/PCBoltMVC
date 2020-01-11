@@ -6,16 +6,21 @@ class Cart{
         $this->db = new Database();
     }
 
-
-    // INSERTING INTO USER_CART_ITEMS
-    public function insertUserCartItem($productCikksz, $quantity, $user_email, $date){
-        $this->db->query('INSERT INTO user_cart_item (user_email, product_cikkszam, quantity, created_at, modified) VALUES (:email, :cikk, :quantity, :created, :mod)');
+    // INSERTING THE ORDERS INTO DATABASE
+    public function insertUserCartItem($productsInCookie, $user_email, /*$orderedAt, */$orderCode){
+        $this->db->query('INSERT INTO user_cart_item (user_email, cartItems, orderCode) VALUES (:email, :cartItems, :orderCode)');
         $this->db->bind(':email',$user_email);
-        $this->db->bind(':cikk', $productCikksz);
-        $this->db->bind(':quantity',$quantity);
-        $this->db->bind(':created',$date);
-        $this->db->bind(':mod',$date);
+        $this->db->bind(':cartItems', $productsInCookie);
+        //$this->db->bind(':orderedAt',$orderedAt);
+        $this->db->bind(':orderCode',$orderCode);
         return $this->db->execute();
+    }
+
+    // GET A USER'S ORDER IF HAVE.....
+    public function showAllOrders($email){
+        $this->db->query('SELECT orderCode, cartItems,orderedAt FROM user_cart_item WHERE user_email LIKE :email ORDER BY orderedAt DESC');
+        $this->db->bind(':email',$email);
+        return $this->db->resultSet();
     }
 
     /**
