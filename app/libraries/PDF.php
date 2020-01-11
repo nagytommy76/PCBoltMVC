@@ -2,7 +2,7 @@
 require '../fpdf182/fpdf.php';
 
 class PDF extends FPDF{
-    function Header()
+    public function Header()
     {
         $this->SetFont('Arial','',14);
         // LOGO
@@ -22,66 +22,87 @@ class PDF extends FPDF{
         $this->Cell(0,5,utf8_decode('Etele út 144.'),0,2,'R');
         $this->Cell(0,14,utf8_decode('Telefon: +36 1 255 78 55'),0,2,'R');
         $this->Cell(0,0,utf8_decode('E-mail: info@computerstore.hu'),0,2,'R');
-        
+        $this->SetCreator('PHP version 7.4.1');
+        $this->SetAuthor(utf8_decode('Nagy Tamás -> Computer Store webáruház'));
+        $this->Ln();
     }
 
-    function Footer()
+    public function Footer()
     {
         $this->SetFont('Arial','',10);
         $this->SetY(-9);
         $this->Cell(0,0,utf8_decode('Készítette: Nagy Tamás, Budapest '.date('Y-M-d h:m:s').''),0,2,'C');
     }
 
-    
     /**
-     * @param item The cart items
-     * @param customer The buyer's data
-     * @param isCheckedDelivery If the checkbox in the summary page is checked then...
-     * @param customerDelivery then display the delivery data
+     * @param array $item The cart items
+     * @param array $customer The buyer's data
+     * @param bool $isCheckedDelivery If the checkbox in the summary page is checked then...
+     * @param array $customerDelivery then display the delivery data
+     * @param array $isCheckedMessage when the message checkbox is set.
+     * @param string $message the customer's message
+     * @param int $overallPrice The overall price
+     * @param int $oneItemPrice an item overall price (2quantity*price)
+     * @param string $emailToPdfName the PDF's name
+     * @param string $billCode the order code
      */
-    function createOrderPdf($item = '', $customer = '' ,$isCheckedDelivery = false,$customerDelivery = [], $isCheckedMessage = false, $messgae =''){
-        $this->customerBillingData($customer);
-        if ($isCheckedDelivery) {
-            $this->customerDeliveryData($customerDelivery);
-        }
-        $this->createTable($item);
-        if ($isCheckedMessage) {
-            $this->messageBox($messgae);
-        }       
+    public function createOrderPdf($item = [], $customer = [] ,$isCheckedDelivery = true,$customerDelivery = [], $isCheckedMessage = false, $message ='', $overallPrice = 0,$oneItemPrice = 0, $emailToPdfName,$billCode){
+        $this->AddPage();
+
+        $this->customerBillingData($customer, $customerDelivery, $isCheckedDelivery,$billCode);
         
+        $this->createTable($item,$overallPrice,$oneItemPrice);
+        if ($isCheckedMessage) {
+            $this->messageBox($message);
+        }     
+        $this->otherInformation();  
+        // save the pdf
+        $this->Output('F',APPROOT.'/helpers/PDF/'.$emailToPdfName.'.pdf',true);
+
+        return $this->Output('S',APPROOT.'/helpers/PDF/'.$emailToPdfName.'.pdf',true);
     }
+
 
     // PRIVATE FUNCTIONS ================================================================ PRIVATE FUNCTIONS
 
     // CREATE customer billing data
-    private function customerBillingData($customer = ''){
+    private function customerBillingData($customer = '',$customerDelivery = [], $isCheckedDelivery, $billCode = 0){
         $this->SetFont('Arial','B',13);
-        $this->Cell(50,30,utf8_decode('Vásárló adatai: '),0,2,'L');
+        $this->Cell(100,40,utf8_decode('Vásárló adatai: '),0,0,'L');
+        if ($customerDelivery !== [] && !$isCheckedDelivery) {
+            $this->Cell(50,40,utf8_decode('Szállítási adatok: '),0,0,'L');
+        }
+        $this->Ln();
         $this->SetFont('Arial','B',11);
-        $this->Cell(50,-18,utf8_decode($customer->vezeteknev.' '.$customer->keresztnev),0,2,'L');
+        $this->Cell(100,-28,utf8_decode($customer['veznev'].' '.$customer['kernev']),0,0,'L');
+        if ($customerDelivery !== [] && !$isCheckedDelivery) {
+            $this->Cell(50,-28,utf8_decode($customerDelivery['veznev'].' '.$customerDelivery['kernev']),0,0,'L');
+        }
+        $this->Ln();
         $this->SetFont('Arial','',10);
-        $this->Cell(50,27,utf8_decode($customer->irszam.' '.$customer->varos),0,2,'L');
-        $this->Cell(50,-18,utf8_decode($customer->utca.'. '.$customer->hazszam.'. '.$customer->emeletajto),0,2,'L');
-        $this->Ln(20);
-    }
+        $this->Cell(100,38,utf8_decode($customer['irszam'].' '.$customer['varos']),0,0,'L');
+        if ($customerDelivery !== [] && !$isCheckedDelivery) {
+            $this->Cell(50,38,utf8_decode($customerDelivery['irszam'].' '.$customerDelivery['varos']),0,0,'L');
+        }
+        $this->Ln();
 
-    // Optional Delivery Adress/name
-    private function customerDeliveryData($customerDelivery = ''){
-        $this->SetFont('Arial','B',13);
-        $this->Cell(50,30,utf8_decode('Szállítási adatok: '),0,2,'L');
-        $this->SetFont('Arial','B',11);
-        $this->Cell(50,-18,utf8_decode($customerDelivery->vezeteknev.' '.$customerDelivery->keresztnev),0,2,'L');
-        $this->SetFont('Arial','',10);
-        $this->Cell(50,27,utf8_decode($customerDelivery->irszam.' '.$customerDelivery->varos),0,2,'L');
-        $this->Cell(50,-18,utf8_decode($customerDelivery->utca.'. '.$customerDelivery->hazszam.'. '.$customerDelivery->emeletajto),0,2,'L');
-        $this->Ln(20);
+        $this->Cell(100,-28,utf8_decode($customer['utca'].'. '.$customer['hazszam'].'. '.$customer['emeletajto']),0,0,'L');
+        if ($customerDelivery !== [] && !$isCheckedDelivery) {
+            $this->Cell(50,-28,utf8_decode($customerDelivery['utca'].'. '.$customerDelivery['hazszam'].'. '.$customerDelivery['emeletajto']),0,0,'L');
+        }
+        $this->Ln();
+
+        $this->Cell(50,40,utf8_decode('Számla sorszáma: '.$billCode),0,0,'L');
+
     }
 
     /**
      * @param finalPrice From $_POST['finalPriceValue']
      */
-    private function createTable($items = '',$finalPrice = 0){
+    private function createTable($items = '',$finalPrice = 0, $oneItemPrice = []){
         // Create header
+        $this->Cell(140,30);
+        $this->Ln();
         $this->SetFont('Arial','B',12);
         $this->Cell(107,7,utf8_decode('Megnevezés '),0,0,'L',false);
         $this->Cell(30,7,utf8_decode('Mennyiség'),0,0,'L',false);
@@ -99,32 +120,57 @@ class PDF extends FPDF{
         $this->Cell(190,2,'',0,0,'',$fill);
         $this->Ln();
         // Create the table from $_SESSION['current']
+        $i = 0;
         foreach ($items as $item) {
             $fill = !$fill;
             $this->Ln();
             $this->Cell(107,5,utf8_decode($item->manufacturer.' '.$item->product_name.' '.$item->warr_months.' hónap gar.'.$item->cikkszam),0,0,'L',$fill);
             $this->Cell(30,5,utf8_decode($item->quantity.' db'),0,0,'L',$fill);
-            $this->Cell(25,5,utf8_decode($item->price.' Ft'),0,0,'L',$fill);
-            // IDE MAJD $_POST['itemPricesHidden']-t kell mbeírni mert már ki van számolva
-            $this->Cell(28,5,((int)$item->quantity * (int)$item->price).' Ft',0,0,'L',$fill);
+            $this->Cell(25,5,utf8_decode(self::createCurrencyHuf($item->price)),0,0,'L',$fill);
+            $this->Cell(28,5,utf8_decode(self::createCurrencyHuf($oneItemPrice[$i])),0,0,'L',$fill);
+            $i++;
         }
         $this->Ln();
-        $this->SetFont('','B',12);
-        // $_POST['finalPriceValue']
-        $this->Cell(0,18,utf8_decode('Ide fog jönni a fizetendö végösszeg POST-on: 123456 Ft'),0,0,'R');
+        $this->SetFont('','B',11);
         $this->Ln();
+        // $_POST['finalPriceValue']
+        $this->Cell(70,8,'',0,0);
+        $this->SetFillColor(180,0,0);
+        $this->SetTextColor(255,255,255);
+        $this->Cell(120,8,utf8_decode('A vásárlás végösszege: '.self::createCurrencyHuf($finalPrice)),0,0,'R',true);
+        $this->Ln();
+        $this->Cell(70,8,'',0,0);
+        $this->Cell(120,8,utf8_decode('Azaz: '.NumberFormatter::create('hu', NumberFormatter::SPELLOUT)->format($finalPrice).' forint'),0,0,'R',true);
+        $this->Ln();
+
     }
 
     // If the custumer wrote something into the message box
     private function messageBox($messgae = ''){
+        $this->SetTextColor(0,0,0);
+        $this->SetFillColor(255,255,255);
         $this->SetFont('','B',12);
-        $this->Cell(50,5,utf8_decode('A vásárló megjegyzése: '),0,0,'L');
+        $this->Cell(50,10,utf8_decode("A vásárló megjegyzése: "),0,0,'L');
         $this->Ln();
         $this->SetFont('','',10);
-        $this->Cell(50,5,utf8_decode($messgae),0,0,'L');
+        $this->MultiCell(185,5,utf8_decode($messgae),0,5,'L');
+        $this->Ln();
     }
 
+    // Other information
+    private function otherInformation(){
+        $this->SetFont('','',11);
+        $this->SetTextColor(0,0,0);
+        $this->MultiCell(180,6, utf8_decode('Kérem vegye figyelembe, hogy ez csak egy hobbi/portfólió project! A rendelés gomb megnyomásával tényleges vásárlás nem fog történni!!!.'));
+    }
 
+    // CREATE HUF CURRENCY
+    private function createCurrencyHuf($number){
+        $result = 0;
+        $format = new NumberFormatter('hu',NumberFormatter::CURRENCY);
+        $result = $format->formatCurrency($number, 'HUF');
+        return $result;
+    }
 
 }
 
