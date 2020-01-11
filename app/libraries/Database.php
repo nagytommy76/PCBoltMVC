@@ -74,6 +74,11 @@
             $this->execute();
             return $this->stmt->fetch(PDO::FETCH_OBJ);
         }
+        // FETCH ASSOC
+        public function singleAssoc(){
+            $this->execute();
+            return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
         // Megszámolja a sorok számát
         public function rowCount(){
             return $this->stmt->rowCount();

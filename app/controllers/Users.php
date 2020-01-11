@@ -1,9 +1,11 @@
 <?php
     class Users extends Controller{
+        private $mail;
         public function __construct()
         {
             // Load model. Be kell tölteni mindig a model-t
             $this->userModel = $this->model('User');
+            $this->mail = new Email();
         }
         // Belépés
         public function login(){
@@ -89,11 +91,12 @@
                     // Save temporary the user info
                     $this->temporarySession($data["username"],$data["password"],$data["email"]);                  
                     if(!isset($_SESSION["code"])){
-                        $_SESSION["code"] = generateCode(10);
+                        $_SESSION["code"] = $this->mail->generateCode(10);
                         // EZT ÁTTENNI COOCKIE BA, mert ha a user nem használja fel nem törlődik??? 
                     }
+                    //die(var_dump($_SESSION['code']));
                     // Sending email to register
-                    if(confirmRegistration($data['email'],$data['username'],$_SESSION["code"])){
+                    if($this->mail->confirmRegistration($data['email'],$data['username'],$_SESSION["code"])){
                         redirect('users/login');
 
                     }else{
@@ -142,9 +145,8 @@
                     die("Hibás kód AMI: ".$_SESSION['code']);
                     $this->destroyTempSessions();
                 }
-                $this->view('users/codeControll',$data);
             }else{
-                redirect('pages/index');
+                $this->view('users/codeControll',$data);
             }            
         }
 
@@ -266,12 +268,6 @@
         }
 
         public function logout(){
-            if (isset($_COOKIE['Cart'])) {
-                setcookie("Cart","",time()-3600,"/");
-            }
-            if (isset($_COOKIE['cart_session'])) {
-                setcookie("cart_session","",time()-3600,"/");
-            }
             unset($_SESSION['email']);
             unset($_SESSION['username']);
             unset($_SESSION['jog']);
