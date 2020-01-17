@@ -9,7 +9,8 @@
     define('APPROOT',dirname(dirname(__FILE__)));
 
     // URL Root
-    define('URLROOT', 'http://localhost/PCBoltMVC');
+    //define('URLROOT', 'http://localhost/PCBoltMVC');
+    define('URLROOT', 'https://nagytamasweboldal.herokuapp.com/');
 
     // Site name
     define('SITENAME', 'Computer Store |');
