@@ -12,12 +12,20 @@
             <div class="form-group row">
                 <div class="col-sm-3">
                     <label for="cikkszam"><h5>Cikkszám: <sup>*</sup></h5></label>
-                    <input class="form-control" type="text" id="cikkszam" name="cikkszamID" placeholder="Termék cikkszáma (max 10 karakter)..." value="<?php echo $data['cikkszam']; ?>" maxlength="10" minlength="5" required >                    
+                    <input class="form-control" type="text" id="cikkszam" name="cikkszamID" placeholder="Termék cikkszáma (max 25 karakter)..." value="<?php echo $data['cikkszam']; ?>" maxlength="25" minlength="5" required >                    
                 </div> <!-- .COL VÉGE -->   
                 <div class="col">
                     <label for="cpuar"><h5>Ár: <sup>*</sup></h5></label>
-                    <input class="form-control" type="number" id="ar" name="cpuar" placeholder="Termék ára..." value="<?php echo $data['cpuar']; ?>" max="9999999999" required >                    
-                </div> <!-- .COL VÉGE -->                 
+                    <input class="form-control" type="number" id="ar" name="cpuar" placeholder="Termék ára..." value="<?php echo $data['cpuar']; ?>" max="9999999999" required >      
+                </div> <!-- .COL VÉGE -->   
+                <div class="col">
+                    <label for="garancia"><h5>Garancia <sup>*</sup></h5></label>
+                    <select class="form-control" type="text" name="garancia" value="<?php echo $data['garancia'] ?>" required>
+                        <?php foreach($data['garancia'] as $warr) : ?>
+                            <option value="<?php echo $warr->warr_id ?>" <?php if(isset($_POST['modifyBTN']) && $warr->warr_id == $data['warr_id']) echo 'selected' ?> ><?php echo $warr->warr_months ?> Hónap</option>
+                        <?php endforeach;?>
+                    </select>     
+                </div> <!-- .COL VÉGE -->              
                 <div class="col">
                     <label for="foglalat"><h5>Foglalat: <sup>*</sup></h5></label>
                     <select class="form-control" id="foglalat" name="foglalat" required>
@@ -98,6 +106,13 @@
                     <textarea class="form-control" name="kepurl" cols="20" rows="2" required><?php if(isset($_POST['cikkszam'])) echo $data['kepurl']; ?> </textarea>
                 </div>
             </div>
+            <div class="form-group row">
+                <div class="col">
+                    <label for="manufacturerUrl"><h5>Gyártó Url: <sup>*</sup></h5></label>
+                    <textarea class="form-control" name="manufacturerUrl" cols="20" rows="1" required><?php if(isset($_POST['cikkszam'])) echo $data['manufacturerUrl']; ?> </textarea>
+                </div>
+            </div>
+
             <input type="submit" name="input" class="btn btn-success btn-lg" value="Bevitel!" <?php if(isset($_POST['cikkszam'])) echo 'disabled' ?>>
             <input type="submit" name="modify" class="btn btn-warning btn-lg" value="Módosítás!" <?php if(!isset($_POST['cikkszam'])) echo 'disabled' ?>>
         </form>

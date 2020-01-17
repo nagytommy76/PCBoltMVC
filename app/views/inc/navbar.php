@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg fixed-top position-sticky">
-  <a title="Vissza a főoldalra" class="navbar-brand" href="<?php echo URLROOT ?>" >
+  <a title="Vissza a főoldalra" class="navbar-brand" href="<?php echo URLROOT ?>/index" >
   <img class="" src="<?php echo ICONROOT?>/ownIcons/supermarket.png">
   Főoldal</a>
   <button class="navbar-toggler bg-dark text-white" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,6 +94,8 @@
         <div class="dropdown-menu">
           <a class="dropdown-item" id="logOut" href="<?php echo URLROOT.'/users/logout' ?>">Kijelentkezés</a>
           <a class="dropdown-item" href="<?php echo URLROOT.'/users/data' ?>">Saját adatok</a>
+          <a class="dropdown-item" href="<?php echo URLROOT.'/carts/orders' ?>">Vásárlásaim</a>
+
 
           <!-- Ha valaki adminként/eladó jelentkezik be akkor éri el ezeket a menüket --> 
           <?php if(bothAdminSeller($_SESSION["jog"])) : ?>   

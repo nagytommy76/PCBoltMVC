@@ -107,7 +107,8 @@
                         <td><?php echo $data['motherboard']->usb31; ?> Db.</td>
                     </tr>
                 </tbody>                
-            </table>             
+            </table> 
+            <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="mt-4 mb-5 btn btn-dark btn-block" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'mb_'.$data['motherboard']->cikkszam; ?> >Kosárba</button>             
         </div><!-- COL VÉGE --> 
     </div><!-- ROW VÉGE -->
 </div> <!-- CONTAINER -->

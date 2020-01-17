@@ -6,7 +6,7 @@
         <?php $MBCikkszam = $mb->cikkszam; ?>
             <div class="col-md-4">
                 <div id="mbCard" class="card mb-5">                    
-                    <img src="<?php echo $mb->picUrl[0]; ?>" class="card-img-top">
+                    <img src="<?php echo $mb->picUrl[0]; ?>" class="card-img-top kepek">
                     <div class="card-body bg-info">
                         <a class="titleLink" target="_blank" href="<?php echo URLROOT;?>/mbs/details/<?php echo $MBCikkszam?>"><h4 class="card-title"><?php echo $mb->MBName;?></h4></a>
                         <p class="mb-0">Gyártó: <?php echo $mb->manufacturer; ?></p>
@@ -33,17 +33,17 @@
                                     <form action="<?php echo URLROOT;?>/admins/deleteMB/<?php echo  $MBCikkszam;?>" method="POST">
                                         <input type="submit" name="deleteMB" value="Törlés" class="btn btn-danger">
                                     </form>
-                                        <?php endif; ?>       
+                                <?php endif; ?>       
                             <?php endif; ?>
                             
-                                <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-dark" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'mb_'.$MBCikkszam; ?> >Kosárba</button> 
+                                <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-dark mt-2" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'mb_'.$MBCikkszam; ?> >Kosárba</button> 
                                 <input type="hidden" name="CartBTN" value="<?php echo $MBCikkszam; ?>">
                                 <input type="hidden" name="mbCartQuantity" id="mbCartQuantity" value="">
                         </div><!-- FORM GROUP END -->
                     </div> <!-- CARD BODY END -->
                 </div>
             </div> 
-                                <?php /*die(var_dump(json_decode($_COOKIE['mbCart'])));*/ endforeach; ?>
+        <?php endforeach; ?>
     </div>
 </div>
 

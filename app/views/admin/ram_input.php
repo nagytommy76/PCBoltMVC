@@ -10,7 +10,7 @@
             <div class="form-group row">
                 <div class="col">
                     <label for="ram_cikkszam">Cikkszám: <sup>*</sup></label>
-                    <input type="text" maxlength="10" name="ram_cikkszam" value="<?php echo $data["cikkszam"]; ?>" class="form-control" required <?php if(!empty($data["cikkszam"])){ echo "disabled";}else{echo ""; } ?>>
+                    <input type="text" maxlength="25" name="ram_cikkszam" value="<?php echo $data["cikkszam"]; ?>" class="form-control" required <?php if(!empty($data["cikkszam"])){ echo "disabled";}else{echo ""; } ?>>
                 </div> <!-- COL CIKKSZÁM END -->
                 <div class="col">
                     <label for="foglalat">Foglalat: <sup>*</sup></label>

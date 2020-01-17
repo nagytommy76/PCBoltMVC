@@ -8,7 +8,7 @@
             <div class="form-group row">
                 <div class="col">
                     <label for="">Cikkszám: <sup>*</sup></label>
-                    <input class="form-control" type="text" maxlength="10" name="mbcikkszam" value="<?php echo $data['mbcikkszam']; ?>" <?php if(isset($data['disabled1'])) echo $data['disabled1']; ?> required>
+                    <input class="form-control" type="text" maxlength="25" minlength="5" name="mbcikkszam" value="<?php echo $data['mbcikkszam']; ?>" <?php if(isset($data['disabled1'])) echo $data['disabled1']; ?> required>
                 </div><!-- COL-SM-3 CIKKSZÁM VÉGE -->
                 <div class="col">
                     <label for="">Garancia (Hó): <sup>*</sup></label>
