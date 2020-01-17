@@ -7,15 +7,15 @@ class Ram{
     }
 
     // Get all DDR4 rams
-    public function allddr4(){
+    public function allddr4($type){
         $this->db->query('SELECT cikkszam, manufacturer, rammanufatctureurl.Url, tipus, timing, type, typeCode, voltage, capacity, clock, is_xmp, kit, picUrl, ramPrice 
         FROM ram_products
         LEFT JOIN ram_price ON ram_products.cikkszam = ram_price.ramCikkszam
         LEFT JOIN rampictureurl ON ram_products.cikkszam = rampictureurl.cikkszamPicUrl
         LEFT JOIN rammanufatctureurl ON ram_products.cikkszam = rammanufatctureurl.cikkszamUrl
         LEFT JOIN ram_manufacturers ON ram_products.manufacturer_id = ram_manufacturers.man_id
-        LEFT JOIN ram ON ram_products.foglalatID = ram.foglalatId');
-
+        LEFT JOIN ram ON ram_products.foglalatID = ram.foglalatId WHERE tipus LIKE :tipus');
+        $this->db->bind(':tipus',$type);
         return $this->db->resultSet();
     }
 

@@ -5,10 +5,14 @@
         {
             $this->db = new Database();
         }
-        // CPU műveletek----------------------------------------------------------------------------
+        
+        // ========================================================================================================
+        // +                                             CPU FUNCTIONS                                            +
+        // ========================================================================================================
+
         // CPU termék bevitele:
         public function cpuBevitel($item){
-            $this->db->query('INSERT INTO cpu (cikkszam, foglalatId, fogyasztas, gpu, gpu_orajel, huto, kepurl, l2cache, l3cache, magok_szama, szalak_szama, orajel, turbo_orajel, tipus) VALUES (:cikkszam, :foglalatId, :fogyasztas, :gpu, :gpu_orajel, :huto, :kepurl, :l2cache, :l3cache, :magok_szama, :szalak_szama, :orajel, :turbo_orajel, :tipus)');
+            $this->db->query('INSERT INTO cpu (cikkszam, foglalatId, fogyasztas, gpu, gpu_orajel, huto, kepurl, l2cache, l3cache, magok_szama, szalak_szama, orajel, turbo_orajel, tipus, garancia) VALUES (:cikkszam, :foglalatId, :fogyasztas, :gpu, :gpu_orajel, :huto, :kepurl, :l2cache, :l3cache, :magok_szama, :szalak_szama, :orajel, :turbo_orajel, :tipus, :gar)');
             $this->db->bind(':cikkszam', $item['cikkszam']);
             $this->db->bind(':foglalatId', $item['foglalat']);
             $this->db->bind(':tipus', $item['tipus']);
@@ -23,16 +27,13 @@
             $this->db->bind(':huto', $item['huto']);
             $this->db->bind(':fogyasztas', $item['fogyasztas']);
             $this->db->bind(':kepurl', $item['kepurl']);
+            $this->db->bind(':gar', $item['garancia']);
 
-            if($this->db->execute()){
-                return true;
-            }else{
-                return false;
-            }           
+            return $this->db->execute();
         }  
         // CPU ÁR BEVITELE: --------
         public function cpuArBevitel($cikkszam, $ar){
-            $this->db->query('INSERT INTO cpuarak1 (ar,cikkszamcpu) VALUES (:cikkszam, :ar)');
+            $this->db->query('INSERT INTO cpuarak1 (cikkszamcpu,ar) VALUES (:cikkszam, :ar)');
             $this->db->bind(':ar',$ar);
             $this->db->bind(':cikkszam',$cikkszam);
             if($this->db->execute()){
@@ -41,10 +42,18 @@
                 return false;
             } 
         } 
+
+        // CPU Manufacturer URL input
+        public function manufacturerUrlInput($cikkszam,$url){
+            $this->db->query('INSERT INTO cpu_manufacturers (cikkszamUrl, Url) VALUES (:cikk, :url)');
+            $this->db->bind(':cikk', $cikkszam);
+            $this->db->bind(':url', $url);
+            return $this->db->execute();
+        }
         
         // CPU Módosítása ------------------------------------------
         public function cpuModositas($item){
-            $this->db->query('UPDATE cpu SET tipus = :tipus, magok_szama = :magok_szama,szalak_szama = :szalak_szama, orajel = :orajel, turbo_orajel = :turbo_orajel,l3cache = :l3cache ,l2cache = :l2cache, huto = :huto, fogyasztas = :fogyasztas, gpu = :gpu, gpu_orajel = :gpu_orajel, kepurl = :kepurl WHERE cikkszam = :cikksz');
+            $this->db->query('UPDATE cpu SET tipus = :tipus, magok_szama = :magok_szama,szalak_szama = :szalak_szama, orajel = :orajel, turbo_orajel = :turbo_orajel,l3cache = :l3cache ,l2cache = :l2cache, huto = :huto, fogyasztas = :fogyasztas, gpu = :gpu, gpu_orajel = :gpu_orajel, kepurl = :kepurl, garancia = :gar WHERE cikkszam = :cikksz');
             $this->db->bind(':cikksz', $item['cikkszam']); 
             /*$this->db->bind(':foglalatId', $item['foglalat']);  */         
             $this->db->bind(':tipus', $item['tipus']);
@@ -59,12 +68,9 @@
             $this->db->bind(':huto', $item['huto']);
             $this->db->bind(':fogyasztas', $item['fogyasztas']);
             $this->db->bind(':kepurl', $item['kepurl']);
+            $this->db->bind(':gar', $item['garancia']);
 
-            if($this->db->execute()){
-                return true;
-            }else{
-                return false;
-            }    
+            return $this->db->execute();
         }
         // CPU ár módosítása: -----------------
         public function cpuModAr($cikkszam,$ar){
@@ -78,6 +84,14 @@
             }
         }
 
+        // CPU manufacturer URL modify
+        public function cpuManufacturerUrlModify($cikkszam, $url){
+            $this->db->query('UPDATE cpu_manufacturers SET Url = :url WHERE cikkszamUrl = :cikk');
+            $this->db->bind(':cikk', $cikkszam);
+            $this->db->bind(':url', $url);
+            return $this->db->execute();
+        }
+
         // CPU törlése!
         public function deleteCPU($cikksz){
             $this->db->query('DELETE FROM cpu WHERE cikkszam LIKE :cikksz');
@@ -89,6 +103,22 @@
             }              
             
         }
+
+        // DELETE PRICE CPU
+        public function deleteCPUPrice($cikkszam){
+            $this->db->query('DELETE FROM cpuarak1 WHERE cikkszamcpu LIKE :cikk');
+            $this->db->bind(':cikk',$cikkszam);
+            return $this->db->execute();
+        }
+
+        // DELETE manufacturer URL
+        public function deleteManufacturers($cikkszam){
+            $this->db->query('DELETE FROM cpu_manufacturers WHERE cikkszamUrl LIKE :cikk');
+            $this->db->bind(':cikk',$cikkszam);
+            return $this->db->execute();
+        }
+
+
         // Foglalatok fekérdezése
         public function foglalatok(){
             $this->db->query('SELECT foglalatID, foglalat FROM cpufoglalatok');
@@ -96,6 +126,11 @@
 
             return $result;
         }
+
+        // ========================================================================================================
+        // +                                         MOTHERBOARD FUNCTIONS                                        +
+        // ========================================================================================================
+
         // RAM FOGLALATOK
         public function RAMtipus(){
             $this->db->query('SELECT foglalatId, tipus FROM ram');

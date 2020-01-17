@@ -7,18 +7,18 @@ class Cart{
     }
 
     // INSERTING THE ORDERS INTO DATABASE
-    public function insertUserCartItem($productsInCookie, $user_email, /*$orderedAt, */$orderCode){
-        $this->db->query('INSERT INTO user_cart_item (user_email, cartItems, orderCode) VALUES (:email, :cartItems, :orderCode)');
+    public function insertUserCartItem($productsInCookie, $user_email,$orderCode, $price){
+        $this->db->query('INSERT INTO user_cart_item (user_email, cartItems, orderCode,orderPrice) VALUES (:email, :cartItems, :orderCode,:price)');
         $this->db->bind(':email',$user_email);
         $this->db->bind(':cartItems', $productsInCookie);
-        //$this->db->bind(':orderedAt',$orderedAt);
+        $this->db->bind(':price',$price);
         $this->db->bind(':orderCode',$orderCode);
         return $this->db->execute();
     }
 
     // GET A USER'S ORDER IF HAVE.....
     public function showAllOrders($email){
-        $this->db->query('SELECT orderCode, cartItems,orderedAt FROM user_cart_item WHERE user_email LIKE :email ORDER BY orderedAt DESC');
+        $this->db->query('SELECT orderCode, cartItems,orderedAt, orderPrice FROM user_cart_item WHERE user_email LIKE :email ORDER BY orderedAt DESC');
         $this->db->bind(':email',$email);
         return $this->db->resultSet();
     }
@@ -82,7 +82,7 @@ class Cart{
 
     // CPU CART---------------------------------------------------
     public function getCartCPUData($cikk){
-        $this->db->query('SELECT cikkszam, cpufoglalatok.gyarto AS manufacturer, tipus AS product_name, kepurl AS picUrl, garancia AS warr_months, ar AS price FROM cpu LEFT JOIN cpufoglalatok ON cpu.foglalatId = cpufoglalatok.foglalatID LEFT JOIN cpuarak1 ON cpu.cikkszam = cpuarak1.cikkszamcpu WHERE cikkszam LIKE :cikk');
+        $this->db->query('SELECT cikkszam, cpufoglalatok.gyarto AS manufacturer, tipus AS product_name, kepurl AS picUrl, warr_months, ar AS price FROM cpu LEFT JOIN cpufoglalatok ON cpu.foglalatId = cpufoglalatok.foglalatID LEFT JOIN cpuarak1 ON cpu.cikkszam = cpuarak1.cikkszamcpu INNER JOIN warranity ON warranity.warr_id = cpu.garancia WHERE cikkszam LIKE :cikk');
         $this->db->bind(':cikk',$cikk);
         return $this->db->resultSet();
     }

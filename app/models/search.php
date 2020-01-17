@@ -10,7 +10,7 @@ class Search{
     public function cpuSearch($input,$man){
         $manufact = ($man === "" ? '' : 'AND cpufoglalatok.gyarto LIKE "'.$man.'"');
         $this->db->query(
-            'SELECT tipus, fogyasztas, kepurl, orajel, turbo_orajel, cpufoglalatok.foglalat, cpufoglalatok.gyarto, cpuarak1.ar
+            'SELECT tipus, fogyasztas, kepurl, orajel, turbo_orajel, cpufoglalatok.foglalat, cpufoglalatok.gyarto, cpuarak1.ar, cikkszam
             FROM cpu
             LEFT JOIN cpuarak1 ON cpu.cikkszam = cpuarak1.cikkszamcpu
             LEFT JOIN cpufoglalatok ON cpu.foglalatid = cpufoglalatok.foglalatID
