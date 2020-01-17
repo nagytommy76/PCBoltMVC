@@ -29,13 +29,13 @@
    }
 
    function splittingPictures($array, $delimiter){
-      if (!is_array($array) || count($array) == 1) {
+      if (!is_array($array)) {         
          $picture = explode_string($array->picUrl, $delimiter);
          return $array->picUrl = $picture;
       }else{
-         foreach ($array as $array) {
-            $picture = explode_string($array->picUrl, $delimiter);
-            return $array->picUrl = $picture;
+         foreach ($array as $array1) {
+            $picture = explode_string($array1->picUrl, $delimiter);
+            return $array1->picUrl = $picture;            
          }
       }
       
