@@ -50,7 +50,7 @@ class CreateText{
     }
 
     // Creating text for Search Modal MOTHERBOARD
-    textForSearchModalMotherboard(response){
+    textForSearchModalMotherboard(response, email){
         let output = '';
         if(response.MBtipus === 'Not Found'){
             output = '';
@@ -84,7 +84,7 @@ class CreateText{
                         <li class="list-group-item">Foglalat: ${resp.foglalat}</li>
                         <li class="list-group-item">Ár: ${resp.price} Ft</li>
                     </ul>
-                    <button name="mb" data-target="#cartModal" data-toggle="modal" type="button" id="addToCart" aria-labelledby="cartModal" class="btn btn-dark"  value="${resp.cikkszam}" >Kosárba</button>
+                    <button name="Cart_${email}" type="button" id="searchAddToCart" class="btn btn-dark" value="mb_${resp.cikkszam}">Kosárba</button>
                 </div>
             </div>
         `;
@@ -93,7 +93,7 @@ class CreateText{
         return output;
     }
     // CPU
-    textForSearchModalCpu(response){
+    textForSearchModalCpu(response, email){
         let output = '';
         if(response.tipus === 'Not Found'){
             output = '';
@@ -119,7 +119,7 @@ class CreateText{
                 </div> <!-- CAROSEL END -->
                 <div id="ModalLinkToItem">
                     <div class="card-body">
-                        <h3>${resp.tipus}</h3>
+                        <a href="${this.urlRoot}cpus/details/${resp.cikkszam}"><h3>${resp.tipus}</h3></a>
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">Gyártó: ${resp.gyarto}</li>
@@ -129,7 +129,7 @@ class CreateText{
                         <li class="list-group-item">Turbo Órajel: ${resp.turbo_orajel} MHz</li>
                         <li class="list-group-item">Ár: ${resp.ar} Ft</li>
                     </ul>
-                    <!--<a href="#" type="button" class="btn btn-success pt-2">Részletek</a>-->
+                    <button name="Cart_${email}" type="button" id="searchAddToCart" class="btn btn-dark" value="cpu_${resp.cikkszam}">Kosárba</button>
                 </div>
             </div>
         `;
@@ -140,7 +140,7 @@ class CreateText{
 
 
     // RAM
-    textForSearchModalRAM(response){
+    textForSearchModalRAM(response, email){
         let output = '';
         if(response.ramType === 'Not Found'){
             output = '';
@@ -177,7 +177,7 @@ class CreateText{
                         <li class="list-group-item">Feszültség: ${resp.voltage} V</li>
                         <li class="list-group-item">Ár: ${resp.ramPrice} Ft</li>
                     </ul>
-                    <!--<a href="#" type="button" class="btn btn-success pt-2">Részletek</a>-->
+                    <button name="Cart_${email}" type="button" id="searchAddToCart" class="btn btn-dark" value="ram_${resp.cikkszam}">Kosárba</button>
                 </div>
             </div>
         `;

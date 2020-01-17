@@ -6,6 +6,9 @@ const search = new Search();
 const cText = new CreateText(urlRoot);
 
 
+// ===============================================================================================
+// ===                                  SEARCH FUNCTIONS                                       ===
+// ===============================================================================================
 
 // Get the search modal output
 const modalOutput = document.getElementById('modalOutput');
@@ -64,34 +67,50 @@ document.getElementById('modalInput').addEventListener('keyup',() => {
 
     search.showSearch(selectedMan,selectedCategory,input)
     .then(response => {
-        //console.log(response);
-        if (input === '') {
-            modalOutput.innerHTML = '';
-        }else{
-            switch (selectedCategory) {
-                case 'cpu':
-                    modalOutput.innerHTML = cText.textForSearchModalCpu(response);
-                    break;
-                case 'motherboard':
-                    modalOutput.innerHTML = cText.textForSearchModalMotherboard(response);      
-                    break;
-                case 'ram':
-                    modalOutput.innerHTML = cText.textForSearchModalRAM(response);
-                    break;
-            }            
-        }
+        CookieQuery.getSessionEmail().then(email =>{
+           // console.log(email);
+            if (input === '') {
+                modalOutput.innerHTML = '';
+            }else{
+                switch (selectedCategory) {
+                    case 'cpu':
+                        modalOutput.innerHTML = cText.textForSearchModalCpu(response, email);
+                        break;
+                    case 'motherboard':
+                        modalOutput.innerHTML = cText.textForSearchModalMotherboard(response, email)
+                        break;
+                    case 'ram':
+                        modalOutput.innerHTML = cText.textForSearchModalRAM(response, email);
+                        break;
+                }            
+            }
+            const searchAddToCart = document.querySelectorAll('#searchAddToCart');
+            searchAddToCart.forEach((e) =>{
+                ModalCartText.createAndShowCookieCart(cartOutput,e);
+            })
+        })
+        
     })
     .catch(err => console.log(err));
 });
 
-// CART FUNCTIONS--------------------------------------------------------------------------------
+// ==================================================================================================
+// ===                                      CART FUNCTIONS                                        ===
+// ==================================================================================================
 
+const searchAddToCart = document.querySelectorAll('#searchAddToCart');
 const addToCart = document.querySelectorAll("#addToCart");
 const cartOutput = document.querySelector("#modalCartOutput");
 const cartPriceOutput = document.querySelector("#modalCartPrice");
 const cartBTN = document.getElementById('cartBTN');
 
-let sessionEmail = '';
+searchAddToCart.forEach((e) =>{
+    e.addEventListener('click', () => {
+        console.log('hello '+ e.value);
+    })
+})
+
+
 
 // Cookie
 const cookie = new Cookie();
@@ -134,9 +153,10 @@ cartBTN.addEventListener('click', () =>{
 
 });
 
-const checkbox = document.querySelector('#deliveryAddress');
-const deliveryOutput = document.querySelector('.deliveryAdressOutput');
 
+const deliveryOutput = document.querySelector('.deliveryAdressOutput');
+if(document.querySelector('#deliveryAddress') !== null){
+    const checkbox = document.querySelector('#deliveryAddress');
     checkbox.addEventListener('change', () =>{
         if (checkbox.checked) {
             deliveryOutput.removeChild(document.getElementById('DeliveryBillingAdress'));
@@ -144,16 +164,20 @@ const deliveryOutput = document.querySelector('.deliveryAdressOutput');
             ModalCartText.showDeliveryAdress(deliveryOutput);
         }
     })
+}
+    
+if(document.getElementById('anyMessage') !== null){
+    const messageCheckbox = document.getElementById('anyMessage');    
+    messageCheckbox.addEventListener('change', () =>{
+        if (messageCheckbox.checked) {
+            deliveryOutput.append(ModalCartText.createMessageBox());
+        }else{
+            deliveryOutput.removeChild(ModalCartText.removeMessageBox());
+        }
+    });
+}
 
 
-const messageCheckbox = document.getElementById('anyMessage');    
-messageCheckbox.addEventListener('change', () =>{
-    if (messageCheckbox.checked) {
-        deliveryOutput.append(ModalCartText.createMessageBox());
-    }else{
-        deliveryOutput.removeChild(ModalCartText.removeMessageBox());
-    }
-});
 
 
 
