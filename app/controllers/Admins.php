@@ -18,6 +18,7 @@
                     'main_title' => 'Processzor bevitele',
                     'foglalatok' => $result,                        
                     'cikkszam' => '',  
+                    'garancia' => $this->adminModel->getWarranity(),
                     'cpuar' => '',              
                     'foglalat' => '',
                     'tipus' => '',
@@ -31,7 +32,8 @@
                     'l2cache' => '',
                     'huto' => '',
                     'fogyasztas' => '',
-                    'kepurl' => ''
+                    'kepurl' => '',
+                    'manufacturerUrl' => ''
                 ];
                 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);      
@@ -39,7 +41,8 @@
                         $data = [
                              'main_title' => 'Processzor bevitele',
                              'foglalatok' => $result,
-                             'cikkszam' => trim($_POST['cikkszamID']), 
+                             'cikkszam' => trim($_POST['cikkszamID']),
+                             'garancia' => trim($_POST['garancia']), 
                              'cpuar' => trim($_POST['cpuar']),               
                              'foglalat' => trim($_POST['foglalat']),
                              'tipus' => trim($_POST['tipus']),
@@ -53,15 +56,15 @@
                              'l2cache' => trim($_POST['l2cache']),
                              'huto' => trim($_POST['huto']),
                              'fogyasztas' => trim($_POST['fogyasztas']),
-                             'kepurl' => trim($_POST['kepurl'])
+                             'kepurl' => trim($_POST['kepurl']),
+                             'manufacturerUrl' => trim($_POST['manufacturerUrl'])
                         ];
-                        if ($this->adminModel->cpuBevitel($data) && $this->adminModel->cpuArBevitel($data['cikkszam'],$data['cpuar'])) {
+                        if ($this->adminModel->cpuBevitel($data) && $this->adminModel->manufacturerUrlInput($data['cikkszam'],$data['manufacturerUrl']) && $this->adminModel->cpuArBevitel($data['cikkszam'],$data['cpuar'])) {
                             flash('input_success','A bevitel sikeres volt!');
                             redirect('admins/cpu_input');
                         }else{
                             die('Hoppá ez nem sikerült :(');
                         }
-                        //$this->view('admin/cpu_input',$data);
                     }else{ // ha egy termék módosítása gombja lett megnyomva
                         if (isset($_POST['cikkszam'])) {                           
                             $cikkszam = $_POST['cikkszam'];
@@ -70,6 +73,8 @@
                                 'main_title' => $product->tipus.' módosítása',
                                 'foglalatok' => $result,                        
                                 'cikkszam' => $cikkszam,
+                                'garancia' => $this->adminModel->getWarranity(),
+                                'warr_id' => $product->garancia,
                                 'cpuar' => $product->ar,                
                                 'foglalat' => $product->foglalat,
                                 'tipus' => $product->tipus,
@@ -83,7 +88,8 @@
                                 'l2cache' => $product->l2cache,
                                 'huto' => $product->huto,
                                 'fogyasztas' => $product->fogyasztas,
-                                'kepurl' => $product->kepurl
+                                'kepurl' => $product->picUrl,
+                                'manufacturerUrl' => $product->Url
                             ];
                         $this->view('admin/cpu_input',$data);
                         }
@@ -93,6 +99,7 @@
                                 'cikkszam' => trim($_POST['cikkszamID']), 
                                 'cpuar' => trim($_POST['cpuar']),               
                                 'foglalat' => trim($_POST['foglalat']),
+                                'garancia' => trim($_POST['garancia']), 
                                 'tipus' => trim($_POST['tipus']),
                                 'gpu' => trim($_POST['gpu']),
                                 'gpu_orajel' => trim($_POST['gpu_orajel']),
@@ -104,9 +111,10 @@
                                 'l2cache' => trim($_POST['l2cache']),
                                 'huto' => trim($_POST['huto']),
                                 'fogyasztas' => trim($_POST['fogyasztas']),
-                                'kepurl' => trim($_POST['kepurl'])
+                                'kepurl' => trim($_POST['kepurl']),
+                                'manufacturerUrl' => trim($_POST['manufacturerUrl'])
                             ];                              
-                            if ($this->adminModel->cpuModositas($inputs) && $this->adminModel->cpuModAr($inputs['cikkszam'],$inputs['cpuar'])) {
+                            if ($this->adminModel->cpuModositas($inputs) && $this->adminModel->cpuModAr($inputs['cikkszam'],$inputs['cpuar']) && $this->adminModel->cpuManufacturerUrlModify($data['cikkszam'],$data['manufacturerUrl'])) {
                                 flash('modify_success','Sikeres volt a(z) '.$inputs['tipus'].' processzor módosítása!' );                                
                                 redirect('admins/cpu_input');                                
                             }else{
@@ -129,7 +137,7 @@
         public function deleteCpu($cikkszam){
             if ($_SESSION['jog'] == 'admin') {
                 if (isset($_POST['deleteBTN']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-                    if ($this->adminModel->deleteCPU($cikkszam)) {
+                    if ($this->adminModel->deleteCPUPrice($cikkszam) && $this->adminModel->deleteManufacturers($cikkszam) && $this->adminModel->deleteCPU($cikkszam)) {
                         flash('delete_success','A ('.$cikkszam.') cikkszám szerint törölve lett a termék!');
                         header('Location: '.$_SERVER['HTTP_REFERER']);
                     }

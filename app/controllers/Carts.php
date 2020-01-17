@@ -97,9 +97,7 @@ class Carts extends Controller{
             if (isset($_POST['confirmOrder'])) {
                 if (isset($_COOKIE['Cart_'.sha1($_SESSION['email'])])) {
                     // This is an array
-                    //if (isset($_POST['itemPricesHidden'])) {
-                        $anItemOverallPrice = $_POST['itemPricesHidden'];
-                    //}
+                    $anItemOverallPrice = $_POST['itemPricesHidden'];
                     // Overall price
                     $overallPrice = (int)$_POST['finalPriceValue'];
                     // Billing data
@@ -159,19 +157,21 @@ class Carts extends Controller{
                      * Email-ben elküldeni a pdf-et, plussz vmmi összesítést PIPA--------------
                      * megsemmisíteni a Cart_ Cookie-t PIPA---------------------
                      * törölni a SESSION[current] változót PIPA ---------------
-                     * Ne az index oldalra dobjon, hanem egy összesítő oldalra FOLYT KÖV
+                     * Ne az index oldalra dobjon, hanem egy összesítő oldalra FOLYT KÖV. PIPA---------
                      * 
                      * FONTOS: - A rendelés kerüljön bele a DB-be!!!!!!!!!!!!! PIPA----------------
                      *         - A pdf-et elmenteni a helpers/PDF mappába PIPA ----------
-                     *         - A felhasználónak vissza lehessen keresni a progin belül a saját rendeléseit
+                     *         - A felhasználónak vissza lehessen keresni a progin belül a saját rendeléseit PIPA??
                      *         - LEHESSEN TÖRÖLNI EGY ELEMET A KOSÁRBÓL!!!!!
+                     *         - CPU-hot GARANCIA!!!!!PIPA!!!!!!!!!!
+                     *         - RAM-ot SZÉTVÁLASZTANI DDR3/4 PIPA!!!!!!
+                     *         - A PICTURE SPLITTINGET JAVÍTANI,
                      */
-
-                    if($this->email->sendOrderListPDF($_SESSION['email'],$_SESSION['username'],$pdfStringFormat,    $billCode,$pdfName)){
-                        if ($this->cartModel->insertUserCartItem($_COOKIE[$cookieName],$_SESSION['email'],$billCode)) {
+                    if($this->email->sendOrderListPDF($_SESSION['email'],$_SESSION['username'],$pdfStringFormat, $billCode,$pdfName,$_SESSION['current'])){
+                        if ($this->cartModel->insertUserCartItem($_COOKIE[$cookieName],$_SESSION['email'],$billCode,$overallPrice)) {
                             if ($this->unsetCookie($cookieName)) {
                                 $this->unsetSession('current');
-                                redirect('index');
+                                redirect('carts/orders');
                             }  
                         }                 
                     }
@@ -187,44 +187,58 @@ class Carts extends Controller{
     public function orders(){
         $allOrders = $this->cartModel->showAllOrders($_SESSION['email']);
         foreach ($allOrders as $order) {
-            // die(var_dump(($order)));
-            $orderedItem = (json_decode($order->cartItems));
-            $order->cartItems = $orderedItem;
-            //die(var_dump(($order)));
-            foreach ($order->cartItems as $item) {
+            $order->cartItems = json_decode($order->cartItems);
+            $orderedQuantity = array_count_values($order->cartItems);
+            $orderedItemsData = [];
+            // egyesítem, hogy ne pl 3 szor fusson le a foreach
+            $order->cartItems = $orderedQuantity;
+
+            foreach ($order->cartItems as $item => $key1) {
                 $itemParameter = $this->getParametersOfAnItem($item);
-                //$item = $itemParameter;
-                $test = str_replace($item,$itemParameter,$item);
-                array_replace($item,$test);
-                //die(var_dump(($item)));
-                // FELADOM FOLYT KÖV
-
+                splittingPictures($itemParameter[0],';');
+                
+                foreach ($orderedQuantity as $key => $quantity) {
+                    if ($key == $item) {
+                        $temp = ['quantity' => $quantity];
+                        $temp1 = ['productType' => explode('_',$key)[0]];
+                        $itemParameter[0] = $this->createMergedObjects($temp,$itemParameter[0]);
+                        $itemParameter[0] = $this->createMergedObjects($temp1,$itemParameter[0]);
+                    }
+                }
+                array_push($orderedItemsData,$itemParameter[0]);                
             }
-            die(var_dump(($order)));
-            //$number = array_count_values(json_decode($order->cartItems));
-
-            //$numberOfItems = ['quantity' => (int)array_values($number)];
-            //$orderedItemParameter = $this->createMergedObjects($orderedItemParameter[0],$numberOfItems);
-            //array_push($orderedItemParameter,$numberOfItems);
-            //die(var_dump($orderedItemParameter));
-
-            //splittingPictures($orderedItemParameter,';');
-            //$order->cartItems = $orderedItemParameter;
-            //die(var_dump($order));
-            //$merged = $this->createMergedObjects($order->cartItems[0],$numberOfItems);
-            //die(var_dump($merged));
-            //$order->cartItems = $merged;
-            
-           //die(var_dump($order));
-
+            $order->cartItems = $orderedItemsData;
         }
-        //die(var_dump($allOrders[0]));
         $data = [
             'main_title' => $_SESSION['username'].' Korábbi rendelései',
-            'allOrders' => $allOrders
+            'allOrders' => $allOrders,
+            'username' => $_SESSION['username']
         ];
 
         $this->view('cart/orders',$data);
+    }
+
+    // TESTING FILE READ ======================
+    public static function showAnOrderPDF(){
+        if (isset($_POST['getPdf'])) {
+            $billCode = $_POST['billCode'];
+            $name = $_POST['userName'];
+            $root = APPROOT.'/helpers/PDF/'.$name.'_'.$billCode.'.pdf';
+            if(file_exists($root)){
+                if ($_SESSION['username'] === $name) {
+                    header('Content-type: application/pdf');
+                    header('Content-Disposition: inline; filename="'.$root.'"');
+                    header('Content-Transfer-Encoding: binary');
+                    header('Accept-Ranges: bytes');
+                    @readfile($root);
+                }
+            }else{
+                //header('Location: '.$_SERVER['HTTP_REFERRER']);
+                flash('pdfNotExists','A keresett számla már sajnos nem létezik a rendszerünkben', 'alert alert-danger');
+                redirect('carts/orders');
+            }
+        }
+        
     }
 
 
