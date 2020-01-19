@@ -10,7 +10,9 @@
                   <img src="<?php echo $cpu->picUrl[0]; ?>" class="card-img-top kepek">
                 </div> 
             <div class="card card-body text-white" <?php $szoveg = ($cpu->gyarto == 'Intel')  ? 'style="background-color: #1e88e5 !important;"' :  'style="background-color: #616161  !important;"'; echo $szoveg; ?>>
-              <h3 class="card-title"><?php echo $cpu->tipus; ?></h3>
+            <div class="cardListHead">
+              <a class="titleLink" href="<?php echo URLROOT;?>/cpus/details/<?php echo $cpu->cikkszam?>" target="_blank"><h3><?php echo $cpu->tipus; ?></h3></a>
+            </div>
               <div class="row">
                 <div class="col">
                   <h6><?php echo 'Gyártó: '. $cpu->gyarto; ?></h6>

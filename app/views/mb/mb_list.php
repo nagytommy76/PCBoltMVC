@@ -8,7 +8,10 @@
                 <div id="mbCard" class="card mb-5">                    
                     <img src="<?php echo $mb->picUrl[0]; ?>" class="card-img-top kepek">
                     <div class="card-body bg-info">
+                        <div class="cardListHead">
                         <a class="titleLink" target="_blank" href="<?php echo URLROOT;?>/mbs/details/<?php echo $MBCikkszam?>"><h4 class="card-title"><?php echo $mb->MBName;?></h4></a>
+                        </div>
+                        <hr>
                         <p class="mb-0">Gyártó: <?php echo $mb->manufacturer; ?></p>
                         <p class="mb-0">Chipset: <?php echo $mb->chipset; ?></p>
                         <p class="mb-0">Chipset gyártó: <?php echo $mb->MBGyarto; ?></p>
@@ -17,6 +20,7 @@
                         <p class="mb-0">RAM típusa: <?php echo $mb->ramType; ?></p>
                         <p class="mb-0">MAX RAM órajel: <?php echo $mb->maxMemMHz; ?> MHz</p>
                         <p class="mb-0">RAM Slotok: <?php echo $mb->memfoglalat; ?> Db</p>
+                        <hr>
                         <h4 class="priceColor"><?php echo $mb->price;?> Ft</h4>   
                         <div class="form-row">    
                             <form action="<?php echo URLROOT;?>/mbs/details/<?php echo $MBCikkszam?>" method="POST">

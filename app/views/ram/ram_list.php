@@ -14,7 +14,6 @@
                         <p class="mb-0 text-dark">Gyártó: <?php echo $ram->manufacturer; ?></p>
                         <p class="mb-0 text-dark">Típus: <?php echo $ram->tipus; ?></p>
                         <p class="mb-0 text-dark">Termék: <?php echo $ram->type; ?></p>
-
                         <p class="mb-0 text-dark notLink">Termék típus: <a target="_blank" href="<?php echo $ram->Url;?>"> <?php echo $ram->typeCode; ?></a></p>
                         <!-- FOLYTAT... UNDEFINED URL...?????!!!??!?! -->
                         <p class="mb-0 text-dark">Kapacitás: <?php echo $ram->capacity; ?> Gb</p>

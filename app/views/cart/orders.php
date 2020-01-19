@@ -6,7 +6,7 @@
             <?php flash('pdfNotExists'); ?>
     <h1>Korábbi vásárlások</h1>
     <div class="accordion" id="accordionExample">
-        <?php foreach($data['allOrders'] as $key => $orders) : //die(var_dump($key));?>
+        <?php foreach($data['allOrders'] as $key => $orders) : ?>
         <div class="card bg-dark">
             <div class="card-header" id="heading<?php echo $key; ?>">
                 <h2 class="mb-0">
@@ -51,9 +51,6 @@
                         <input type="hidden" name="userName" value="<?php echo $data['username']; ?>">
                         <input type="submit" name="getPdf" value="Számla megtekintése és letöltése" class="btn btn-lg btn-warning">
                     </form>
-                    <!-- <p>ITT MEG LEHESSEN NYITNI A PDF SZÁMLÁT BLANK/HELYBEN..............</p> -->
-                    <!-- <embed src="" type="application/pdf" width="100%" height="30%"> -->
-
                 </div> <!-- CARD BODY END -->
             </div>
             <!-- COLLAPSE ONE END -->
@@ -61,11 +58,6 @@
         <?php endforeach; ?>
     </div> <!-- accordion END -->
     </div> <!-- COL END -->
-    <!-- <div class="col">
-        <aside>
-            <h1>TESZT</h1>
-        </aside>
-    </div> -->
     </div> <!-- ROW END -->
 </div>
 

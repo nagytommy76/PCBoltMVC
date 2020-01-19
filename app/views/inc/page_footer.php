@@ -17,7 +17,7 @@
                                 <p><i class="fas fa-map-marked-alt"></i> 1115 Budapest, Etele út 144.</p>
                             </li>
                             <li>
-                                <p><i class="fas fa-envelope"></i> info@computerstore.hu</p>
+                                <p><i class="far fa-envelope"></i> info@computerstore.hu</p>
                             </li>
                             <li>
                                 <p><i class="fas fa-phone-volume"></i> +36 1 255 78 55</p>
