@@ -9,8 +9,8 @@ class Carts extends Controller{
         $this->pdf = new PDF();
         $this->email = new Email();
         $this->currentCartItems = array();
-        $this->cartModel = $this->model('cart');
-        $this->userModel = $this->model('user');
+        $this->cartModel = $this->model('Cart');
+        $this->userModel = $this->model('User');
     }
 
     public function getItemsCookie(){
@@ -26,17 +26,7 @@ class Carts extends Controller{
                 foreach ($numberOfItems as $cikksz => $number) {
                     $cikk = explode('_',$cikksz);
                     $test = (object)['quantity' => $number];
-                    // switch ($cikk[0]) {
-                    //     case 'mb':
-                    //         $temp = $this->cartModel->getCartMBSData($cikk[1]);
-                    //         break;
-                    //     case 'ram' :
-                    //         $temp = $this->cartModel->getCartRAMData($cikk[1]);
-                    //         break;
-                    //     case 'cpu':
-                    //         $temp = $this->cartModel->getCartCPUData($cikk[1]);
-                    //         break;
-                    // }
+
                     $temp = $this->getParametersOfAnItem($cikksz);
                     foreach ($temp as $re) {
                         pictureSplitting($re,';');
