@@ -14,13 +14,13 @@
                     <h5 class="font-weight-bold text-uppercase mb-6 ml-4">Elérhetőségeink</h5>
                         <ul class="page_footer_list">
                             <li>
-                                <p><img src="<?php echo ICONROOT;?>/icons/home-4x.png"> 1115 Budapest, Etele út 144.</p>
+                                <p><i class="fas fa-map-marked-alt"></i> 1115 Budapest, Etele út 144.</p>
                             </li>
                             <li>
-                                <p><img src="<?php echo ICONROOT;?>/icons/envelope-closed-4x.png"> info@computerstore.hu</p>
+                                <p><i class="far fa-envelope"></i> info@computerstore.hu</p>
                             </li>
                             <li>
-                                <p><img src="<?php echo ICONROOT;?>/icons/info-4x.png"> +36 1 255 78 55</p>
+                                <p><i class="fas fa-phone-volume"></i> +36 1 255 78 55</p>
                             </li>
                         </ul>
                 </div>

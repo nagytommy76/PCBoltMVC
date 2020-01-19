@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg fixed-top position-sticky">
-  <a title="Vissza a főoldalra" class="navbar-brand" href="<?php echo URLROOT ?>" >
+  <a title="Vissza a főoldalra" class="navbar-brand" href="<?php echo URLROOT ?>/index" >
   <img class="" src="<?php echo ICONROOT?>/ownIcons/supermarket.png">
   Főoldal</a>
   <button class="navbar-toggler bg-dark text-white" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,6 +74,21 @@
       </li>
       <!-- RAM legördüló menü VÉGE -->
 
+
+      <!-- VGA legördüló menü kezdete  -->
+      <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <img class="" src="<?php echo ICONROOT?>/ownIcons/graphics-card.png">
+          Videókártyák</a>
+          <div class="dropdown-menu">
+            <!-- INTELEK --> 
+            <a href="<?php echo URLROOT.'/vgas/allVga' ?>" class="dropdown-item" data-toggle="tooltip" data-placement="right" title="Összes VGA">Összes</a>
+            <!-- <div class="dropdown-divider"></div> -->
+          </div>
+      </li>
+      <!-- VGA legördüló menü VÉGE -->
+
+
       <!-- Felhasználói fiók műveletek --> 
       <li class="nav-item dropdown">       
         <!-- Ha nincs bejelentkezve senki sem --> 
@@ -89,11 +104,13 @@
           <!-- Ha be vanjelentkezve valaki --> 
         <?php else :  ?>
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <img class="" src="<?php echo ICONROOT?>/ownIcons/man.png"> <?php echo $_SESSION['username']; ?> <span class="sr-only">(current)</span>
+          <img class="" src="<?php echo ICONROOT?>/ownIcons/account.png"> <?php echo $_SESSION['username']; ?> <span class="sr-only">(current)</span>
         </a>
         <div class="dropdown-menu">
           <a class="dropdown-item" id="logOut" href="<?php echo URLROOT.'/users/logout' ?>">Kijelentkezés</a>
           <a class="dropdown-item" href="<?php echo URLROOT.'/users/data' ?>">Saját adatok</a>
+          <a class="dropdown-item" href="<?php echo URLROOT.'/carts/orders' ?>">Vásárlásaim</a>
+
 
           <!-- Ha valaki adminként/eladó jelentkezik be akkor éri el ezeket a menüket --> 
           <?php if(bothAdminSeller($_SESSION["jog"])) : ?>   
@@ -104,6 +121,7 @@
             <a class="dropdown-item text-warning" href="<?php echo URLROOT.'/admins/cpu_input' ?>">CPU bevitele</a>
             <a class="dropdown-item text-warning" href="<?php echo URLROOT.'/admins/mb_input' ?>">Alaplap bevitele</a>
             <a class="dropdown-item text-warning" href="<?php echo URLROOT.'/admins/ram_input' ?>">RAM bevitele</a>
+            <a class="dropdown-item text-warning" href="<?php echo URLROOT.'/admins/vga_input' ?>">VGA bevitele</a>
             <div class="dropdown-divider"></div>        
           <?php endif; ?>
         </div>        
@@ -113,7 +131,7 @@
 
       <!-- Cart MODAL -->
       <li class="nav-item">
-        <button class="btn btn-secondary mr-3" data-target="#cartModal" data-toggle="modal" type="button" id="cartBTN" aria-labelledby="cartModal">Kosár</button>
+        <button class="btn mr-4 ml-4" data-target="#cartModal" data-toggle="modal" type="button" id="cartBTN" aria-labelledby="cartModal"><img title="Kosár" src="<?php echo ICONROOT?>/ownIcons/cart.png"></button>
         <form action="<?php echo URLROOT; ?>/carts/getItemsCookie" method="POST">
           <input type="hidden" name="cartBTN">
         </form>
@@ -123,7 +141,7 @@
 
       <!-- Search MODAL!!! -->
       <li class="nav-item">
-        <button class="btn btn-success my-2 my-sm-0" data-target="#searchModal" data-toggle="modal" type="button" id="searchModalBTN" aria-labelledby="searchModal">Keresés</button>
+        <button class="btn my-2 my-sm-0" data-target="#searchModal" data-toggle="modal" type="button" id="searchModalBTN" aria-labelledby="searchModal"><img title="Keresés" src="<?php echo ICONROOT?>/ownIcons/loupe.png"></button>
       </li>
     </ul>
 

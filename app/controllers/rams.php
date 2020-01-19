@@ -7,15 +7,22 @@ class Rams extends Controller{
 
     // DDR3 Ramok
     public function ddr3(){
+        $rams = $this->ramModel->allddr4('DDR3');
+        
+        foreach($rams as $ram){
+            pictureSplitting($ram,';');
+        }
+        //die(var_dump($rams));
         $data = [
-            'main_title' => 'DDR3 RAM-ok'
+            'main_title' => 'DDR3 RAM-ok',
+            'ddr4Rams' => $rams
         ];
         $this->view("ram/ram_list", $data);
     }
 
     // DDR4 ramok
     public function ddr4(){
-        $rams = $this->ramModel->allddr4();
+        $rams = $this->ramModel->allddr4('DDR4');
         foreach($rams as $ram){
             pictureSplitting($ram,';');
         }

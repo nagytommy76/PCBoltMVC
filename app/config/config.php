@@ -10,11 +10,15 @@
 
     // URL Root
     define('URLROOT', 'http://localhost/PCBoltMVC');
+    //define('URLROOT', 'https://nagytamasweboldal.000webhostapp.com');
 
     // Site name
     define('SITENAME', 'Computer Store |');
 
     // Ikonok elérési útvonala:
+    /***
+     * http://localhost/PCBoltMVC/img....
+     */
     define('ICONROOT', URLROOT.'/img');
 
     // FOOTER

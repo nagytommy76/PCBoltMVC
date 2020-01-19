@@ -1,5 +1,4 @@
 <?php
-
     class Admins extends Controller{
         public function __construct()
         {
@@ -8,6 +7,7 @@
             $this->userModel = $this->model('User');
             $this->mbModel = $this->model('Mb');
             $this->ramModel = $this->model('Ram');
+            $this->vgaModel = $this->model('Vga');
         }
         // CPU műveletek-----------------------------------------------------------------------------
         // Proci bevitlel:
@@ -18,6 +18,7 @@
                     'main_title' => 'Processzor bevitele',
                     'foglalatok' => $result,                        
                     'cikkszam' => '',  
+                    'garancia' => $this->adminModel->getWarranity(),
                     'cpuar' => '',              
                     'foglalat' => '',
                     'tipus' => '',
@@ -31,7 +32,8 @@
                     'l2cache' => '',
                     'huto' => '',
                     'fogyasztas' => '',
-                    'kepurl' => ''
+                    'kepurl' => '',
+                    'manufacturerUrl' => ''
                 ];
                 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);      
@@ -39,7 +41,8 @@
                         $data = [
                              'main_title' => 'Processzor bevitele',
                              'foglalatok' => $result,
-                             'cikkszam' => trim($_POST['cikkszamID']), 
+                             'cikkszam' => trim($_POST['cikkszamID']),
+                             'garancia' => trim($_POST['garancia']), 
                              'cpuar' => trim($_POST['cpuar']),               
                              'foglalat' => trim($_POST['foglalat']),
                              'tipus' => trim($_POST['tipus']),
@@ -53,15 +56,15 @@
                              'l2cache' => trim($_POST['l2cache']),
                              'huto' => trim($_POST['huto']),
                              'fogyasztas' => trim($_POST['fogyasztas']),
-                             'kepurl' => trim($_POST['kepurl'])
+                             'kepurl' => trim($_POST['kepurl']),
+                             'manufacturerUrl' => trim($_POST['manufacturerUrl'])
                         ];
-                        if ($this->adminModel->cpuBevitel($data) && $this->adminModel->cpuArBevitel($data['cikkszam'],$data['cpuar'])) {
+                        if ($this->adminModel->cpuBevitel($data) && $this->adminModel->manufacturerUrlInput($data['cikkszam'],$data['manufacturerUrl']) && $this->adminModel->cpuArBevitel($data['cikkszam'],$data['cpuar'])) {
                             flash('input_success','A bevitel sikeres volt!');
                             redirect('admins/cpu_input');
                         }else{
                             die('Hoppá ez nem sikerült :(');
                         }
-                        //$this->view('admin/cpu_input',$data);
                     }else{ // ha egy termék módosítása gombja lett megnyomva
                         if (isset($_POST['cikkszam'])) {                           
                             $cikkszam = $_POST['cikkszam'];
@@ -70,6 +73,8 @@
                                 'main_title' => $product->tipus.' módosítása',
                                 'foglalatok' => $result,                        
                                 'cikkszam' => $cikkszam,
+                                'garancia' => $this->adminModel->getWarranity(),
+                                'warr_id' => $product->garancia,
                                 'cpuar' => $product->ar,                
                                 'foglalat' => $product->foglalat,
                                 'tipus' => $product->tipus,
@@ -83,7 +88,8 @@
                                 'l2cache' => $product->l2cache,
                                 'huto' => $product->huto,
                                 'fogyasztas' => $product->fogyasztas,
-                                'kepurl' => $product->kepurl
+                                'kepurl' => $product->picUrl,
+                                'manufacturerUrl' => $product->Url
                             ];
                         $this->view('admin/cpu_input',$data);
                         }
@@ -93,6 +99,7 @@
                                 'cikkszam' => trim($_POST['cikkszamID']), 
                                 'cpuar' => trim($_POST['cpuar']),               
                                 'foglalat' => trim($_POST['foglalat']),
+                                'garancia' => trim($_POST['garancia']), 
                                 'tipus' => trim($_POST['tipus']),
                                 'gpu' => trim($_POST['gpu']),
                                 'gpu_orajel' => trim($_POST['gpu_orajel']),
@@ -104,9 +111,10 @@
                                 'l2cache' => trim($_POST['l2cache']),
                                 'huto' => trim($_POST['huto']),
                                 'fogyasztas' => trim($_POST['fogyasztas']),
-                                'kepurl' => trim($_POST['kepurl'])
+                                'kepurl' => trim($_POST['kepurl']),
+                                'manufacturerUrl' => trim($_POST['manufacturerUrl'])
                             ];                              
-                            if ($this->adminModel->cpuModositas($inputs) && $this->adminModel->cpuModAr($inputs['cikkszam'],$inputs['cpuar'])) {
+                            if ($this->adminModel->cpuModositas($inputs) && $this->adminModel->cpuModAr($inputs['cikkszam'],$inputs['cpuar']) && $this->adminModel->cpuManufacturerUrlModify($data['cikkszam'],$data['manufacturerUrl'])) {
                                 flash('modify_success','Sikeres volt a(z) '.$inputs['tipus'].' processzor módosítása!' );                                
                                 redirect('admins/cpu_input');                                
                             }else{
@@ -129,7 +137,7 @@
         public function deleteCpu($cikkszam){
             if ($_SESSION['jog'] == 'admin') {
                 if (isset($_POST['deleteBTN']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-                    if ($this->adminModel->deleteCPU($cikkszam)) {
+                    if ($this->adminModel->deleteCPUPrice($cikkszam) && $this->adminModel->deleteManufacturers($cikkszam) && $this->adminModel->deleteCPU($cikkszam)) {
                         flash('delete_success','A ('.$cikkszam.') cikkszám szerint törölve lett a termék!');
                         header('Location: '.$_SERVER['HTTP_REFERER']);
                     }
@@ -236,6 +244,13 @@
                 }
             }
         } 
+
+
+    // ===================================================================================================
+    // ++                                       MOTHERBOARD FUNCTIONS                                   ++
+    // ===================================================================================================
+
+
         // ALAPLAP MŰVELETEK ADMIN-------------------------------------------------------------------
         public function mb_input($cikkszam = ''){
             $finalCikkszam = $cikkszam;
@@ -401,6 +416,10 @@
         }
     }
 
+    // ===================================================================================================
+    // ++                                       RAM FUNCTIONS                                           ++
+    // ===================================================================================================
+
     // RAM INPUT 
     public function ram_input($cikk =''){
         if (bothAdminSeller($_SESSION["jog"])) {
@@ -523,5 +542,171 @@
             redirect('pages/index');
         }
         
+    }
+
+    // ===================================================================================================
+    // ++                                       VGA FUNCTIONS                                           ++
+    // ===================================================================================================
+
+    // VGA INPUT
+    public function vga_input($cikkszam = ''){
+        if (bothAdminSeller($_SESSION['jog'])) {
+            $pciSlots = [
+                'PCI-E 16x 2.0',
+                'PCI-E 16x 3.0',
+                'PCI-E 16x 4.0'
+            ];
+            $vramCap = [
+                1,2,3,4,5,6,8,11,24
+            ];
+            $warranity = $this->adminModel->getWarranity();
+            $manufacturers = $this->vgaModel->getVgaManufacturers();
+            $data = [
+                'main_title' => 'VGA bevitele',
+                'cikkszam' => $cikkszam,
+                'manufacturers' => $manufacturers,
+                'selected_man' => '',
+                'warranity' => $warranity,
+                'vramCap' => $vramCap,
+                'pciSlots' => $pciSlots,
+                'selected_warr' =>'',
+                'price' => '',
+                'vga_stock' => '',
+                'picUrl' => '',
+                'man_url' => '',
+                'type' => '',
+                'typeCode' => '',
+                'vga_man' =>'',
+                'pci_type' => '',
+                'gpu_clock' => '',
+                'gpu_peak' => '',
+                'vram_capacity' => '',
+                'vram_clock' => '',
+                'vram_type' => '',
+                'vram_bandwidth' => '',
+                'power_consumption' => '',
+                'power_pin' => '',
+                'directX' => '',
+                'displayPort' => '',
+                'DVI' => '',
+                'HDMI' => '',
+                'disabledIn' => '',
+                'disabledModify' => 'disabled'
+            ];
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+                if (isset($_POST['vgaInput'])) {
+                    $data = [
+                        'main_title' => 'VGA bevitele',
+                        'cikkszam' => trim($_POST['cikkszam']),
+                        'manufacturers' => $manufacturers,
+                        'selected_man' => trim($_POST['selected_man']),
+                        'warranity' => $warranity,
+                        'vramCap' => $vramCap,
+                        'pciSlots' => $pciSlots,
+                        'selected_warr' => trim($_POST['selected_warr']),
+                        'price' => trim($_POST['price']),
+                        'vga_stock' => trim($_POST['vga_stock']),
+                        'picUrl' => trim($_POST['picUrl']),
+                        'man_url' => trim($_POST['man_url']),
+                        'type' => trim($_POST['type']),
+                        'typeCode' => trim($_POST['typeCode']),
+                        'vga_man' => trim($_POST['vga_man']),
+                        'pci_type' => trim($_POST['pci_type']),
+                        'gpu_clock' => trim($_POST['gpu_clock']),
+                        'gpu_peak' => trim($_POST['gpu_peak']),
+                        'vram_capacity' => trim($_POST['vram_capacity']),
+                        'vram_clock' => trim($_POST['vram_clock']),
+                        'vram_type' => trim($_POST['vram_type']),
+                        'vram_bandwidth' => trim($_POST['vram_bandwidth']),
+                        'power_consumption' => trim($_POST['power_consumption']),
+                        'power_pin' => trim($_POST['power_pin']),
+                        'directX' => trim($_POST['directX']),
+                        'displayPort' => trim($_POST['displayPort']),
+                        'DVI' => trim($_POST['DVI']),
+                        'HDMI' => trim($_POST['HDMI']),
+                        'disabledIn' => '',
+                        'disabledModify' => 'disabled'
+                    ];
+                    if ($this->adminModel->VGAInput($data) && $this->adminModel->VGAManUrlInput($data['cikkszam'],$data['man_url']) && $this->adminModel->VGAPicUrlInput($data['cikkszam'],$data['picUrl']) && $this->adminModel->VGAPriceInput($data['cikkszam'],$data['price']) && $this->adminModel->VGAStockInput($data['cikkszam'],$data['vga_stock'])) {
+                        flash('input_success','A '.$data['type'].' Termék bevitele sikeres volt');
+                        redirect('admins/vga_input');
+                    }else {
+                        flash('input_fail','A '.$data['type'].' Termék bevitele sikertelen volt!!', 'alert alert-danger');
+                        redirect('admins/vga_input');
+                    }
+                } elseif(isset($_POST['editVGA'])){
+                    $vgaByCikk = $this->vgaModel->getVgaByCikkszam($cikkszam);
+                    $data = [
+                        'main_title' => 'VGA bevitele',
+                        'cikkszam' => $cikkszam,
+                        'manufacturers' => $manufacturers,
+                        'vramCap' => $vramCap,
+                        'pciSlots' => $pciSlots,
+                        'selected_man' => $vgaByCikk->manufacturer_id,
+                        'warranity' => $warranity,
+                        'selected_warr' => $vgaByCikk->warr_id,
+                        'price' => $vgaByCikk->price,
+                        'vga_stock' => $vgaByCikk->vga_stock,
+                        'picUrl' => $vgaByCikk->picUrl,
+                        'man_url' => $vgaByCikk->Url,
+                        'type' => $vgaByCikk->type,
+                        'typeCode' => $vgaByCikk->typeCode,
+                        'vga_man' => $vgaByCikk->vga_man,
+                        'pci_type' => $vgaByCikk->pci_type,
+                        'gpu_clock' => $vgaByCikk->gpu_clock,
+                        'gpu_peak' => $vgaByCikk->gpu_peak,
+                        'vram_capacity' => $vgaByCikk->vram_capacity,
+                        'vram_clock' => $vgaByCikk->vram_clock,
+                        'vram_type' => $vgaByCikk->vram_type,
+                        'vram_bandwidth' => $vgaByCikk->vram_bandwidth,
+                        'power_consumption' => $vgaByCikk->power_consumption,
+                        'power_pin' => $vgaByCikk->power_pin,
+                        'directX' => $vgaByCikk->directX,
+                        'displayPort' => $vgaByCikk->displayPort,
+                        'DVI' => $vgaByCikk->DVI,
+                        'HDMI' => $vgaByCikk->HDMI,
+                        'disabledIn' => 'disabled',
+                        'disabledModify' => ''
+                    ];
+                }elseif(isset($_POST['vgaModify'])){
+                    $data = [
+                        'cikkszam' => $cikkszam,
+                        'selected_man' => trim($_POST['selected_man']),
+                        'selected_warr' => trim($_POST['selected_warr']),
+                        'price' => trim($_POST['price']),
+                        'vga_stock' => trim($_POST['vga_stock']),
+                        'picUrl' => trim($_POST['picUrl']),
+                        'man_url' => trim($_POST['man_url']),
+                        'type' => trim($_POST['type']),
+                        'typeCode' => trim($_POST['typeCode']),
+                        'vga_man' => trim($_POST['vga_man']),
+                        'pci_type' => trim($_POST['pci_type']),
+                        'gpu_clock' => trim($_POST['gpu_clock']),
+                        'gpu_peak' => trim($_POST['gpu_peak']),
+                        'vram_capacity' => trim($_POST['vram_capacity']),
+                        'vram_clock' => trim($_POST['vram_clock']),
+                        'vram_type' => trim($_POST['vram_type']),
+                        'vram_bandwidth' => trim($_POST['vram_bandwidth']),
+                        'power_consumption' => trim($_POST['power_consumption']),
+                        'power_pin' => trim($_POST['power_pin']),
+                        'directX' => trim($_POST['directX']),
+                        'displayPort' => trim($_POST['displayPort']),
+                        'DVI' => trim($_POST['DVI']),
+                        'HDMI' => trim($_POST['HDMI']),
+                    ];
+                    if ($this->vgaModel->updateVgaProduct($data) && $this->vgaModel->updateVgaManUrl($data['cikkszam'], $data['man_url']) && $this->vgaModel->updateVgaPicUrl($data['cikkszam'], $data['picUrl']) && $this->vgaModel->updateVgaPrice($data['cikkszam'], $data['price']) && $this->vgaModel->updateVgaStockpile($data['cikkszam'], $data['vga_stock'])) {
+                        flash('modify_success','A '.$data['type'].' Termék módosítása sikeres volt');
+                        redirect('admins/vga_input');
+                    }else {
+                        flash('modify_fail','A '.$data['type'].' Termék módosítása sikertelen volt!!', 'alert alert-danger');
+                        redirect('admins/vga_input');
+                    }
+                }
+            }
+            $this->view('admin/vga_input',$data);
+        }else{
+            redirect('index');
+        }
     }
 }

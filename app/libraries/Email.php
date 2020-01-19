@@ -40,7 +40,7 @@ class Email extends PHPMailer{
     }
 
     
-    public function sendOrderListPDF($sendToEmail, $username, $pdfInString,$billCode,$pdfName){
+    public function sendOrderListPDF($sendToEmail, $username, $pdfInString,$billCode,$pdfName,$currentItems){
         $this->addAddress($sendToEmail,$username);
 
         // The content
@@ -51,7 +51,21 @@ class Email extends PHPMailer{
                 <h1>Köszönjük a vásárlást kedves ".$username."!</h1>
                 <h5>Az alábbi e-mail-ben elküldjük Önnek a számlát, illetve a vásárolt termékek összesítését láthatja!</h5>
                 <p>IDE JÖN MAJD EGY TÁBLA A RENDELT CUCCOKKAL</p>
-                <table></table>
+                <table>
+                    <thead>
+                        <tr align='center'>
+                            <th scope='col'>#</th>
+                            <th scope='col'>Megnevezés</th>
+                            <th scope='col'>Ár</th>
+                            <th scope='col'>mennyiség</th>
+                            <th scope='col'>Cikkszám</th>
+                            <th scope='col'>Garancia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ".$this->createTableBody($currentItems)."
+                    </tbody>
+                </table>
                 <p>Az ön rendelés száma: <strong>".$billCode."</strong></p>
             </body>
         ";
@@ -61,7 +75,7 @@ class Email extends PHPMailer{
 
 
     /**
-     * @param codeLength Number of characters
+     * @param codeLength Number of characters you need
      */
     public static function generateCode($codeLength){
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -74,8 +88,18 @@ class Email extends PHPMailer{
     }
 
     // PRIVATE FUNCTIONS ==============================================+
-    
+    private function createTableBody($items){
+        $result = '';
+        foreach ($items as $item) {
+            $result .= '<tr align="center">';
+                $result .= '<td scope="col"><img src="'.$item->picUrl[0].'" height="115rem" width="125rem"></td>';
+                $result .= '<td scope="col">'.$item->manufacturer.' '.$item->product_name.'</td>';
+                $result .= '<td scope="col">'.((int)$item->price*(int)$item->quantity).' Ft'.'</td>';
+                $result .= '<td scope="col">'.$item->quantity.' Db.</td>';
+                $result .= '<td scope="col">'.$item->cikkszam.'</td>';
+                $result .= '<td scope="col">'.$item->warr_months.' Hónap'.'</td>';
+            $result .= '</tr>';
+        }
+        return $result;
+    }
 }
-
-
-

@@ -1,5 +1,13 @@
 {
+    "config": {
+        "platform": {
+            "php": "7.4.1"
+        }
+    },
     "require": {
         "phpmailer/phpmailer": "^6.1"
+    },
+    "require-dev": {
+        "heroku/heroku-buildpack-php": "*"
     }
 }
