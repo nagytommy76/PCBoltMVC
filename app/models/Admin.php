@@ -196,5 +196,73 @@
             $this->db->query("SELECT warr_id, warr_months FROM warranity");
             return $this->db->resultSet();
         }
+
+        // ========================================================================================================
+        // +                                         VGA FUNCTIONS                                               +
+        // ========================================================================================================
+
+        public function VGAInput($data){
+            $this->db->query(
+                'INSERT INTO vga_products (cikkszam, manufacturer_id, type, typeCode, vga_man, pci_type, gpu_clock,
+                gpu_peak, vram_capacity, vram_clock, vram_type, vram_bandwidth, power_consumption, power_pin,
+                directX, warr_id, displayPort, DVI, HDMI) 
+                VALUES (:cikkszam, :manufacturer_id, :type, :typeCode, :vga_man, :pci_type, :gpu_clock,
+                :gpu_peak, :vram_capacity, :vram_clock, :vram_type, :vram_bandwidth, :power_consumption, :power_pin,
+                :directX, :warr_id, :displayPort, :DVI, :HDMI)'
+            );
+            $this->db->bind(':cikkszam',$data['cikkszam']);
+            $this->db->bind(':manufacturer_id',$data['selected_man']);
+            $this->db->bind(':type',$data['type']);
+            $this->db->bind(':typeCode',$data['typeCode']);
+            $this->db->bind(':vga_man',$data['vga_man']);
+            $this->db->bind(':pci_type',$data['pci_type']);
+            $this->db->bind(':gpu_clock',$data['gpu_clock']);
+            $this->db->bind(':gpu_peak',$data['gpu_peak']);
+            $this->db->bind(':vram_capacity',$data['vram_capacity']);
+            $this->db->bind(':vram_clock',$data['vram_clock']);
+            $this->db->bind(':vram_type',$data['vram_type']);
+            $this->db->bind(':vram_bandwidth',$data['vram_bandwidth']);
+            $this->db->bind(':power_consumption',$data['power_consumption']);
+            $this->db->bind(':power_pin',$data['power_pin']);
+            $this->db->bind(':directX',$data['directX']);
+            $this->db->bind(':warr_id',$data['selected_warr']);
+            $this->db->bind(':displayPort',$data['displayPort']);
+            $this->db->bind(':DVI',$data['DVI']);
+            $this->db->bind(':HDMI',$data['HDMI']);
+            return $this->db->execute();
+        }
+
+        // VGA manufacturer url input
+        public function VGAManUrlInput($cikkszam, $Url){
+            $this->db->query('INSERT INTO vga_manunfact_url (cikkszam, Url) VALUES (:cikk, :url)');
+            $this->db->bind(':cikk',$cikkszam);
+            $this->db->bind(':url',$Url);
+            return $this->db->execute();
+        }
+
+        // VGA PICTURE url input
+        public function VGAPicUrlInput($cikkszam, $Url){
+            $this->db->query('INSERT INTO vga_picurl (cikkszam, picUrl) VALUES (:cikk, :url)');
+            $this->db->bind(':cikk',$cikkszam);
+            $this->db->bind(':url',$Url);
+            return $this->db->execute();
+        }
+
+        // VGA PRICE input
+        public function VGAPriceInput($cikkszam, $price){
+            $this->db->query('INSERT INTO vga_price (cikkszam, price) VALUES (:cikk, :price)');
+            $this->db->bind(':cikk',$cikkszam);
+            $this->db->bind(':price',$price);
+            return $this->db->execute();
+        }
+
+        // VGA STOC input
+        public function VGAStockInput($cikkszam, $stock){
+            $this->db->query('INSERT INTO vga_stockpile (cikkszam, vga_stock) VALUES (:cikk, :stock)');
+            $this->db->bind(':cikk',$cikkszam);
+            $this->db->bind(':stock',$stock);
+            return $this->db->execute();
+        }
+
         
     }
