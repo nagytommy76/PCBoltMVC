@@ -84,10 +84,6 @@ document.getElementById('modalInput').addEventListener('keyup',() => {
                         break;
                 }            
             }
-            const searchAddToCart = document.querySelectorAll('#searchAddToCart');
-            searchAddToCart.forEach((e) =>{
-                ModalCartText.createAndShowCookieCart(cartOutput,e);
-            })
         })
         
     })
@@ -98,19 +94,12 @@ document.getElementById('modalInput').addEventListener('keyup',() => {
 // ===                                      CART FUNCTIONS                                        ===
 // ==================================================================================================
 
-const searchAddToCart = document.querySelectorAll('#searchAddToCart');
 const addToCart = document.querySelectorAll("#addToCart");
 const cartOutput = document.querySelector("#modalCartOutput");
 const cartPriceOutput = document.querySelector("#modalCartPrice");
 const cartBTN = document.getElementById('cartBTN');
 
-searchAddToCart.forEach((e) =>{
-    e.addEventListener('click', () => {
-        console.log('hello '+ e.value);
-    })
-})
-
-
+let sessionEmail = '';
 
 // Cookie
 const cookie = new Cookie();
@@ -153,10 +142,10 @@ cartBTN.addEventListener('click', () =>{
 
 });
 
-
+const checkbox = document.querySelector('#deliveryAddress');
 const deliveryOutput = document.querySelector('.deliveryAdressOutput');
-if(document.querySelector('#deliveryAddress') !== null){
-    const checkbox = document.querySelector('#deliveryAddress');
+if(checkbox !== undefined || checkbox !== null){
+
     checkbox.addEventListener('change', () =>{
         if (checkbox.checked) {
             deliveryOutput.removeChild(document.getElementById('DeliveryBillingAdress'));
@@ -166,18 +155,16 @@ if(document.querySelector('#deliveryAddress') !== null){
     })
 }
     
-if(document.getElementById('anyMessage') !== null){
-    const messageCheckbox = document.getElementById('anyMessage');    
-    messageCheckbox.addEventListener('change', () =>{
-        if (messageCheckbox.checked) {
-            deliveryOutput.append(ModalCartText.createMessageBox());
-        }else{
-            deliveryOutput.removeChild(ModalCartText.removeMessageBox());
-        }
-    });
-}
 
 
+const messageCheckbox = document.getElementById('anyMessage');    
+messageCheckbox.addEventListener('change', () =>{
+    if (messageCheckbox.checked) {
+        deliveryOutput.append(ModalCartText.createMessageBox());
+    }else{
+        deliveryOutput.removeChild(ModalCartText.removeMessageBox());
+    }
+});
 
 
 

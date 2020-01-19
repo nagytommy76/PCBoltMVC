@@ -123,37 +123,6 @@ class ModalCartText{
     }).catch(err => console.log(err));
     }
 
-
-    // CREATE AND SHOW COOKIE
-    static createAndShowCookieCart(cartOutput, e){
-        let priceSum = 0;
-        e.addEventListener('click', () => {
-            CookieQuery.getSessionEmail()
-            .then(email => {
-                cookie.setCookie(e.name,e.value,1);
-                if (cookie.getCookie('Cart_'+email) !== undefined) {
-                    CookieQuery.queryCartItems()
-                    .then(response => {
-                        cartOutput.innerHTML = '';
-                        response.forEach(res =>{
-                            if (email === res.sessEmail) {
-                                priceSum += parseInt(res.price * res.quantity);
-                                cartOutput.append(ModalCartText.TextForMb(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam, res.product_type ,res.quantity));
-                            }
-                        })
-                        cartOutput.append(ModalCartText.showPrice(priceSum,'A Fizetendő végösszeg'));
-                    }).catch(error => console.log(error))
-                }
-            }).catch(err => console.log(err));
-
-            $('#cartModal').modal('show');
-            cartOutput.innerHTML = '';
-            setTimeout(() =>{
-                $('#cartModal').modal('hide');
-            }, 2000);
-        })
-    }
-
     /**
      * @param {An output DIV} outputField 
      * 

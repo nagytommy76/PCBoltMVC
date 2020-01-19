@@ -84,7 +84,7 @@ class CreateText{
                         <li class="list-group-item">Foglalat: ${resp.foglalat}</li>
                         <li class="list-group-item">Ár: ${resp.price} Ft</li>
                     </ul>
-                    <button name="Cart_${email}" type="button" id="searchAddToCart" class="btn btn-dark" value="mb_${resp.cikkszam}">Kosárba</button>
+                    <button name="Cart_${email}" data-toggle="modal" data-target="#cartModal" type="button" id="addToCart" class="btn btn-dark"  value="mb_${resp.cikkszam}">Kosárba</button>
                 </div>
             </div>
         `;
@@ -129,7 +129,7 @@ class CreateText{
                         <li class="list-group-item">Turbo Órajel: ${resp.turbo_orajel} MHz</li>
                         <li class="list-group-item">Ár: ${resp.ar} Ft</li>
                     </ul>
-                    <button name="Cart_${email}" type="button" id="searchAddToCart" class="btn btn-dark" value="cpu_${resp.cikkszam}">Kosárba</button>
+                    <a href="#" type="button" class="btn btn-dark pt-2">Kosárba</a>
                 </div>
             </div>
         `;
@@ -177,7 +177,7 @@ class CreateText{
                         <li class="list-group-item">Feszültség: ${resp.voltage} V</li>
                         <li class="list-group-item">Ár: ${resp.ramPrice} Ft</li>
                     </ul>
-                    <button name="Cart_${email}" type="button" id="searchAddToCart" class="btn btn-dark" value="ram_${resp.cikkszam}">Kosárba</button>
+                    <!--<a href="#" type="button" class="btn btn-success pt-2">Részletek</a>-->
                 </div>
             </div>
         `;
