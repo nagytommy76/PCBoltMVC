@@ -2,6 +2,10 @@
     min-height: 62.3vh;
 }
 
+.container{
+    text-align: justify;
+    text-justify: inter-word;
+}
 
 body{
     background-color: #1C2833 !important;
@@ -10,6 +14,7 @@ body{
     min-height: 100vh;
     position: relative;
     margin: 0;
+
 }
 
 #ModalLinkToItem .notLink{
@@ -24,7 +29,7 @@ body{
     position:unset !important;
 }
 #ModalCard{
-    width: 40%;
+    width: 90%;
 }
 
 #footer{
@@ -66,18 +71,13 @@ nav a {
     max-width: 450px;
     height: auto;
 }
-.ownCards{
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    width: 100%;
-    height: 100%;
-}
 
 #cardHeadColor{
     background-color: #1B2631;
 }
 
 #cardBodyColor{
-    background-color: #85929E ;
+    background-color: #85929E;
 }
 
 .kartya_hatter{
@@ -101,6 +101,10 @@ nav a {
     text-align: center;
 }
 
+#buttonColor{
+   background-color: #5DA9FF; 
+}
+
 .titleLink{
     text-decoration: none !important;
     color: #212121;
@@ -117,10 +121,13 @@ nav a {
     list-style-type: none;
 }
 /* AZ INDEX OLDALI ANIMÁLT ÜDVÖZLŐ KÉPERNYŐ */
+
+
 .intro{
     font-family: sans-serif;
     background-image: url("../img/background2.jpg");
     background-repeat: no-repeat;
+    height: auto;
     min-height: 80rem;
     min-width: 100%;
     /*position: fixed;*/
