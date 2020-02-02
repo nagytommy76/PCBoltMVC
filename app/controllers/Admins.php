@@ -702,11 +702,31 @@
                         flash('modify_fail','A '.$data['type'].' Termék módosítása sikertelen volt!!', 'alert alert-danger');
                         redirect('admins/vga_input');
                     }
+                    /**
+                     * TEENDŐK:
+                     *      -ellenőrizni, hogy készleten vannak-e  atermékek, illteve csőkkenteni a termék 
+                     *       számát
+                     *      - MEGOLDANI, hogy a vásárlásaim tábla reponsive legyen
+                     *      - ESETLEG betteni a pdf-et mediumBLOB-ba a DB-be NEM!!!
+                     *      - AZ ADMINBÓL áttenni az input/modify/delete functionokat a hozzá tartozó
+                     *        termék model-jébe
+                     */
                 }
             }
             $this->view('admin/vga_input',$data);
         }else{
             redirect('index');
+        }
+    }
+    
+    public function deleteVGA($cikkszam){
+        if (isset($_POST['deleteVGA'])) {
+            if ($cikkszam !== '' || $cikkszam != null) {
+                if ($this->vgaModel->deleteVgaPrice($cikkszam) && $this->vgaModel->deleteVgaPicUrl($cikkszam) && $this->vgaModel->deleteVgaManufactUrl($cikkszam) && $this->vgaModel->deleteVgaStockpile($cikkszam) && $this->vgaModel->deleteVgaProduct($cikkszam)) {
+                    flash('delete_success','A '.$cikkszam.' Termék TÖRLÉSE sikeres volt');
+                    redirect('vgas/allVga');
+                }
+            }
         }
     }
 }

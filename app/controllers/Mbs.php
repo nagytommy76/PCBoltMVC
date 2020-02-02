@@ -78,7 +78,7 @@
 
 
         // MB manufacturers
-        public function mbManufacturers(){
+        public function getManufacturers(){
             $res = $this->mbModel->mbMan();
             echo json_encode($res);
         }

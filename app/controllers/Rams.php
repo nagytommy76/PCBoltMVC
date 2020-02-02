@@ -48,7 +48,7 @@ class Rams extends Controller{
         $this->view('ram/details', $data);
     }
 
-    public function ramManufacts(){
+    public function getManufacturers(){
         $result = $this->ramModel->manufacturers();
         echo json_encode($result);
     }

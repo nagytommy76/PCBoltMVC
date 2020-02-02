@@ -14,53 +14,53 @@ class Carts extends Controller{
     }
 
     public function getItemsCookie(){
+        $cikkszam = null;
         if (isset($_COOKIE['Cart_'.sha1($_SESSION['email'])])) {
             $cikkszam = json_decode($_COOKIE['Cart_'.sha1($_SESSION['email'])]);
         }
         if (isset($_SESSION['email'])) {
-            if (isset($cikkszam) && count($cikkszam) > 0) {
+            if (isset($cikkszam) && count($cikkszam) > 0 || $cikkszam != null) {
                 if ($_SERVER['REQUEST_METHOD'] === 'GET') {               
-                $numberOfItems = array_count_values($cikkszam);
-                $res = array();
+                    $numberOfItems = array_count_values($cikkszam);
+                    $res = array();
 
-                foreach ($numberOfItems as $cikksz => $number) {
-                    $cikk = explode('_',$cikksz);
-                    $test = (object)['quantity' => $number];
+                    foreach ($numberOfItems as $cikksz => $number) {
+                        $cikk = explode('_',$cikksz);
+                        $test = (object)['quantity' => $number];
 
-                    $temp = $this->getParametersOfAnItem($cikksz);
-                    foreach ($temp as $re) {
-                        pictureSplitting($re,';');
+                        $temp = $this->getParametersOfAnItem($cikksz);
+                        foreach ($temp as $re) {
+                            splittingPictures($re,';');
+                        }
+                        $merged = $this->createMergedObjects($test, $temp[0]);
+                        $merged = $this->createMergedObjects($merged, ['sessEmail' => sha1($_SESSION['email'])]);
+                        $merged = $this->createMergedObjects($merged, ['product_type' => $cikk[0]]);
+                        array_push($res, $merged);
+                        $_SESSION['current'] = $res;
                     }
-                    $merged = $this->createMergedObjects($test, $temp[0]);
-                    $merged = $this->createMergedObjects($merged, ['sessEmail' => sha1($_SESSION['email'])]);
-                    $merged = $this->createMergedObjects($merged, ['product_type' => $cikk[0]]);
-                    array_push($res, $merged);
-                    $_SESSION['current'] = $res;
-                }
-
                 echo json_encode($res);
                 }
-
-            }  
+            }else{
+                echo json_encode(['product_type' => 'emptyCart']);
+            }
         }else{
-            redirect('pages/index');
+            redirect('index');
         } // IF ISSET $_Session['email]
     }
 
 
     public function summaryCartItems(){
-        //unset($_SESSION['current']);
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_COOKIE['Cart_'.sha1($_SESSION['email'])])) {
                 
                 $changedQuantities = array(); 
-                if(isset($_POST['hiddenCikkszam']) && isset($_POST['numberOfItemsInSummary']))
+                
+                if(isset($_POST['hiddenCikkszam']) && isset($_POST['numberOfItemsInModal']))
                 {
                     for ($i=0; $i < count($_POST['hiddenCikkszam']); $i++) { 
-                        $temp = [$_POST['hiddenCikkszam'][$i] => (int)$_POST['numberOfItemsInSummary'][$i]];
+                        $temp = [$_POST['hiddenCikkszam'][$i] => (int)$_POST['numberOfItemsInModal'][$i]];
                         $changedQuantities = $this->createMergedObjects($changedQuantities, $temp);
                     }
-     
                     $finalPrice = $this->changeTheItemsQuantity($changedQuantities, $_SESSION['current']);
     
                     $userDetails = $this->userModel->getDataByEmail($_SESSION['email']);
@@ -127,8 +127,7 @@ class Carts extends Controller{
                     $pdfName = $_SESSION['username'].'_'.$billCode;
                     // cookie name:
                     $cookieName = 'Cart_'.sha1($_SESSION['email']);
-
-
+                    
                     // CREATE THE PDF ============================================================++
                     $pdfStringFormat = $this->pdf->createOrderPdf(
                         $_SESSION['current'],
@@ -143,18 +142,8 @@ class Carts extends Controller{
                         $billCode
                     );
                     /**
-                     * FOLYT KÖV
-                     * Email-ben elküldeni a pdf-et, plussz vmmi összesítést PIPA--------------
-                     * megsemmisíteni a Cart_ Cookie-t PIPA---------------------
-                     * törölni a SESSION[current] változót PIPA ---------------
-                     * Ne az index oldalra dobjon, hanem egy összesítő oldalra FOLYT KÖV. PIPA---------
                      * 
-                     * FONTOS: - A rendelés kerüljön bele a DB-be!!!!!!!!!!!!! PIPA----------------
-                     *         - A pdf-et elmenteni a helpers/PDF mappába PIPA ----------
-                     *         - A felhasználónak vissza lehessen keresni a progin belül a saját rendeléseit PIPA??
-                     *         - LEHESSEN TÖRÖLNI EGY ELEMET A KOSÁRBÓL!!!!!
-                     *         - CPU-hot GARANCIA!!!!!PIPA!!!!!!!!!!
-                     *         - RAM-ot SZÉTVÁLASZTANI DDR3/4 PIPA!!!!!!
+                     * FONTOS: - LEHESSEN TÖRÖLNI EGY ELEMET A KOSÁRBÓL!!!!!
                      *         - A PICTURE SPLITTINGET JAVÍTANI,
                      */
                     if($this->email->sendOrderListPDF($_SESSION['email'],$_SESSION['username'],$pdfStringFormat, $billCode,$pdfName,$_SESSION['current'])){
@@ -175,37 +164,38 @@ class Carts extends Controller{
 
     // USER ORDERS-------------------------------------------------------------------------------------------
     public function orders(){
-        $allOrders = $this->cartModel->showAllOrders($_SESSION['email']);
-        foreach ($allOrders as $order) {
-            $order->cartItems = json_decode($order->cartItems);
-            $orderedQuantity = array_count_values($order->cartItems);
-            $orderedItemsData = [];
-            // egyesítem, hogy ne pl 3 szor fusson le a foreach
-            $order->cartItems = $orderedQuantity;
+        if (isset($_SESSION['email']) && isset($_SESSION['username'])) {
+            $allOrders = $this->cartModel->showAllOrders($_SESSION['email']);
+            foreach ($allOrders as $order) {
+                $order->cartItems = json_decode($order->cartItems);
+                $orderedQuantity = array_count_values($order->cartItems);
+                $orderedItemsData = [];
+                // egyesítem, hogy ne pl 3 szor fusson le a foreach
+                $order->cartItems = $orderedQuantity;
 
-            foreach ($order->cartItems as $item => $key1) {
-                $itemParameter = $this->getParametersOfAnItem($item);
-                splittingPictures($itemParameter[0],';');
-                
-                foreach ($orderedQuantity as $key => $quantity) {
-                    if ($key == $item) {
-                        $temp = ['quantity' => $quantity];
-                        $temp1 = ['productType' => explode('_',$key)[0]];
-                        $itemParameter[0] = $this->createMergedObjects($temp,$itemParameter[0]);
-                        $itemParameter[0] = $this->createMergedObjects($temp1,$itemParameter[0]);
+                foreach ($order->cartItems as $item => $key1) {
+                    $itemParameter = $this->getParametersOfAnItem($item);
+                    splittingPictures($itemParameter[0],';');
+
+                    foreach ($orderedQuantity as $key => $quantity) {
+                        if ($key == $item) {
+                            $temp = ['quantity' => $quantity];
+                            $temp1 = ['productType' => explode('_',$key)[0]];
+                            $itemParameter[0] = $this->createMergedObjects($temp,$itemParameter[0]);
+                            $itemParameter[0] = $this->createMergedObjects($temp1,$itemParameter[0]);
+                        }
                     }
+                    array_push($orderedItemsData,$itemParameter[0]);                
                 }
-                array_push($orderedItemsData,$itemParameter[0]);                
+                $order->cartItems = $orderedItemsData;
             }
-            $order->cartItems = $orderedItemsData;
+            $data = [
+                'main_title' => $_SESSION['username'].' Korábbi rendelései',
+                'allOrders' => $allOrders,
+                'username' => $_SESSION['username']
+            ];
+            $this->view('cart/orders',$data);
         }
-        $data = [
-            'main_title' => $_SESSION['username'].' Korábbi rendelései',
-            'allOrders' => $allOrders,
-            'username' => $_SESSION['username']
-        ];
-
-        $this->view('cart/orders',$data);
     }
 
     // TESTING FILE READ ======================
@@ -227,14 +217,22 @@ class Carts extends Controller{
                 flash('pdfNotExists','A keresett számla már sajnos nem létezik a rendszerünkben', 'alert alert-danger');
                 redirect('carts/orders');
             }
+        }else{
+            redirect('index');
         }
         
     }
 
-
+    // ==================================================================================
+    // ---------------------------- API FUNCTIONS  -------------------------------------
+    // =================================================================================
 
     public function getSessionEmail(){
-        echo json_encode(sha1($_SESSION['email']));
+        if (isset($_SESSION['email'])) {
+            echo json_encode(sha1($_SESSION['email']));
+        }else{
+            echo json_encode('EmailNotSet');
+        }        
     }
 
     public function getTheCurrentUserData(){
@@ -251,9 +249,21 @@ class Carts extends Controller{
         }
     }
 
-    // ======================================================================================================
-    // +++                                      PRIVATE FUNCTIONS                                         +++
-    // ======================================================================================================
+    // delete from the Session
+    public function deleteFromSession(){
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            foreach ($_SESSION['current'] as $current) {
+                if ($_GET['cikksz'] == $current->cikkszam) {
+                    unset($current);
+                }
+            }
+        }
+    }
+    
+
+    // ===========================================================================================
+    // +++                                      PRIVATE FUNCTIONS                            +++
+    // ===========================================================================================
 
 
     // GET AN ITEM PARAMETERS
@@ -269,6 +279,9 @@ class Carts extends Controller{
                 break;
             case 'cpu':
                 $temp = $this->cartModel->getCartCPUData($cikk[1]);
+                break;
+            case 'vga':
+                $temp = $this->cartModel->getCartVGAData($cikk[1]);
                 break;
         }
         return $temp;        
