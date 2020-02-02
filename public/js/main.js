@@ -12,6 +12,7 @@ const cText = new CreateText(urlRoot);
 
 // Get the search modal output
 const modalOutput = document.getElementById('modalOutput');
+const searchModal = document.getElementById('searchModal');
 
 document.getElementById("category").addEventListener('change', () => {
     let man = document.getElementById('manufacture');
@@ -20,30 +21,25 @@ document.getElementById("category").addEventListener('change', () => {
    //console.log(category)
    switch(category){
        case 'ram':
-            search.showRamMan()
+            search.productsManufacturers(category)
             .then(response => {
-                //console.log(response);
-                man.innerHTML = '<option value="">Nincs kiválasztva</option>';
-                response.forEach(manufact => {
-                    man.innerHTML += `
-                        <option value="${manufact.man_id}">${manufact.manufacturer}</option>
-                    `;
-                })
+                cText.createManOptions(response,man);
             })
             .catch(err => console.log(err));
        break;
         case 'motherboard' :
-            search.showMBMan()
+            search.productsManufacturers('mb')
             .then(response => {
-                man.innerHTML = '<option value="">Nincs megadva</option>';
-                //console.log(response);
-                response.forEach(res => {
-                    man.innerHTML += `
-                        <option value="${res.manufacturer}">${res.manufacturer}</option>
-                    `;
-                });
+                cText.createManOptions(response,man);
             })
             .catch(err => console.log(err));
+        break;
+        case 'vga':
+            search.productsManufacturers(category)
+            .then(response => {
+                cText.createManOptions(response, man);
+            })
+            .catch(error =>console.log(error));
         break;
         case 'cpu' :
             man.innerHTML = '<option value="">Nincs megadva</option>';
@@ -64,23 +60,27 @@ document.getElementById('modalInput').addEventListener('keyup',() => {
     const selectedMan = document.getElementById('manufacture').value;
     const selectedCategory = document.getElementById('category').value;
     const input = document.querySelector('#modalInput').value;
-
+    
     search.showSearch(selectedMan,selectedCategory,input)
     .then(response => {
         CookieQuery.getSessionEmail().then(email =>{
-           // console.log(email);
+           console.log(response);
             if (input === '') {
                 modalOutput.innerHTML = '';
             }else{
+                modalOutput.innerHTML = '';
                 switch (selectedCategory) {
                     case 'cpu':
-                        modalOutput.innerHTML = cText.textForSearchModalCpu(response, email);
+                        modalOutput.append(cText.textForSearchModal(response, email));
                         break;
                     case 'motherboard':
-                        modalOutput.innerHTML = cText.textForSearchModalMotherboard(response, email)
+                        modalOutput.append(cText.textForSearchModal(response, email));
                         break;
                     case 'ram':
-                        modalOutput.innerHTML = cText.textForSearchModalRAM(response, email);
+                        modalOutput.append(cText.textForSearchModal(response,email));
+                        break;
+                    case 'vga':
+                        modalOutput.append(cText.textForSearchModal(response, email))
                         break;
                 }            
             }
@@ -90,6 +90,39 @@ document.getElementById('modalInput').addEventListener('keyup',() => {
     .catch(err => console.log(err));
 });
 
+
+
+searchModal.addEventListener('click', (e) =>{
+    const flashOutput = document.querySelector('.flashMessage');
+    //console.log(e.target);
+    if (e.target.type === 'button') {
+        //console.log(e.target.name);
+        CookieQuery.getSessionEmail()
+        .then(email => {
+            if (email === e.target.name.split('_')[1]) {
+                if (email !== 'EmailNotSet') {
+                    cookie.setCookie(e.target.name,e.target.value,1);
+                    flashOutput.append(cText.flashMessageInModal('A termék sikeresen hozzáadva kosárhoz!'));
+                    //console.log('CSÁ');
+                    if(document.querySelector('#flashMessage') != undefined || document.querySelector('#flashMessage') != null){
+                        setTimeout(() => {
+                            cText.flashMessageInModalDestroy();
+                        },2500);
+                    }
+                }else{
+                    flashOutput.append(cText.flashMessageInModal('A vásárláshoz be kell jelentkezni!','danger'));
+                    if (document.querySelector('#flashMessage') != undefined || document.querySelector('#flashMessage') != null) {
+                        setTimeout(() => {
+                            cText.flashMessageInModalDestroy();
+                        },2500);
+                    }
+                }
+            }
+        })
+    }
+})
+
+
 // ==================================================================================================
 // ===                                      CART FUNCTIONS                                        ===
 // ==================================================================================================
@@ -98,20 +131,18 @@ const addToCart = document.querySelectorAll("#addToCart");
 const cartOutput = document.querySelector("#modalCartOutput");
 const cartPriceOutput = document.querySelector("#modalCartPrice");
 const cartBTN = document.getElementById('cartBTN');
-
-let sessionEmail = '';
+const cartModal = document.querySelector('#cartModal');
 
 // Cookie
 const cookie = new Cookie();
 
 addToCart.forEach((e) =>{
     let priceSum = 0;
-    e.addEventListener('click', () =>{   
-        // let Cart = e.name.split('_');  
-        // sessionEmail = Cart[1];
+    e.addEventListener('click', () =>{  
         CookieQuery.getSessionEmail()
         .then(email => {
             cookie.setCookie(e.name,e.value,1);
+            //console.log(email);
             if (cookie.getCookie('Cart_'+email) !== undefined) {
                 CookieQuery.queryCartItems()
                 .then(response => {
@@ -119,8 +150,7 @@ addToCart.forEach((e) =>{
                     response.forEach(res =>{
                         if (email === res.sessEmail) {
                             priceSum += parseInt(res.price * res.quantity);
-                            cartOutput.append(ModalCartText.TextForMb(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam, res.product_type ,res.quantity));
-                            //console.log(res.sessEmail);
+                            cartOutput.append(ModalCartText.TextForShowCartItems(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam, res.quantity, res.product_type));
                         }
                     })
                     cartOutput.append(ModalCartText.showPrice(priceSum,'A Fizetendő végösszeg'));
@@ -139,13 +169,12 @@ addToCart.forEach((e) =>{
 
 cartBTN.addEventListener('click', () =>{
     ModalCartText.getCartTextAndData(cartOutput);
-
 });
 
-const checkbox = document.querySelector('#deliveryAddress');
-const deliveryOutput = document.querySelector('.deliveryAdressOutput');
-if(checkbox !== undefined || checkbox !== null){
 
+const deliveryOutput = document.querySelector('.deliveryAdressOutput');
+if(document.querySelector('#deliveryAddress') != undefined || document.querySelector('#deliveryAddress') != null){
+    const checkbox = document.querySelector('#deliveryAddress');
     checkbox.addEventListener('change', () =>{
         if (checkbox.checked) {
             deliveryOutput.removeChild(document.getElementById('DeliveryBillingAdress'));
@@ -156,75 +185,90 @@ if(checkbox !== undefined || checkbox !== null){
 }
     
 
-
-const messageCheckbox = document.getElementById('anyMessage');    
-messageCheckbox.addEventListener('change', () =>{
+if(document.getElementById('anyMessage') != undefined || document.getElementById('anyMessage') != null){
+    const messageCheckbox = document.getElementById('anyMessage');    
+    messageCheckbox.addEventListener('change', () =>{
     if (messageCheckbox.checked) {
         deliveryOutput.append(ModalCartText.createMessageBox());
     }else{
         deliveryOutput.removeChild(ModalCartText.removeMessageBox());
     }
 });
+}
 
 
-
-
-
-
-// CHANGE THE ELEMENTS PRICE FOLYT KÖV!!!!----------------------------------------------
-
-//const numberOfItemsInSummary = document.querySelectorAll('#numberOfItemsInSummary');
+// ==============================================================================================
+// -------------------------    CHANGE THE ELEMENTS PRICE SUMMARY PAGE     ----------------------
+// ==============================================================================================
 
 const numberOfItems = document.querySelectorAll('#numberOfItemsInSummary');
-// A látható végösszeg
+// overallPriceTextOutput LÁTHATÓ VÉGÖSSZEG SUMMMARY
 let overallPrice = document.querySelector('#finalPriceValue');
-// a rejtett végösszeg, hogy POST-on eresztül le tudjam klérdezni
+// overallPriceHiddenValue POST SUMMARY
 let overallPriceHidden = document.querySelector('#finalPriceValueHidden');
+// Minden terméknek az egyes ára A LÁTHATÓ TEXT SUMMARY
+let itemPricesSpanText = document.querySelectorAll('#itemPrices');
+// egy adott terméknek az egy darab ára amivel kiszámolom: darab*ár NEM VÁLTOZIK SUMMARY
+let itemPriceHidden = document.querySelectorAll('#itemPriceHidden');
+// Item Type vga_BLABLA SUMMARY
+let itemType = document.querySelectorAll('#itemType');
+// VÁLTOZIK db*ár
+let itemPricesHidden = document.querySelectorAll('#itemPricesHidden');
 
-
-
-numberOfItems.forEach((e,index) =>{
-    let itemPrice = document.querySelectorAll('#itemPriceHidden');
-    
-    e.addEventListener('change',(e) => {
-        //console.log(e.target.value);
-        CookieQuery.getSessionEmail()
-        .then(email =>{
-            let itemType = document.querySelectorAll('#itemType');
-            //console.log(itemType[index].value);
-            cookie.modifyNumberOfItemsCookie('Cart_'+email,itemType[index].value,1, e.target.value);
-
-            CookieQuery.changeAnItemQuantity(itemType[index].value.split('_')[1],e.target.value);
-        })
-        .catch(err => console.log(err));
-
-        let itemPricesText = document.querySelectorAll('#itemPrices');
-        let itemPricesHidden = document.querySelectorAll('#itemPricesHidden');
-
-        let priceCounter = (parseInt(e.target.value) * parseInt(itemPrice[index].value));
-        
-
-        itemPricesText[index].innerHTML = `${priceCounter}`;
-        itemPricesHidden[index].value = priceCounter;
-        //console.log(itemPricesHidden[index].value);
-        //itemPricesText[index].value = `${priceCounter}`;
-        
-        let test = 0;
-        itemPricesText.forEach(price =>{
-            test += parseInt(price.innerHTML);
-        });
-
-        overallPriceHidden.value = test;
-        //console.log(overallPriceHidden.value);
-        (overallPrice.innerHTML = test);        
+// Calculate overall price and modify $_SESSION[current] in SUMMARY +++++++++++++++++++++
+numberOfItems.forEach((e,index) =>{    
+    e.addEventListener('change',(e) => {    
+        CartFunctions.calculatePrice(overallPrice,overallPriceHidden,itemPricesSpanText,itemPriceHidden,itemPricesHidden, itemType, index,e);    
      }); 
-    
 })
 
 
+// ==============================================================================================
+// -------------------------    CHANGE THE ELEMENTS PRICE MODAL CART     ----------------------
+// ==============================================================================================
+// Calculate overall price and modify $_SESSION[current] in MODAL CART +++++++++++++++++++++
 
+$('#cartModal').on('shown.bs.modal', (e) => {
 
+//cartModal.addEventListener('click', (e) =>{
+    const numberOfItemsModal = document.querySelectorAll('#numberOfItemsInModal');
+    // overallPriceTextOutput LÁTHATÓ VÉGÖSSZEG CART MODAL
+    let overallPriceModal = document.querySelector('#finalPriceValueModal');
+    // overallPriceHiddenValue POST SUMMARY
+    let overallPriceHiddenModal = document.querySelector('#finalPriceValueHiddenModal');
+    // Minden terméknek az egyes ára A LÁTHATÓ TEXT CART MODAL
+    let itemPricesSpanTextModal = document.querySelectorAll('#itemPricesModal');
+    // egy adott terméknek az egy darab ára amivel kiszámolom: darab*ár NEM VÁLTOZIK CART
+    let itemPriceHiddenModal = document.querySelectorAll('#itemPriceHiddenModal');
+    // Item Type vga_BLABLA SUMMARY
+    let itemTypeModal = document.querySelectorAll('#itemTypeModal');
 
+    numberOfItemsModal.forEach((e,index) =>{
+        e.addEventListener('change', (e) =>{
+            if (e.target.name == 'numberOfItemsInModal[]') {
+                CartFunctions.calculatePrice(overallPriceModal,overallPriceHiddenModal, itemPricesSpanTextModal, itemPriceHiddenModal,'', itemTypeModal, index,e);
+            }
+        })
+    })
 
-
-
+    // ===========================================================================================
+    // --------------------    DELETE FROM MODAL CART     -------------------
+    // ===========================================================================================
+    cartModal.addEventListener('click', (e) =>{
+    // if the click type is button or name is deleteFromCart...
+    if (e.target.name === 'deleteFromCart' && e.target.type === 'button') {
+        //console.log(e.target.parentElement.parentElement.parentElement);
+        if (e.target.id === e.target.parentElement.parentElement.parentElement.id) {
+            CookieQuery.getSessionEmail()
+            .then(email => {
+                cookie.modifyNumberOfItemsCookie('Cart_'+email, e.target.value+'_'+e.target.id,1,0);
+                e.target.parentElement.parentElement.parentElement.remove();
+                CookieQuery.deleteFromSession(e.target.id);
+                //console.log(numberOfItemsModal);
+                //$('#cartModal').modal('hide');
+            });  
+            // MEGOLDANI, HOGY AZ ÁR IS VÁLTOZZON   
+        }        
+    }
+    })
+})

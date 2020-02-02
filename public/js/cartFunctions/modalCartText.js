@@ -1,8 +1,10 @@
 class ModalCartText{
-    static TextForMb(picUrl,manufacturer,productName,price,cikksz,urlToProductDetails = '', quantity){
+    urlRoot = 'http://localhost/PCBoltMVC/';
+    static TextForShowCartItems(picUrl,manufacturer,productName,price,cikksz, quantity, productType){
         // Create Media DIV
         let mediaDiv = document.createElement('div');
         mediaDiv.classList = 'media border border-white mt-1';
+        mediaDiv.id = cikksz;
 
         // Create IMG tag
         let img = document.createElement('img');
@@ -16,7 +18,7 @@ class ModalCartText{
 
         // Create H5 and a tag
         let a = document.createElement('a');
-        a.href = `http://localhost/PCBoltMVC/${urlToProductDetails}s/details/${cikksz}`;
+        a.href = `${urlRoot}${productType}s/details/${cikksz}`;
         a.target = '_blank';
         a.classList = 'text-white'
         let h5 = document.createElement('h5');
@@ -24,8 +26,10 @@ class ModalCartText{
         h5.innerHTML = `${manufacturer} ${productName}`;
 
         // Create Price paragraph
-        let priceP = document.createElement('p');
-        priceP.innerHTML = `${price} Ft`;
+        let priceP = document.createElement('h5');
+        let oneItemOverallPrice = parseInt(price) * parseInt(quantity);
+        priceP.className = 'priceColor';
+        priceP.innerHTML = `Ár: <span id="itemPricesModal">${oneItemOverallPrice}</span> Ft`;
 
         // Create FORM Control DIV
         let formControlDiv = document.createElement('div');
@@ -33,27 +37,27 @@ class ModalCartText{
 
         // Create a form to modify the quantity
         let form = document.createElement('form');
-        form.action = 'http://localhost/PCBoltMVC/carts/summaryCartItems';
+        form.action = `${urlRoot}carts/summaryCartItems`;
         form.method = 'POST';
 
-
         // Create a number of products
-        let number = document.createElement('input');
-        number.type = 'number';
-        number.step = 1;
-        number.max = 20;
-        number.min = 1;
-        number.id = 'numberOfItemsInSummary';
-        number.name = 'numberOfItemsInSummary[]';
-        number.value = quantity;
+        // let number = document.createElement('input');
+        // number.type = 'number';
+        // //number.step = 1;
+        // number.max = 20;
+        // number.min = 1;
+        // number.name = 'numberOfItemsInModal[]';
+        // number.id = 'numberOfItemsInModal';
+        // number.value = quantity;
+        let number = `<input type="number" value=${quantity} name="numberOfItemsInModal[]" id="numberOfItemsInModal" min="1" max="20" step="1">`;
+
 
         // Create hidden price
         let hiddenPrice = document.createElement('input');
         hiddenPrice.type = 'hidden';
-        hiddenPrice.name = 'itemPriceHidden';
-        hiddenPrice.id = 'itemPriceHidden';
+        hiddenPrice.name = 'itemPriceHiddenModal';
+        hiddenPrice.id = 'itemPriceHiddenModal';
         hiddenPrice.value = price;
-
 
         // CREATE another input (HIDDEN) for the cikkszam
         let hiddenCikk = document.createElement('input');
@@ -61,40 +65,56 @@ class ModalCartText{
         hiddenCikk.name = 'hiddenCikkszam[]';
         hiddenCikk.value = cikksz;
 
+        // CREATE another input (HIDDEN) for the cikkszam
+        let hiddenType = document.createElement('input');
+        hiddenType.type = 'hidden';
+        hiddenType.name = 'itemTypeModal[]';
+        hiddenType.id = 'itemTypeModal';
+        hiddenType.value = productType+'_'+cikksz;
+
         // Create a delete BTN
         let deleteBtn = document.createElement('button');
-        deleteBtn.classList = 'btn btn-danger btn-sm';
-        deleteBtn.innerText = 'Törlés a kosárból';
+        deleteBtn.classList = 'btn btn-danger btn-sm ml-3';
+        deleteBtn.innerText = 'Törlés';
         deleteBtn.id = cikksz;
+        deleteBtn.type = 'button';
+        deleteBtn.name = 'deleteFromCart';
+        deleteBtn.value = productType;
 
         // Chain together
-        formControlDiv.appendChild(number);
+        //formControlDiv.appendChild(number);
+        formControlDiv.innerHTML = number;
         formControlDiv.appendChild(hiddenPrice);
+        formControlDiv.appendChild(hiddenType);
         formControlDiv.appendChild(hiddenCikk);
 
-        //form.appendChild(number);
-        form.appendChild(deleteBtn);
+        formControlDiv.appendChild(deleteBtn);
 
         a.appendChild(h5);
         mediaBodyDiv.appendChild(a);
         mediaBodyDiv.appendChild(priceP);
         mediaBodyDiv.appendChild(formControlDiv);
-        //mediaBodyDiv.appendChild(form);
-
 
         mediaDiv.appendChild(img);
         mediaDiv.appendChild(mediaBodyDiv);
-        //mediaDiv.append(priceSum);
 
         return mediaDiv;
     }
     // Shows the final price at summaryCartItems page
     static showPrice(price, text = ''){
+        let hiddenPrice = document.createElement('input');
+        hiddenPrice.type = 'hidden';
+        hiddenPrice.id = 'finalPriceValueHiddenModal';
+        hiddenPrice.name = 'finalPriceValueModal';
+        hiddenPrice.value = price;
 
         let priceSum = document.createElement('h5');
         priceSum.className = 'priceColor';
         priceSum.id = 'overallPrice'
-        priceSum.innerHTML = `${text} ${price} Ft`;
+        //priceSum.innerHTML = `${text} ${span.innerText} Ft`;
+        priceSum.innerHTML = `${text} <span id="finalPriceValueModal">${price}</span> Ft`;
+
+        priceSum.append(hiddenPrice);
 
         return priceSum;
     }
@@ -105,21 +125,26 @@ class ModalCartText{
      */
     static getCartTextAndData(cartOutput){
     let priceSum = 0;
+    //let oneItemPrice = 0;
     CookieQuery.getSessionEmail()
     .then(email => {
+        cartOutput.innerHTML = '';
         if (cookie.getCookie('Cart_'+email) !== undefined) {
             CookieQuery.queryCartItems()
-            .then(response => {
-                cartOutput.innerHTML = '';
-                    response.forEach(res =>{
-                        if (email === res.sessEmail) {
-                            priceSum += parseInt(res.price * res.quantity);
-                            cartOutput.append(ModalCartText.TextForMb(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam, res.product_type ,res.quantity));
-                        }
-                    })
+            .then(response => {  
+                response.forEach(res =>{
+                    if (email === res.sessEmail) {
+                        priceSum += parseInt(res.price * res.quantity);
+                        //oneItemPrice = 0;
+                        //oneItemPrice = parseInt(res.price) * parseInt(res.quantity);
+                        cartOutput.append(ModalCartText.TextForShowCartItems(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam,res.quantity, res.product_type));
+                    }                        
+                })
                 cartOutput.append(this.showPrice(priceSum,'A Fizetendő végösszeg'));
             }).catch(error => console.log(error))
-        }            
+        }else{
+            cartOutput.append(ModalCartText.emptyCartText());
+        }         
     }).catch(err => console.log(err));
     }
 
@@ -128,13 +153,6 @@ class ModalCartText{
      * 
      */
     static showDeliveryAdress(outputField){
-        /**
-         * megjeleníteni egy hasonló form-ot mint fent, ez változhat. Ha nincs bepipálva akkor jelenjen meg.
-         * Majd PHP-ben megvizsgálni, hogy isset($_POST['deliveryAddress']) ekkor más lesz a cím, akár név is...
-         * Esetleg lemásolni a már beírt adatokat a létrehozott mezőkbe automatikusan
-         * A termékkategóriánkénti árakat meg a fizetendő végösszeget be lehetne tenni egy hidden input field-be,
-         * hogy ne keljen PHP-ban is számolni, max ellenőrizni
-         */
         CookieQuery.getUserDeliveryData()
         .then(data => {
             this.createBillingAndDeliveryAdress(data,outputField,'Szállítási cím', 'D');
@@ -151,7 +169,6 @@ class ModalCartText{
      */
     static createBillingAndDeliveryAdress(userData, outputElement, theFormType, deliveryOrBilling = ''){
         // CREATE A CONTAINING DIV
-        //console.log(userData);
         let div = document.createElement('div');
         div.id = 'DeliveryBillingAdress';
         // create a header
@@ -358,6 +375,13 @@ class ModalCartText{
     static removeMessageBox(){
        let remove = document.getElementById('messageBoxArea');
        return remove;
+    }
+
+    static emptyCartText(){
+        let h4 = document.createElement('h4');
+        h4.innerHTML = 'A kosár jelenleg üres';
+
+        return h4;
     }
 
 }

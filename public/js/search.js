@@ -1,8 +1,8 @@
 class Search{
-
+    urlRoot = 'http://localhost/PCBoltMVC/';
     async showSearch(selectedMan,selectedCategory,input){
         try {
-            const response = await fetch(`http://localhost/PCBoltMVC/searches/modalSearches/?category=${selectedCategory}&manufacture=${selectedMan}&modalInput=${input}`,{
+            const response = await fetch(`${urlRoot}searches/modalSearches/?category=${selectedCategory}&manufacture=${selectedMan}&modalInput=${input}`,{
             method: 'GET',
         });
     
@@ -15,18 +15,8 @@ class Search{
         
     }
 
-    async showRamMan(){
-        const response = await fetch("http://localhost/PCBoltMVC/rams/ramManufacts/",{
-            method : 'GET'
-        });
-
-        const data = await response.json();
-
-        return data;
-    }
-
-    async showMBMan(){
-        const response = await fetch("http://localhost/PCBoltMVC/mbs/mbManufacturers/",{
+    async productsManufacturers(productType){
+        const response = await fetch(`${urlRoot}${productType}s/getManufacturers/`,{
             method : 'GET'
         });
 

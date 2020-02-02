@@ -1,29 +1,36 @@
 class CartFunctions{
-    showMotherboardCartItems(outputElement){
-        let routeToProductDetails = 'http://localhost/PCBoltMVC/';
-    let currentCookie;
-    if (Cookie.getCookie('mbCart') !== undefined) {
-        currentCookie = JSON.parse(Cookie.getCookie('mbCart'));
-    }
-    if (currentCookie !== undefined) {
-        if (currentCookie.length > 1) {
-            CookieQuery.mbsQuery()
-            .then(response => {
-                outputElement.innerHTML = '';
-                response.forEach(res => {
-                    outputElement.append(ModalCartText.TextForMb(res.picUrl[0],res.manufacturer,res.MBName,res.price,routeToProductDetails+`mbs/details/${res.cikkszam}`));
-                });              
-            })
-            .catch(err => console.log(err));
+    /**
+     * 
+     * @param {outputField} overallPriceTextOutput LÁTHATÓ VÉGÖSSZEG
+     * @param {*} overallPriceHiddenValue POST-on lehessen látni a végösszeget
+     * @param {*} itemPricesSpanText Minden terméknek az egyes ára A LÁTHATÓ TEXT
+     * @param {*} itemPriceHidden egy adott terméknek az egy darab ára amivel kiszámolom: darab*ár NEM VÁLTOZIK
+     * @param {value} itemPricesHidden egy termék összesített ára db*ár VÁLTOZIK
+     * @param {*} index th element
+     * @param {*} e event
+     */
+    static calculatePrice(overallPriceTextOutput, overallPriceHiddenValue,itemPricesSpanText, itemPriceHidden,itemPricesHidden = '', itemType, index,e){
+        CookieQuery.getSessionEmail()
+        .then(email =>{
+            // let itemType = document.querySelectorAll('#itemType');
+            cookie.modifyNumberOfItemsCookie('Cart_'+email,itemType[index].value,1, e.target.value);
+            CookieQuery.changeAnItemQuantity(itemType[index].value.split('_')[1],e.target.value);
+        })
+        .catch(err => console.log(err));
 
-        }else{
-            CookieQuery.mbQuery()
-            .then(response => {
-                outputElement.innerHTML = '';
-                outputElement.append(ModalCartText.TextForMb(response.picUrl[0],response.manufacturer,response.MBName,response.price,response.cikkszam,routeToProductDetails+`mbs/details/${response.cikkszam}`));
-            })
-            .catch(err => console.log(err))
-        }
-    }
+        let priceCounter = (parseInt(e.target.value) * parseInt(itemPriceHidden[index].value));
+
+        itemPricesSpanText[index].innerHTML = priceCounter;
+        if (itemPricesHidden !== '') {
+            itemPricesHidden[index].value = priceCounter;
+        }        
+        
+        let overallPrice = 0;
+        itemPricesSpanText.forEach(price =>{
+            overallPrice += parseInt(price.innerHTML);
+        });
+
+        overallPriceHiddenValue.value = overallPrice;
+        (overallPriceTextOutput.innerHTML = overallPrice);       
     }
 }
