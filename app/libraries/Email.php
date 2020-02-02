@@ -50,7 +50,6 @@ class Email extends PHPMailer{
             <body>
                 <h1>Köszönjük a vásárlást kedves ".$username."!</h1>
                 <h5>Az alábbi e-mail-ben elküldjük Önnek a számlát, illetve a vásárolt termékek összesítését láthatja!</h5>
-                <p>IDE JÖN MAJD EGY TÁBLA A RENDELT CUCCOKKAL</p>
                 <table>
                     <thead>
                         <tr align='center'>
@@ -67,6 +66,7 @@ class Email extends PHPMailer{
                     </tbody>
                 </table>
                 <p>Az ön rendelés száma: <strong>".$billCode."</strong></p>
+                <h4>Köszönöm, hogy megtekintette és kipróbálta a programomat. Az esetleges hibákat még javítani fogom!</h4>
             </body>
         ";
         $this->addStringAttachment($pdfInString,$pdfName.'.pdf','base64','application/pdf');
@@ -91,9 +91,11 @@ class Email extends PHPMailer{
     private function createTableBody($items){
         $result = '';
         foreach ($items as $item) {
+            // create url to product
+            $productDetailsUrl = URLROOT.'/carts/'.$item->product_type.'s/'.$item->cikkszam;
             $result .= '<tr align="center">';
-                $result .= '<td scope="col"><img src="'.$item->picUrl[0].'" height="115rem" width="125rem"></td>';
-                $result .= '<td scope="col">'.$item->manufacturer.' '.$item->product_name.'</td>';
+                $result .= '<td scope="col"><img src="'.$item->picUrl[0].'" height="115rem" width="130rem"></td>';
+                $result .= '<td scope="col"><a href="'.$productDetailsUrl.'" target="_blank">'.$item->manufacturer.' '.$item->product_name.'</td>';
                 $result .= '<td scope="col">'.((int)$item->price*(int)$item->quantity).' Ft'.'</td>';
                 $result .= '<td scope="col">'.$item->quantity.' Db.</td>';
                 $result .= '<td scope="col">'.$item->cikkszam.'</td>';

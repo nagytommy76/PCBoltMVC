@@ -29,9 +29,11 @@ class PDF extends FPDF{
 
     public function Footer()
     {
+        $date = getdate();
+        $finalDate = $date['year'].'-'.$date['month'].'-'.$date['weekday'].'-'.$date['hours'].':'.$date['minutes'].':'.$date['seconds'];
         $this->SetFont('Arial','',10);
         $this->SetY(-9);
-        $this->Cell(0,0,utf8_decode('Készítette: Nagy Tamás, Budapest '.date('Y-M-d h:m:s').''),0,2,'C');
+        $this->Cell(0,0,utf8_decode('Készítette: Nagy Tamás, Budapest '.$finalDate.''),0,2,'C');
     }
 
     /**
