@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: 127.0.0.1
--- Létrehozás ideje: 2020. Jan 19. 17:29
+-- Létrehozás ideje: 2020. Feb 02. 16:10
 -- Kiszolgáló verziója: 10.4.11-MariaDB
 -- PHP verzió: 7.4.1
 
@@ -538,11 +538,16 @@ CREATE TABLE `user_cart_item` (
 --
 
 INSERT INTO `user_cart_item` (`user_email`, `cartItems`, `orderedAt`, `orderCode`, `orderPrice`) VALUES
+('nagytommy76@gmail.com', '[\"ram_KING182400\",\"ram_KING182400\",\"vga_ASRX57008GBROGSTR\",\"vga_ASRX57008GBROGSTR\"]', '2020-02-02 15:39:20', '4W3haxxN3l7q19AqbViQt60hJ', 325400),
 ('nagytommy76@gmail.com', '[\"cpu_UZT5454534\",\"cpu_UZT5454534\"]', '2020-01-17 16:26:42', '7yuFsKon57YViq65K7j5jsfoO', 156450),
 ('nagytommy76@gmail.com', '[\"cpu_AM42600\",\"cpu_AM42600\",\"cpu_AM42600\"]', '2020-01-12 15:26:14', '83nNI2r7hwCu62X7nfTI3TjGa', 131100),
+('nagytommy76@gmail.com', '[\"cpu_TR4THR1950X\",\"mb_ASUSROGZET\",\"ram_GSK2163200\",\"ram_GSK2163200\",\"vga_MSRX5700XTEVOKE\"]', '2020-02-02 13:46:07', 'IOSmg2ObjyafIH7lfYVK17cMF', 625462),
 ('nagytommy76@gmail.com', '[\"cpu_UZT5454534\",\"mb_GB450AE000\",\"ram_KING283200\"]', '2020-01-14 20:05:23', 'MuS6MY4PigtDrYrLiSkLR0T7b', 141244),
 ('nagytommy76@gmail.com', '[\"mb_GAM4AORUSM\"]', '2020-01-12 15:15:49', 'QknflYb3oxSQInHy7moxTXSF0', 27150),
 ('nagytommy76@hotmail.com', '[\"mb_GB450AE000\",\"mb_GB450AE000\"]', '2020-01-12 14:59:55', 'trtCwvG6OnEuvKJNXkuhAVh23', 64840),
+('nagytommy76@gmail.com', '[\"cpu_AM4R31200B\"]', '2020-02-02 16:01:50', 'UAh2QMI9mGsrGssHebWiyYwWF', 14000),
+('nagytommy76@gmail.com', '[\"cpu_AM4R31200B\"]', '2020-02-02 16:00:55', 'vzheh0lxZZWOvxWVGZwFvmItB', 14000),
+('nagytommy76@gmail.com', '[\"vga_ASRX57008GBROGSTR\",\"mb_GAM4AORUSM\",\"mb_GAM4AORUSM\"]', '2020-02-02 14:24:59', 'YHEJdGxN5LbqCDhuHLol1IvIW', 203900),
 ('nagytommy76@hotmail.com', '[\"mb_MPGZ390GAP\"]', '2020-01-12 15:08:01', 'yoU6mT0mSUY8qaFnVPlfoa0Ee', 40350);
 
 -- --------------------------------------------------------
@@ -668,7 +673,7 @@ CREATE TABLE `vga_products` (
 --
 
 INSERT INTO `vga_products` (`cikkszam`, `manufacturer_id`, `type`, `typeCode`, `vga_man`, `pci_type`, `gpu_clock`, `gpu_peak`, `vram_capacity`, `vram_clock`, `vram_type`, `vram_bandwidth`, `power_consumption`, `power_pin`, `directX`, `warr_id`, `displayPort`, `DVI`, `HDMI`) VALUES
-('ASRX57008GBROGSTR', 'As', 'RX 5700 ROG STRIX', 'ROG-STRIX-RX5700-O8G-GAMING', 'AMD', 'PCI-E 16x 4.0', 1610, 1725, 8, 14000, 'GDDR5', 256, 180, '1 x 6-pin, 1 x 8-pin', '12', 3, 3, 0, 1),
+('ASRX57008GBROGSTR', 'As', 'RX 5700 ROG STRIX', 'ROG-STRIX-RX5700-O8G-GAMING', 'AMD', 'PCI-E 16x 4.0', 1610, 1725, 8, 14000, 'GDDR6', 256, 180, '1 x 6-pin, 1 x 8-pin', '12', 3, 3, 0, 1),
 ('MSRX5700XTEVOKE', 'Ms', 'RX 5700 XT EVOKE OC', '', 'AMD', 'PCI-E 16x 4.0', 1690, 1835, 8, 14000, 'GDDR6', 256, 225, '8-pin x 1+ 6-pin x 1', '12', 3, 3, 0, 1);
 
 -- --------------------------------------------------------
@@ -841,7 +846,8 @@ ALTER TABLE `users`
 -- A tábla indexei `user_cart_item`
 --
 ALTER TABLE `user_cart_item`
-  ADD PRIMARY KEY (`orderCode`);
+  ADD PRIMARY KEY (`orderCode`),
+  ADD KEY `user_email` (`user_email`);
 
 --
 -- A tábla indexei `vga_manufacturers`
@@ -936,25 +942,25 @@ ALTER TABLE `ram_price`
 -- AUTO_INCREMENT a táblához `vga_manunfact_url`
 --
 ALTER TABLE `vga_manunfact_url`
-  MODIFY `vga_man_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `vga_man_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT a táblához `vga_picurl`
 --
 ALTER TABLE `vga_picurl`
-  MODIFY `vga_pic_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `vga_pic_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT a táblához `vga_price`
 --
 ALTER TABLE `vga_price`
-  MODIFY `vga_price_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `vga_price_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT a táblához `vga_stockpile`
 --
 ALTER TABLE `vga_stockpile`
-  MODIFY `vga_stockpile_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `vga_stockpile_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Megkötések a kiírt táblákhoz
