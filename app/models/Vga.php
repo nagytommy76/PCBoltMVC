@@ -52,6 +52,13 @@ class Vga{
         return $this->db->single();
     }
 
+    public function getAllMan(){
+        $this->db->query(
+            'SELECT man_id, manufacturer FROM vga_manufacturers ORDER BY manufacturer ASC'
+        );
+        return $this->db->resultSet();
+    }
+
     // ============================================================================================================
     // ===                                          MODIFY VGA                                                  ===
     // ============================================================================================================
@@ -126,7 +133,49 @@ class Vga{
         return $this->db->execute();
     }
 
+    // ============================================================================================================
+    // ===                                          DELETE VGA                                                  ===
+    // ============================================================================================================
 
+    public function deleteVgaProduct($cikkszam){
+        $this->db->query(
+            'DELETE FROM vga_products WHERE cikkszam LIKE :cikk'
+        );
+        $this->db->bind(':cikk',$cikkszam);
+        return $this->db->execute();
+    }
+
+    public function deleteVgaPrice($cikkszam){
+        $this->db->query(
+            'DELETE FROM vga_price WHERE cikkszam LIKE :cikk'
+        );
+        $this->db->bind(':cikk',$cikkszam);
+        return $this->db->execute();
+    }
+
+    public function deleteVgaPicUrl($cikkszam){
+        $this->db->query(
+            'DELETE FROM vga_picurl WHERE cikkszam LIKE :cikk'
+        );
+        $this->db->bind(':cikk',$cikkszam);
+        return $this->db->execute();
+    }
+
+    public function deleteVgaManufactUrl($cikkszam){
+        $this->db->query(
+            'DELETE FROM vga_manunfact_url WHERE cikkszam LIKE :cikk'
+        );
+        $this->db->bind(':cikk',$cikkszam);
+        return $this->db->execute();
+    }
+
+    public function deleteVgaStockpile($cikkszam){
+        $this->db->query(
+            'DELETE FROM vga_stockpile WHERE cikkszam LIKE :cikk'
+        );
+        $this->db->bind(':cikk',$cikkszam);
+        return $this->db->execute();
+    }
 
 
 }

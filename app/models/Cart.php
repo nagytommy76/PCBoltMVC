@@ -87,6 +87,23 @@ class Cart{
         return $this->db->resultSet();
     }
 
+    // VGA CART
+    public function getCartVGAData($cikk){
+        $this->db->query(
+            'SELECT vga_products.cikkszam, manufacturer, type AS product_name, vga_man, warr_months,price, picUrl
+            FROM vga_products
+            LEFT JOIN vga_manufacturers ON vga_products.manufacturer_id = vga_manufacturers.man_id
+            LEFT JOIN vga_picurl ON vga_products.cikkszam = vga_picurl.cikkszam
+            LEFT JOIN vga_price ON vga_products.cikkszam = vga_price.cikkszam
+            LEFT JOIN vga_stockpile ON vga_products.cikkszam = vga_stockpile.cikkszam
+            LEFT JOIN warranity ON vga_products.warr_id = warranity.warr_id
+            WHERE vga_products.cikkszam LIKE :cikk
+            '
+        );
+        $this->db->bind(':cikk',$cikk);
+        return $this->db->resultSet();
+    }
+
 }
 
 
