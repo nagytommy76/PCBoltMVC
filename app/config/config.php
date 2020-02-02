@@ -21,6 +21,12 @@
      */
     define('ICONROOT', URLROOT.'/img');
 
+    /**
+     * Define a character chain to salt the passwords
+     * 25 character long
+     */
+    define('SALT', 'QknflYb3oxSQInHy7moxTXSF0');
+
     // FOOTER
     define('FOOTER', APPROOT . '/views/inc/footer.php');
 
