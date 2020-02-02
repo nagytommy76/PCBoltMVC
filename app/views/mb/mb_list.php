@@ -21,7 +21,8 @@
                         <p class="mb-0">MAX RAM órajel: <?php echo $mb->maxMemMHz; ?> MHz</p>
                         <p class="mb-0">RAM Slotok: <?php echo $mb->memfoglalat; ?> Db</p>
                         <hr>
-                        <h4 class="priceColor"><?php echo $mb->price;?> Ft</h4>   
+                        <h4 class="priceColor"><?php echo $mb->price;?> Ft</h4> 
+                        <hr>  
                         <div class="form-row">    
                             <form action="<?php echo URLROOT;?>/mbs/details/<?php echo $MBCikkszam?>" method="POST">
                                 <input type="submit" value="Részletek" name="details" class="btn btn-success mr-1" title="Részletek megtekintése">

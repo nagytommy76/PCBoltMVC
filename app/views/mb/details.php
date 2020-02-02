@@ -26,7 +26,8 @@
             </a>
             </div>
         </div>
-        <h1 class="pt-5">Ár: <?php echo $data['motherboard']->price; ?> Ft</h1>
+        <h1 class="pt-5 pb-3 priceColor">Ár: <?php echo $data['motherboard']->price; ?> Ft</h1>
+        <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="mt-4 mb-5 btn btn-warning btn-block" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'mb_'.$data['motherboard']->cikkszam; ?> >Kosárba</button>          
     </div> <!-- COL VÉGE -->
         <div class="col pt-5">
             <h1 class="text-warning"><?php echo $data['motherboard']->manufacturer.' '.$data['motherboard']->MBName;?></h1>
@@ -107,8 +108,7 @@
                         <td><?php echo $data['motherboard']->usb31; ?> Db.</td>
                     </tr>
                 </tbody>                
-            </table> 
-            <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="mt-4 mb-5 btn btn-dark btn-block" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'mb_'.$data['motherboard']->cikkszam; ?> >Kosárba</button>             
+            </table>    
         </div><!-- COL VÉGE --> 
     </div><!-- ROW VÉGE -->
 </div> <!-- CONTAINER -->

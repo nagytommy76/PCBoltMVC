@@ -1,4 +1,4 @@
-<?php require APPROOT . '/views/inc/header.php'; ?>
+<?php require HEADER; ?>
 
 <div class="row pb-5">
     <div class="col-lg-6 mx-auto pt-5">
@@ -38,4 +38,4 @@
     </div>
 </div>
 
-<?php require APPROOT . '/views/inc/footer.php'; ?>
+<?php require FOOTER; ?>

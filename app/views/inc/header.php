@@ -20,7 +20,6 @@
     <script defer src="<?php echo URLROOT;?>/js/cartFunctions/cookieQuery.js"></script>
     <script defer src="<?php echo URLROOT;?>/js/cartFunctions/cookie.js"></script>
     
-    <script defer src="<?php echo URLROOT;?>/js/Storage.js"></script>
     <script defer src="<?php echo URLROOT;?>/js/createOutputText.js"></script>
     <script defer src="<?php echo URLROOT;?>/js/search.js"></script>
 

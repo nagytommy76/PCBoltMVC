@@ -2,7 +2,7 @@
 
 <div class="container-fluid mx-auto">
 <div class="row">
-    <div class="col-lg-4 pt-4">
+    <div class="col-md-4 pt-4">
         <div class="carousel slide pb-5 mx-auto" data-ride="carousel" id="carouselExampleIndicators">
         <ol class="carousel-indicators">
             <?php for($i=0;$i<count($data['rams']->picUrl);$i++) : ?>
@@ -26,10 +26,11 @@
             </a>
             </div>
         </div>
+        <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-warning btn-block" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'ram_'.$data['rams']->cikkszam; ?> >Kosárba</button>
     </div> <!-- COL VÉGE -->
-
+    
     <!-- Another COL -->
-    <div class="col-lg-8 pt-4">
+    <div class="col-md-8 pt-4">
         <h1 class="text-warning"><?php echo $data["rams"]->manufacturer.' '.$data["rams"]->type ?></h1>
         <table class="table table-hover text-white pb-5">
             <thead>

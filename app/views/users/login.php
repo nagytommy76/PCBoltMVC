@@ -1,7 +1,7 @@
-<?php require APPROOT . '/views/inc/header.php'; ?>
+<?php require HEADER; ?>
 
 <div class="row pb-5">
-    <div class="col-md-6 mx-auto">
+    <div class="col-lg-6 mx-auto">
         <div class="card card-body bg-dark text-white mt-5">
             <?php flash('register_success'); ?>
             <h2>Bejelentkezés</h2>
@@ -30,4 +30,4 @@
     </div>
 </div>
 
-<?php require APPROOT . '/views/inc/footer.php'; ?>
+<?php require FOOTER; ?>

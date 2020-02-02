@@ -1,4 +1,4 @@
-<?php require APPROOT . '/views/inc/header.php'; ?>    
+<?php require HEADER; ?>    
         <div class="col-md-6 mx-auto pt-3 pb-5">       
             <div class="card card-head bg-info pl-3 pt-3">                                               <?php flash('kitolteni'); ?>
                 <h1 class="h1">Saját adatok bevitele</h1>
@@ -104,4 +104,4 @@
     </div>
     
 
-<?php require APPROOT . '/views/inc/footer.php'; ?>
+<?php require FOOTER; ?>
