@@ -1,5 +1,8 @@
 class ModalCartText{
     urlRoot = 'http://localhost/PCBoltMVC/';
+    // ==============================================================================================
+    // -------------------------    CREATE MODAL CART TEXT   -------------------------------
+    // ==============================================================================================
     static TextForShowCartItems(picUrl,manufacturer,productName,price,cikksz, quantity, productType){
         // Create Media DIV
         let mediaDiv = document.createElement('div');
@@ -129,22 +132,24 @@ class ModalCartText{
     CookieQuery.getSessionEmail()
     .then(email => {
         cartOutput.innerHTML = '';
-        if (cookie.getCookie('Cart_'+email) !== undefined) {
-            CookieQuery.queryCartItems()
-            .then(response => {  
-                response.forEach(res =>{
-                    if (email === res.sessEmail) {
-                        priceSum += parseInt(res.price * res.quantity);
-                        //oneItemPrice = 0;
-                        //oneItemPrice = parseInt(res.price) * parseInt(res.quantity);
-                        cartOutput.append(ModalCartText.TextForShowCartItems(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam,res.quantity, res.product_type));
-                    }                        
-                })
-                cartOutput.append(this.showPrice(priceSum,'A Fizetendő végösszeg'));
-            }).catch(error => console.log(error))
+        if (email !== 'EmailNotSet') {
+            if (cookie.getCookie('Cart_'+email) !== undefined) {
+                CookieQuery.queryCartItems()
+                .then(response => {  
+                    response.forEach(res =>{
+                        if (email === res.sessEmail) {
+                            priceSum += parseInt(res.price * res.quantity);
+                            cartOutput.append(ModalCartText.TextForShowCartItems(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam,res.quantity, res.product_type));
+                        }                        
+                    })
+                    cartOutput.append(this.showPrice(priceSum,'A Fizetendő végösszeg'));
+                }).catch(error => console.log(error))
+            }else{
+                cartOutput.append(ModalCartText.emptyCartText('A kosár jelenleg üres!'));
+            } 
         }else{
-            cartOutput.append(ModalCartText.emptyCartText());
-        }         
+            cartOutput.append(ModalCartText.emptyCartText('A vásárláshoz ki kell tölteni a szállítási adatokat'));
+        }        
     }).catch(err => console.log(err));
     }
 
@@ -160,6 +165,10 @@ class ModalCartText{
         .catch(err => console.log(err));        
     }
 
+    
+    // ==============================================================================================
+    // -------------------------    CREATE BILLING ADRESS ETC...   -------------------------------
+    // ==============================================================================================
     /**
      * 
      * @param {Object} userData 
@@ -377,9 +386,9 @@ class ModalCartText{
        return remove;
     }
 
-    static emptyCartText(){
+    static emptyCartText(text){
         let h4 = document.createElement('h4');
-        h4.innerHTML = 'A kosár jelenleg üres';
+        h4.innerHTML = text;
 
         return h4;
     }

@@ -18,7 +18,8 @@ class CartFunctions{
         })
         .catch(err => console.log(err));
 
-        let priceCounter = (parseInt(e.target.value) * parseInt(itemPriceHidden[index].value));
+        // let priceCounter = (parseInt(e.target.value) * parseInt(itemPriceHidden[index].value));
+        let priceCounter = this.getPrice(parseInt(e.target.value),parseInt(itemPriceHidden[index].value))
 
         itemPricesSpanText[index].innerHTML = priceCounter;
         if (itemPricesHidden !== '') {
@@ -31,6 +32,11 @@ class CartFunctions{
         });
 
         overallPriceHiddenValue.value = overallPrice;
-        (overallPriceTextOutput.innerHTML = overallPrice);       
+        overallPriceTextOutput.innerHTML = overallPrice;       
+    }
+
+    static getPrice(price, quantity){
+        let priceCounter = price * quantity;
+        return parseInt(priceCounter);
     }
 }

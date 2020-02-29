@@ -59,7 +59,7 @@ class CookieQuery{
 
     // DELETE FROM $_SESSION[current]
     static async deleteFromSession(cikkszam){
-        await fetch(`${urlRoot}carts/changeSessionsQuantity/?cikksz=${cikkszam}`,{
+        await fetch(`${urlRoot}carts/deleteFromSession/?cikksz=${cikkszam}`,{
             method : 'GET',
             headers: {
                 'Content-type': 'application/json',

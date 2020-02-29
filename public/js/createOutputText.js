@@ -69,6 +69,10 @@ class CreateText{
                 button.innerHTML = 'Kosárba';
                 button.name = `Cart_${hashedEmail}`;
                 button.value = `${resp.productType}_${resp.cikkszam}`;
+                if (hashedEmail === 'EmailNotSet') {
+                    button.disabled = true;
+                    button.title = 'Be kell jelentkezni vagy az adatokat kitölteni!';
+                }
 
                 // CHAIN TOGETHER
                 ul.appendChild(li1);

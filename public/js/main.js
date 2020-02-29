@@ -141,20 +141,26 @@ addToCart.forEach((e) =>{
     e.addEventListener('click', () =>{  
         CookieQuery.getSessionEmail()
         .then(email => {
-            cookie.setCookie(e.name,e.value,1);
-            //console.log(email);
-            if (cookie.getCookie('Cart_'+email) !== undefined) {
-                CookieQuery.queryCartItems()
-                .then(response => {
-                    cartOutput.innerHTML = '';
-                    response.forEach(res =>{
-                        if (email === res.sessEmail) {
-                            priceSum += parseInt(res.price * res.quantity);
-                            cartOutput.append(ModalCartText.TextForShowCartItems(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam, res.quantity, res.product_type));
-                        }
-                    })
-                    cartOutput.append(ModalCartText.showPrice(priceSum,'A Fizetendő végösszeg'));
-                }).catch(error => console.log(error))
+            if (email !== 'EmailNotSet') {
+                cookie.setCookie(e.name,e.value,1);
+                //console.log(email);
+                if (cookie.getCookie('Cart_'+email) !== undefined) {
+                    CookieQuery.queryCartItems()
+                    .then(response => {
+                        cartOutput.innerHTML = '';
+                        response.forEach(res =>{
+                            if (email === res.sessEmail) {
+                                priceSum += parseInt(res.price * res.quantity);
+                                cartOutput.append(ModalCartText.TextForShowCartItems(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam, res.quantity, res.product_type));
+                            }
+                        })
+                        cartOutput.append(ModalCartText.showPrice(priceSum,'A Fizetendő végösszeg'));
+                    }).catch(error => console.log(error))
+                }else{
+                    cartOutput.append(ModalCartText.emptyCartText('A kosár jelenleg üres!'));
+                }
+            }else{
+                cartOutput.append(ModalCartText.emptyCartText('Vásárláshoz ásárláshoz ki kell tölteni a szállítási adatokat'));
             }
         }).catch(err => console.log(err));
         
@@ -201,6 +207,9 @@ if(document.getElementById('anyMessage') != undefined || document.getElementById
 // -------------------------    CHANGE THE ELEMENTS PRICE SUMMARY PAGE     ----------------------
 // ==============================================================================================
 
+// summary cart elements
+const summaryElements = document.querySelector('#summaryCartItems');
+// the number input field
 const numberOfItems = document.querySelectorAll('#numberOfItemsInSummary');
 // overallPriceTextOutput LÁTHATÓ VÉGÖSSZEG SUMMMARY
 let overallPrice = document.querySelector('#finalPriceValue');
@@ -220,7 +229,28 @@ numberOfItems.forEach((e,index) =>{
     e.addEventListener('change',(e) => {    
         CartFunctions.calculatePrice(overallPrice,overallPriceHidden,itemPricesSpanText,itemPriceHidden,itemPricesHidden, itemType, index,e);    
      }); 
-})
+});
+
+// ==============================================================================================
+// -------------------------    DELETE ITEMS IN SUMMARY PAGE     -------------------------------
+// ==============================================================================================
+if(summaryElements !== null){
+    summaryElements.addEventListener('click', (e) =>{
+        if (e.target.type === 'button' && e.target.name === 'deleteFromCart') {
+            if (e.target.id === e.target.parentElement.parentElement.id) {
+                CookieQuery.getSessionEmail()
+                .then(email =>{
+                    CookieQuery.deleteFromSession(e.target.id).then(() =>{
+                        cookie.modifyNumberOfItemsCookie('Cart_'+email, e.target.value+'_'+e.target.id,1,0);
+                        e.target.parentElement.parentElement.remove();
+                        console.log(e.target.value);
+                    });
+                    
+                })                
+            }            
+        }
+    });
+}
 
 
 // ==============================================================================================
@@ -248,27 +278,41 @@ $('#cartModal').on('shown.bs.modal', (e) => {
             if (e.target.name == 'numberOfItemsInModal[]') {
                 CartFunctions.calculatePrice(overallPriceModal,overallPriceHiddenModal, itemPricesSpanTextModal, itemPriceHiddenModal,'', itemTypeModal, index,e);
             }
+            
         })
     })
+})
 
-    // ===========================================================================================
-    // --------------------    DELETE FROM MODAL CART     -------------------
-    // ===========================================================================================
-    cartModal.addEventListener('click', (e) =>{
+// ===========================================================================================
+// --------------------    DELETE FROM MODAL CART     -------------------
+// ===========================================================================================
+cartModal.addEventListener('mouseup', (e) =>{
     // if the click type is button or name is deleteFromCart...
     if (e.target.name === 'deleteFromCart' && e.target.type === 'button') {
         //console.log(e.target.parentElement.parentElement.parentElement);
         if (e.target.id === e.target.parentElement.parentElement.parentElement.id) {
             CookieQuery.getSessionEmail()
             .then(email => {
+                // TÖRLÉS
+                // CookieQuery.deleteFromSession(e.target.id)
+                // .then(() => {
+                //     cookie.modifyNumberOfItemsCookie('Cart_'+email, e.target.value+'_'+e.target.id,1,0);
+                //     e.target.parentElement.parentElement.parentElement.remove();
+                //     // Recall the whole cart text function
+                //     console.log(e.target.value);
+                //     ModalCartText.getCartTextAndData(cartOutput);
+                // })
+
+                // MEGOLDANI, HOGY TÖRLÉS UTÁN IS LEHESSEN NÖVELNI CSÖKKENTENI (VÁLTOZZON AZ ÁR)
+
+                CookieQuery.deleteFromSession(e.target.id);
                 cookie.modifyNumberOfItemsCookie('Cart_'+email, e.target.value+'_'+e.target.id,1,0);
                 e.target.parentElement.parentElement.parentElement.remove();
-                CookieQuery.deleteFromSession(e.target.id);
-                //console.log(numberOfItemsModal);
-                //$('#cartModal').modal('hide');
-            });  
-            // MEGOLDANI, HOGY AZ ÁR IS VÁLTOZZON   
+                // Recall the whole cart text function
+                //console.log(e.target.value);
+                ModalCartText.getCartTextAndData(cartOutput);
+
+            });   
         }        
     }
-    })
 })

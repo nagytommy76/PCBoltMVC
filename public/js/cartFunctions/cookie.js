@@ -23,19 +23,23 @@ class Cookie{
     }
 
     modifyNumberOfItemsCookie(cName, cValue, exDays, numberOfItem){
-        let toModify = this.getNumberOfProductTypes(JSON.parse(this.getCookie(cName)));
+        let toModify = false;
+        if(this.getCookie(cName) != undefined){
+            toModify = this.getNumberOfProductTypes(JSON.parse(this.getCookie(cName)));
+        }
+        // let toModify = this.getNumberOfProductTypes(JSON.parse(this.getCookie(cName)));
         const days = this.expires(exDays);
         if (toModify !== false) {
             if (numberOfItem > 0) {
                 toModify[cValue] = numberOfItem;
-            
                 const modified = this.makeModifiedCookie((toModify));
                 document.cookie = `${cName}=${JSON.stringify(modified)}; expires=${days}; path=/`;
             }else{
                 // delete all item from cookie...
                 toModify[cValue] = numberOfItem;
-                let toDelete = this.makeModifiedCookie((toModify));
-                document.cookie = `${cName}=${JSON.stringify(toDelete)}; expires=${days}; path=/`;
+                let toStayInCookie = this.makeModifiedCookie((toModify));
+                console.log('TO toStayInCookie: '+toStayInCookie);
+                document.cookie = `${cName}=${JSON.stringify(toStayInCookie)}; expires=${days}; path=/`;
                 if (this.getCookie(cName).length == 2) {
                     this.destroyCookie(cName);
                     // REMOVE the price 
@@ -43,7 +47,7 @@ class Cookie{
                     cartOutput.append(ModalCartText.emptyCartText());
                 }
             }  
-        }     
+        }    
     }
     // creates an expire date in date type
     expires(exDays){
@@ -72,7 +76,7 @@ class Cookie{
         let result = [];
         for(let key of Object.keys(array)){
             for (let i = 0; i < array[key]; i++) {
-                result.push(key);         
+                result.push(key);        
             }
         }
         return result;
