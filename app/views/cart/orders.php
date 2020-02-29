@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col">
             <?php flash('pdfNotExists'); ?>
-    <h1>Korábbi vásárlások</h1>
+    <h1><?php echo $data['page_title'] ?></h1>
     <div class="accordion" id="accordionExample">
         <?php foreach($data['allOrders'] as $key => $orders) : ?>
         <div class="card bg-dark">

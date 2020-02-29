@@ -36,10 +36,8 @@
                     }else{
                         // Ha ki van töltve akkor le kérhetem a jogosutlságot is!
                         $loggedInUser = $this->userModel->login($data['email'],$data['password']);
-
                         if ($loggedInUser) {
-                            $this->createUserSession($loggedInUser); 
-                                                       
+                            $this->createUserSession($loggedInUser);                               
                         }
                     }
                                                         
@@ -48,7 +46,6 @@
                     $this->view('users/login',$data);
                 }
                 
-                //$this->view('users/login',$data);
                 
             }else{
                 $data = [
@@ -94,13 +91,12 @@
                         $_SESSION["code"] = $this->mail->generateCode(10);
                         // EZT ÁTTENNI COOCKIE BA, mert ha a user nem használja fel nem törlődik??? 
                     }
-                    //die(var_dump($_SESSION['code']));
                     // Sending email to register
                     if($this->mail->confirmRegistration($data['email'],$data['username'],$_SESSION["code"])){
                         redirect('users/login');
 
                     }else{
-                        flash('register_success','Az email nem lett elküldve, kérem     próbálja újra!!');
+                        flash('register_success','Az email nem lett elküldve, kérem próbálja újra!!');
                         redirect('users/register');
                     }
                 }              
@@ -134,16 +130,18 @@
                     if($this->userModel->register($_SESSION['temp_email'],$_SESSION['temp_password'], $_SESSION['temp_username'])){
                         $this->destroyTempSessions();
                         // Ha regisztrálás sikeres
-                        flash('register_success','A regisztráció sikeres volt! És be tud jelentkezni!');
+                        flash('code_confirmed','A regisztráció sikeres volt! És be tud jelentkezni!');
                         redirect('users/login');
                     }else{
                         $this->destroyTempSessions();
-                        flash('register_success','A regisztráció sikertelen volt!');
+                        flash('register_failed','A regisztráció sikertelen volt!');
                         redirect('users/register');
                     }
                 }else{
-                    die("Hibás kód AMI: ".$_SESSION['code']);
+                    //die("Hibás kód AMI: ".$_SESSION['code']);
                     $this->destroyTempSessions();
+                    flash('code_error','Kérem próbálkozzon újra a regisztrálással!','alert alert-danger');
+                    redirect('users/register');
                 }
             }else{
                 $this->view('users/codeControll',$data);
@@ -152,31 +150,30 @@
 
         // If $this->code === the email code
         private function confirmCode($incomingFromEmail){
-            if ($_SESSION["code"] == $incomingFromEmail) {
-                return true;
-            }else{
-                return false;
+            $result = false;
+            if (isset($_SESSION['code'])) {
+                if ($_SESSION["code"] == $incomingFromEmail) {
+                    $result = true;
+                }
             }
+            return $result;
         }
-
-       
+      
         
         public function createUserSession($user){
             $_SESSION['email'] = $user->email;
             $_SESSION['username'] = $user->username;
-            if ($user->jogosultsag == '') {
-                $_SESSION['jog'] = 'felhasználó';
+            if (isset($user->jogosultsag)) {
+                $_SESSION['jog'] = $user->jogosultsag;
             }else{
-                $_SESSION['jog'] = $user->jogosultsag; 
+                $_SESSION['jog'] = 'felhasználó';
             }
-                       
-            
-            redirect('pages/index');
+            redirect('index');
         }
+
             // Adatok beírása
         public function data(){
-            // A felhasználó további adatai
-            //$data = [];                        
+            // A felhasználó további adatai                        
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Sanitize post data
                 $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -218,7 +215,6 @@
                     $adatok = $this->userModel->adatok();                                 
                 $data = [
                     'main_title' => 'Adatok bevitele',
-                    /*'email' => '',*/
                     'veznev' => $adatok->vezeteknev,
                     'kernev' => $adatok->keresztnev,
                     'irszam' => $adatok->irszam,

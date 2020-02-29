@@ -3,7 +3,7 @@
 <div class="row pb-5">
     <div class="col-lg-6 mx-auto">
         <div class="card card-body bg-dark text-white mt-5">
-            <?php flash('register_success'); ?>
+            <?php flash('code_confirmed'); ?>
             <h2>Bejelentkezés</h2>
             <p>Ha már rendelkezik felhasználói fiókkal</p>
             <form action="<?php echo URLROOT; ?>/users/login" method="POST">

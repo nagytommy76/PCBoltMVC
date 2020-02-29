@@ -12,32 +12,34 @@ class Carts extends Controller{
         $this->cartModel = $this->model('Cart');
         $this->userModel = $this->model('User');
     }
+    
 
     public function getItemsCookie(){
-        $cikkszam = null;
-        if (isset($_COOKIE['Cart_'.sha1($_SESSION['email'])])) {
-            $cikkszam = json_decode($_COOKIE['Cart_'.sha1($_SESSION['email'])]);
-        }
+        $cikkszam = $this->getCookiesCikkszam();
+        // if (isset($_COOKIE['Cart_'.sha1($_SESSION['email'])])) {
+        //     $cikkszam = json_decode($_COOKIE['Cart_'.sha1($_SESSION['email'])]);
+        // }
+        //die(var_dump($cikkszam));
         if (isset($_SESSION['email'])) {
             if (isset($cikkszam) && count($cikkszam) > 0 || $cikkszam != null) {
                 if ($_SERVER['REQUEST_METHOD'] === 'GET') {               
-                    $numberOfItems = array_count_values($cikkszam);
-                    $res = array();
+                    // $numberOfItems = array_count_values($cikkszam);
+                    $res = $this->createResultForCart();
 
-                    foreach ($numberOfItems as $cikksz => $number) {
-                        $cikk = explode('_',$cikksz);
-                        $test = (object)['quantity' => $number];
+                    // foreach ($numberOfItems as $cikksz => $number) {
+                    //     $cikk = explode('_',$cikksz);
+                    //     $test = (object)['quantity' => $number];
 
-                        $temp = $this->getParametersOfAnItem($cikksz);
-                        foreach ($temp as $re) {
-                            splittingPictures($re,';');
-                        }
-                        $merged = $this->createMergedObjects($test, $temp[0]);
-                        $merged = $this->createMergedObjects($merged, ['sessEmail' => sha1($_SESSION['email'])]);
-                        $merged = $this->createMergedObjects($merged, ['product_type' => $cikk[0]]);
-                        array_push($res, $merged);
-                        $_SESSION['current'] = $res;
-                    }
+                    //     $temp = $this->getParametersOfAnItem($cikksz);
+                    //     foreach ($temp as $re) {
+                    //         splittingPictures($re,';');
+                    //     }
+                    //     $merged = $this->createMergedObjects($test, $temp[0]);
+                    //     $merged = $this->createMergedObjects($merged, ['sessEmail' => sha1($_SESSION['email'])]);
+                    //     $merged = $this->createMergedObjects($merged, ['product_type' => $cikk[0]]);
+                    //     array_push($res, $merged);
+                    $_SESSION['current'] = $res;
+                    // }
                 echo json_encode($res);
                 }
             }else{
@@ -74,10 +76,10 @@ class Carts extends Controller{
                     $this->view('cart/summaryCart',$data);
                 }
             }else{
-                redirect('pages/index');
+                redirect('index');
             }
         }else{
-            redirect('pages/index');
+            redirect('index');
         }
     }
 
@@ -145,6 +147,7 @@ class Carts extends Controller{
                      * 
                      * FONTOS: - LEHESSEN TÖRÖLNI EGY ELEMET A KOSÁRBÓL!!!!!
                      *         - A PICTURE SPLITTINGET JAVÍTANI,
+                     *         - FONTOS, HA NINCS KITÖLTVE AZA ADATOK REDIRECT ADATOK KITÖLT
                      */
                     if($this->email->sendOrderListPDF($_SESSION['email'],$_SESSION['username'],$pdfStringFormat, $billCode,$pdfName,$_SESSION['current'])){
                         if ($this->cartModel->insertUserCartItem($_COOKIE[$cookieName],$_SESSION['email'],$billCode,$overallPrice)) {
@@ -166,34 +169,44 @@ class Carts extends Controller{
     public function orders(){
         if (isset($_SESSION['email']) && isset($_SESSION['username'])) {
             $allOrders = $this->cartModel->showAllOrders($_SESSION['email']);
-            foreach ($allOrders as $order) {
-                $order->cartItems = json_decode($order->cartItems);
-                $orderedQuantity = array_count_values($order->cartItems);
-                $orderedItemsData = [];
-                // egyesítem, hogy ne pl 3 szor fusson le a foreach
-                $order->cartItems = $orderedQuantity;
-
-                foreach ($order->cartItems as $item => $key1) {
-                    $itemParameter = $this->getParametersOfAnItem($item);
-                    splittingPictures($itemParameter[0],';');
-
-                    foreach ($orderedQuantity as $key => $quantity) {
-                        if ($key == $item) {
-                            $temp = ['quantity' => $quantity];
-                            $temp1 = ['productType' => explode('_',$key)[0]];
-                            $itemParameter[0] = $this->createMergedObjects($temp,$itemParameter[0]);
-                            $itemParameter[0] = $this->createMergedObjects($temp1,$itemParameter[0]);
+            if (count($allOrders) > 0) {
+                foreach ($allOrders as $order) {
+                    $order->cartItems = json_decode($order->cartItems);
+                    $orderedQuantity = array_count_values($order->cartItems);
+                    $orderedItemsData = [];
+                    // egyesítem, hogy ne pl 3 szor fusson le a foreach
+                    $order->cartItems = $orderedQuantity;
+    
+                    foreach ($order->cartItems as $item => $key1) {
+                        $itemParameter = $this->getParametersOfAnItem($item);
+                        splittingPictures($itemParameter[0],';');
+    
+                        foreach ($orderedQuantity as $key => $quantity) {
+                            if ($key == $item) {
+                                $temp = ['quantity' => $quantity];
+                                $temp1 = ['productType' => explode('_',$key)[0]];
+                                $itemParameter[0] = $this->createMergedObjects($temp,$itemParameter[0]);
+                                $itemParameter[0] = $this->createMergedObjects($temp1,$itemParameter[0]);
+                            }
                         }
+                        array_push($orderedItemsData,$itemParameter[0]);                
                     }
-                    array_push($orderedItemsData,$itemParameter[0]);                
+                    $order->cartItems = $orderedItemsData;
                 }
-                $order->cartItems = $orderedItemsData;
+                $data = [
+                    'main_title' => $_SESSION['username'].' Korábbi rendelései',
+                    'allOrders' => $allOrders,
+                    'username' => $_SESSION['username'],
+                    'page_title' => 'Korábbi vásárlásai'
+                ];
+            }else{
+                $data = [
+                    'main_title' => $_SESSION['username'].' Korábbi rendelései',
+                    'allOrders' => $allOrders,
+                    'username' => $_SESSION['username'],
+                    'page_title' => 'Még nem vásárolt webáruházunkban!'
+                ];
             }
-            $data = [
-                'main_title' => $_SESSION['username'].' Korábbi rendelései',
-                'allOrders' => $allOrders,
-                'username' => $_SESSION['username']
-            ];
             $this->view('cart/orders',$data);
         }
     }
@@ -222,13 +235,16 @@ class Carts extends Controller{
         }
         
     }
-
+    public function test(){
+        var_dump($_SESSION['current']);
+        // unset($_SESSION['current']);
+    }
     // ==================================================================================
     // ---------------------------- API FUNCTIONS  -------------------------------------
     // =================================================================================
 
     public function getSessionEmail(){
-        if (isset($_SESSION['email'])) {
+        if (isset($_SESSION['email']) && $this->userModel->checkUserData($_SESSION['email'])) {
             echo json_encode(sha1($_SESSION['email']));
         }else{
             echo json_encode('EmailNotSet');
@@ -252,19 +268,61 @@ class Carts extends Controller{
     // delete from the Session
     public function deleteFromSession(){
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-            foreach ($_SESSION['current'] as $current) {
-                if ($_GET['cikksz'] == $current->cikkszam) {
-                    unset($current);
+            // foreach ($_SESSION['current'] as $current) {
+            //     if ($_GET['cikksz'] == $current->cikkszam) {
+            //         //die(var_dump($current->quantity));
+            //         //if ($current->quantity == 0) {
+            //             // if (isset($_COOKIE['Cart_'.sha1($_SESSION['email'])])) {
+            //             //     $cikkszam = json_decode($_COOKIE['Cart_'.sha1($_SESSION['email'])]);
+            //             //     $_SESSION['current'] = $this->createResultForCart($cikkszam);
+            //             // }
+            //             $current = array_pop($current);                        
+            //         //}
+            //     }
+            // }
+            $this->unsetSession('current');
+            $_SESSION['current'] = $this->createResultForCart();
+        }
+    }    
+
+    // ========================================================================================
+    // +++                                   PRIVATE FUNCTIONS                              +++
+    // ========================================================================================
+
+    // ================================ CART FUNCTIONS  ======================================
+
+    // CEATE RESULT FOR CART ITEMS
+    private function createResultForCart(){
+        $res = array();
+        $cikkszam = $this->getCookiesCikkszam();
+        if (isset($cikkszam) && count($cikkszam) > 0 || $cikkszam != null) {
+        $numberOfItems = array_count_values($cikkszam);
+
+            foreach ($numberOfItems as $cikksz => $number) {
+                $cikk = explode('_',$cikksz);
+                $test = (object)['quantity' => $number];
+
+                $temp = $this->getParametersOfAnItem($cikksz);
+                foreach ($temp as $re) {
+                    splittingPictures($re,';');
                 }
+                $merged = $this->createMergedObjects($test, $temp[0]);
+                $merged = $this->createMergedObjects($merged, ['sessEmail' => sha1($_SESSION['email'])]);
+                $merged = $this->createMergedObjects($merged, ['product_type' => $cikk[0]]);
+                array_push($res, $merged);
             }
         }
+        return $res;
     }
-    
 
-    // ===========================================================================================
-    // +++                                      PRIVATE FUNCTIONS                            +++
-    // ===========================================================================================
-
+    // get the elements from COOKIE to array ([0] => cpu_GDSFF, [1] vga_GDGG........)
+    private function getCookiesCikkszam(){
+        $cikkszam = null;
+        if (isset($_COOKIE['Cart_'.sha1($_SESSION['email'])])) {
+            $cikkszam = json_decode($_COOKIE['Cart_'.sha1($_SESSION['email'])]);
+        }
+        return $cikkszam;
+    }
 
     // GET AN ITEM PARAMETERS
     private function getParametersOfAnItem($cikkszam){

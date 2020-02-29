@@ -4,13 +4,15 @@ require '../fpdf182/fpdf.php';
 class PDF extends FPDF{
     public function Header()
     {
+        // ORIGINAL
+        
         $this->SetFont('Arial','',14);
         // LOGO
-        $this->Image('../public/img/preview-xl.jpg',-18,0,125,);
+        $this->Image('../public/img/preview-xl.jpg',-18,0,125);
         // FONT
         $this->SetTextColor(214,137,16);
         $this->SetFontSize(30);
-        $this->Cell(0,4,utf8_decode('Computer Store Webáruház'),0,2,'R',false,'http://localhost/PCBoltMVC/pages/index');
+        $this->Cell(0,4,utf8_decode('Computer Store Webáruház'),0,2,'R',false,'http://localhost/PCBoltMVC/index');
 
         $this->Ln();
         $this->SetTextColor(52,75,98);
@@ -25,6 +27,7 @@ class PDF extends FPDF{
         $this->SetCreator('PHP version 7.4.1');
         $this->SetAuthor(utf8_decode('Nagy Tamás -> Computer Store webáruház'));
         $this->Ln();
+
     }
 
     public function Footer()
@@ -34,6 +37,13 @@ class PDF extends FPDF{
         $this->SetFont('Arial','',10);
         $this->SetY(-9);
         $this->Cell(0,0,utf8_decode('Készítette: Nagy Tamás, Budapest '.$finalDate.''),0,2,'C');
+    }
+
+    public function resumeCreate(){
+        $this->AddPage();
+        $this->SetFont('Arial','B',13);
+        //$this->Cell(40,10,'Hello World!');
+        return $this->Output('I','NagyTamás.pdf',true);
     }
 
     /**

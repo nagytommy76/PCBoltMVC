@@ -4,10 +4,12 @@
  * The current user's ($_SESSION['jog']) == admin?
  */
     function isAdmin($premission){
-        if ($premission != "admin" || $premission == null) {
-            return false;
-        }else{
-            return true;
+        if (isset($premission)) {
+            if ($premission != "admin" || $premission == null) {
+                return false;
+            }else{
+                return true;
+            }
         }
     }
 
@@ -20,10 +22,25 @@
     }
 
     function bothAdminSeller($premission){
-        if ($premission == 'admin' || $premission == 'eladó' && $premission != null) {
-            return true;
-        }else{
-            return false;
+        $result = false;
+        if (isset($premission)){
+            if ($premission == 'admin' || $premission == 'eladó' && $premission != null) {
+                $result = true;
+            }
         }
+        return $result;
+    }
+
+    /**
+     * @param premission: eladó/admin
+     */
+    function bothAdminAndSeller($premission = 'admin'){
+        $result = false;
+        if (isset($_SESSION['jog'])) {
+            if ($premission == 'admin' || $premission == 'eladó' && $premission != null) {
+                $result = true;
+            }
+        }
+        return $result;
     }
 

@@ -3,7 +3,8 @@
 <div class="row pb-5">
     <div class="col-lg-6 mx-auto pt-5">
         <div class="card card-body bg-dark text-white">
-            <?php flash('register_success'); ?>
+            <?php flash('register_failed'); ?>
+            <?php flash('code_error'); ?>
             <h2>Regisztráció</h2>
             <p>Ha még nem rendelkezik felhasználói fiókkal kérem töltse ki a beviteli mezőket</p>
             <form action="<?php echo URLROOT; ?>/users/register" method="POST">

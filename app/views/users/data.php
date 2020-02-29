@@ -79,7 +79,7 @@
                     <div class="col">
                         <div class="form-group row p-3 text-white">
                             <label for="jogosultsag">Jogosultság: </label>
-                            <input type="text" value="<?php echo $_SESSION['jog']; ?>" class="form-control form-control-lg" name="jogosultsag" disabled>
+                            <input type="text" value="<?php echo (isset($_SESSION['jog']) ? $_SESSION['jog'] : 'felhasználó'); ?>" class="form-control form-control-lg" name="jogosultsag" disabled>
                         </div>
                     </div>
                     <div class="col">

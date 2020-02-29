@@ -113,7 +113,7 @@
 
 
           <!-- Ha valaki adminként/eladó jelentkezik be akkor éri el ezeket a menüket --> 
-          <?php if(bothAdminSeller($_SESSION["jog"])) : ?>   
+          <?php if(bothAdminSeller($_SESSION['jog'])) : ?>   
             <div class="dropdown-divider"></div>
             <a class="dropdown-item text-primary" href="<?php echo URLROOT.'/admins/userHandler' ?>">Felhasználók kezelése</a>
             <div class="dropdown-divider"></div>
