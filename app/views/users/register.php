@@ -1,9 +1,8 @@
-<?php require APPROOT . '/views/inc/header.php'; ?>
+<?php require HEADER; ?>
 
-<div class="row pb-5">
-    <div class="col-lg-6 mx-auto pt-5">
+<div class="row w-100">
+    <div class="col-md-8 m-auto pt-5">
         <div class="card card-body bg-dark text-white">
-            <?php flash('register_success'); ?>
             <h2>Regisztráció</h2>
             <p>Ha még nem rendelkezik felhasználói fiókkal kérem töltse ki a beviteli mezőket</p>
             <form action="<?php echo URLROOT; ?>/users/register" method="POST">
@@ -34,8 +33,13 @@
                     </div>
                 </div>  
             </form>
+            <?php
+                flash('register_failed'); 
+                flash('email_fail'); 
+                echo flash('code_errorr'); 
+            ?>
         </div>
     </div>
 </div>
 
-<?php require APPROOT . '/views/inc/footer.php'; ?>
+<?php require FOOTER; ?>

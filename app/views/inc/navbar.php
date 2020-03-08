@@ -93,7 +93,7 @@
       <li class="nav-item dropdown">       
         <!-- Ha nincs bejelentkezve senki sem --> 
         <?php if(!isset($_SESSION['email'])) : ?>       
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle mr-5" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <img class="" src="<?php echo ICONROOT?>/ownIcons/user.png">
           Felhasználók <span class="sr-only">(current)</span>
         </a>
@@ -103,7 +103,7 @@
         </div>
           <!-- Ha be vanjelentkezve valaki --> 
         <?php else :  ?>
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle mr-5" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <img class="" src="<?php echo ICONROOT?>/ownIcons/account.png"> <?php echo $_SESSION['username']; ?> <span class="sr-only">(current)</span>
         </a>
         <div class="dropdown-menu">
@@ -113,7 +113,7 @@
 
 
           <!-- Ha valaki adminként/eladó jelentkezik be akkor éri el ezeket a menüket --> 
-          <?php if(bothAdminSeller($_SESSION["jog"])) : ?>   
+          <?php if(bothAdminSeller($_SESSION['jog'])) : ?>   
             <div class="dropdown-divider"></div>
             <a class="dropdown-item text-primary" href="<?php echo URLROOT.'/admins/userHandler' ?>">Felhasználók kezelése</a>
             <div class="dropdown-divider"></div>
@@ -129,9 +129,10 @@
 
       </li>
 
+      <!-- <div class=""> -->
       <!-- Cart MODAL -->
       <li class="nav-item">
-        <button class="btn mr-4 ml-4" data-target="#cartModal" data-toggle="modal" type="button" id="cartBTN" aria-labelledby="cartModal"><img title="Kosár" src="<?php echo ICONROOT?>/ownIcons/cart.png"></button>
+        <button class="btn mr-2 " data-target="#cartModal" data-toggle="modal" type="button" id="cartBTN" aria-labelledby="cartModal"><img title="Kosár" src="<?php echo ICONROOT?>/ownIcons/cart.png"></button>
         <form action="<?php echo URLROOT; ?>/carts/getItemsCookie" method="POST">
           <input type="hidden" name="cartBTN">
         </form>
@@ -144,7 +145,7 @@
         <button class="btn my-2 my-sm-0" data-target="#searchModal" data-toggle="modal" type="button" id="searchModalBTN" aria-labelledby="searchModal"><img title="Keresés" src="<?php echo ICONROOT?>/ownIcons/loupe.png"></button>
       </li>
     </ul>
-
+    <!-- </div> -->
     <!-- CART MODAL -->
 
     <div class="modal fade" id="cartModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -156,7 +157,6 @@
           <span aria-hidden="true">&times;</span>
           </div>
           <div class="modal-body">
-            <h4><?php echo (!isset($_SESSION["jog"]) ? 'A vásárláshoz be kell jelentkezni' : 'Ez a funkció jelenleg fejlesztés alatt áll!') ?></h4>
             <!-- MODAL OUTPUT -->
             <form action="<?php echo URLROOT?>/carts/summaryCartItems" method="POST">
             <div class="pt-3 pb-4" id="modalCartOutput"></div>
@@ -179,7 +179,7 @@
       <!-- SEARCH MODAL -->
     <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog" role="document">
-        <div class="modal-content text-dark">
+        <div class="modal-content text-dark bg-light">
           <div class="modal-header">
             <h4 class="modal-title">Keresés a weboldalon!</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -192,10 +192,11 @@
                 <option value="cpu">CPU</option>
                 <option value="motherboard">Alaplap</option>
                 <option value="ram">RAM</option>
+                <option value="vga">Videókártya</option>
               </select>
               <label for="manufacturer">Gyártó: </label>
               <select class="form-control" name="manufacture" id="manufacture">
-                <option value="" selected>Nincs megadva</option>
+                <option value="" selected>Nincs Megadva</option>
                 <option value="intel">Intel</option>
                 <option value="amd">AMD</option>
               </select>
@@ -206,6 +207,9 @@
             <!-- MODAL OUTPUT -->
             <div class="pt-3 pb-4" id="modalOutput">
 
+            </div>
+            <div class="flashMessage">
+              
             </div>
           <div class="modal-footer">            
             <button type="button" class="btn btn-warning" data-dismiss="modal">Bezárás</button>

@@ -63,7 +63,8 @@
                             flash('input_success','A bevitel sikeres volt!');
                             redirect('admins/cpu_input');
                         }else{
-                            die('Hoppá ez nem sikerült :(');
+                            flash('input_fail','A bevitel sikertelen volt! :(');
+                            redirect('admins/cpu_input');
                         }
                     }else{ // ha egy termék módosítása gombja lett megnyomva
                         if (isset($_POST['cikkszam'])) {                           
@@ -129,30 +130,38 @@
                     $this->view('admin/cpu_input',$data);
                 }
             }else{
-               redirect("pages/index");
+               redirect("index");
             }
         }
 
         // Processzor törlése
         public function deleteCpu($cikkszam){
-            if ($_SESSION['jog'] == 'admin') {
+            if (isAdmin($_SESSION['jog'])) {
                 if (isset($_POST['deleteBTN']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-                    if ($this->adminModel->deleteCPUPrice($cikkszam) && $this->adminModel->deleteManufacturers($cikkszam) && $this->adminModel->deleteCPU($cikkszam)) {
-                        flash('delete_success','A ('.$cikkszam.') cikkszám szerint törölve lett a termék!');
-                        header('Location: '.$_SERVER['HTTP_REFERER']);
+                    try{
+                        if ($this->adminModel->deleteCPUPrice($cikkszam) && $this->adminModel->deleteManufacturers($cikkszam) && $this->adminModel->deleteCPU($cikkszam)) {
+                            flash('delete_success','A ('.$cikkszam.') cikkszám szerint törölve lett a termék!');
+                            header('Location: '.$_SERVER['HTTP_REFERER']);
+                        }
+                    }catch(PDOException $ex){
+                        flash('cpu_exception', $ex->getMessage(), 'alert alert-danger');
+                        redirect('cpus/allCPU');
                     }
                 }
             }else{
-                redirect("pages/index");
+                redirect("index");
             }
         }
 
-        // Felhasználók kezelése------------------------------------------------------------------------
+         // ===================================================================================================
+        // ++                                       USERS HANDLING                                          ++
+        // ===================================================================================================
+
         public function userHandler(){
             $data = [
                 'main_title' => 'Felhasználók kezelése'
             ];
-            if (bothAdminSeller($_SESSION["jog"])) {
+            if (isAdmin($_SESSION["jog"])) {
                 $userInfo = $this->userModel->showUserInfo();
                 $users = $this->userModel->showUsers();
                 $checkedUsers = [];
@@ -168,7 +177,7 @@
                 ];
                 $this->view('admin/userHandling', $data); 
             }else{
-                redirect("pages/index");
+                redirect("index");
             }      
         }        
 
@@ -196,7 +205,7 @@
                     ];
                     $this->view('admin/userEdit',$data);                 
                 }else{
-                    redirect("pages/index");
+                    redirect("index");
                 }
             
             }
@@ -230,17 +239,30 @@
             }
         }
 
-        // Felhasználó törlése!
-        public function deleteUser($email,$username,$telefon=''){
+    //===================================================================================================
+    // ++                                         DELETE USERS                                         ++
+    // ===================================================================================================
+
+        public function deleteUser($email,$telefon=''){
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 if (isAdmin($_SESSION["jog"])) {
-                    if ($this->userModel->deleteUserByAdmin($email,$telefon) && $this->userModel->deleteUserByAdmin0($email)) {           
-                        flash('deleted','A '.$username.' felhasználó törlése sikeres volt!','alert alert-danger');
+                    try{
+                        if ($this->userModel->deleteUserByAdmin($telefon) && $this->userModel->deleteUserByAdmin0($email) && $this->userModel->deleteFromUserCartItems($email)) {           
+                            flash('deleted','A '.$email.' felhasználó törlése sikeres volt!','alert alert-success');
+                            redirect('admins/userHandler');
+                        }else{
+                            flash('deleted','A '.$email.' felhasználó törlése sikertelen volt sajnos!','alert alert-danger');
+                            redirect('admins/userHandler');
+                        }
+                    }catch(PDOException $ex){
+                        flash('deleted',$ex->getMessage(),'alert alert-danger');
                         redirect('admins/userHandler');
-                    }else{
-                        flash('deleted','A '.$username.' felhasználó törlése sikertelen volt sajnos!','alert alert-danger');
+                    }finally{
+                        flash('deleted', 'Egyéb hiba történt');
                         redirect('admins/userHandler');
                     }
+                }else{
+                    redirect('index');
                 }
             }
         } 
@@ -412,7 +434,7 @@
                 }
             
         }else{
-            redirect("pages/index");
+            redirect("index");
         }
     }
 
@@ -539,7 +561,7 @@
             }
             $this->view('admin/ram_input',$data);
         }else{
-            redirect('pages/index');
+            redirect('index');
         }
         
     }
@@ -702,11 +724,31 @@
                         flash('modify_fail','A '.$data['type'].' Termék módosítása sikertelen volt!!', 'alert alert-danger');
                         redirect('admins/vga_input');
                     }
+                    /**
+                     * TEENDŐK:
+                     *      -ellenőrizni, hogy készleten vannak-e  atermékek, illteve csőkkenteni a termék 
+                     *       számát
+                     *      - MEGOLDANI, hogy a vásárlásaim tábla reponsive legyen
+                     *      - ESETLEG betteni a pdf-et mediumBLOB-ba a DB-be NEM!!!
+                     *      - AZ ADMINBÓL áttenni az input/modify/delete functionokat a hozzá tartozó
+                     *        termék model-jébe
+                     */
                 }
             }
             $this->view('admin/vga_input',$data);
         }else{
             redirect('index');
+        }
+    }
+    
+    public function deleteVGA($cikkszam){
+        if (isset($_POST['deleteVGA'])) {
+            if ($cikkszam !== '' || $cikkszam != null) {
+                if ($this->vgaModel->deleteVgaPrice($cikkszam) && $this->vgaModel->deleteVgaPicUrl($cikkszam) && $this->vgaModel->deleteVgaManufactUrl($cikkszam) && $this->vgaModel->deleteVgaStockpile($cikkszam) && $this->vgaModel->deleteVgaProduct($cikkszam)) {
+                    flash('delete_success','A '.$cikkszam.' Termék TÖRLÉSE sikeres volt');
+                    redirect('vgas/allVga');
+                }
+            }
         }
     }
 }

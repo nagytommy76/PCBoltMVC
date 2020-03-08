@@ -21,11 +21,21 @@
      */
     define('ICONROOT', URLROOT.'/img');
 
+    /**
+     * Define a character chain to salt the passwords
+     * 25 character long
+     */
+    define('SALT', 'QknflYb3oxSQInHy7moxTXSF0');
+
     // FOOTER
     define('FOOTER', APPROOT . '/views/inc/footer.php');
 
     // HEADER
     define('HEADER', APPROOT . '/views/inc/header.php');
+
+    // SIDEBAR (ORDER)
+    define('SIDEBAR', APPROOT.'/views/inc/sidebar.php');
+    
 
     // Define the cookies expire days
     define('COOKIESEXPIRE', 2);

@@ -6,13 +6,14 @@
         <h1 class="card-title"><?php echo $_SESSION['username'] ?> összesített kosártartalma!</h1>
     </div>
 
+    <div id="summaryItems">
     <form action="<?php echo URLROOT;?>/carts/confirmOrders" method="POST">
     <div class="row"> 
     <div class="col">          
-        <div class="card-body">        
+        <div class="card-body" id="summaryCartItems">        
             <h5 class="text-center">A kosár tartalma: </h5>            
             <?php foreach ($data['cartItems'] as $item) :  ?>
-                <div class="media pb-4 border border-success m-3">
+                <div class="media pb-4 border border-success m-3" id="<?php echo $item->cikkszam;?>">
                 <a href="<?php echo URLROOT.'/'.$item->product_type.'s/details/'.$item->cikkszam; ?>" class="titleLink" target="_blank">
                     <img src="<?php echo $item->picUrl[0]; ?>" class="mr-3" id="mediaPicture">
                     <div class="media-body">
@@ -25,6 +26,7 @@
                 <input type="number" min="1" max="20" step="1" value="<?php echo $item->quantity ?>"name="numberOfItemsInSummary" id="numberOfItemsInSummary"class="form-control">
                 <input type="hidden" name="itemPriceHidden" id="itemPriceHidden"value="<?php echo $item->price; ?>">
                 <input type="hidden" name="itemType" id="itemType" value="<?php echo $item->product_type.'_'.$item->cikkszam ?>">
+                <button type="button" class="btn btn-danger btn-sm mt-1" name="deleteFromCart" id="<?php echo $item->cikkszam;?>" value="<?php echo $item->product_type;?>">Törlés</button>
                 </div>           
         </div>
             <?php endforeach; ?>
@@ -99,6 +101,7 @@
     </div>  <!-- FOOTER END -->
 
     </form>
+    </div> <!-- SUMMARYITEMS END  -->
     </div> <!-- CARD END  -->
 </div> <!-- CONTAINER END -->   
        

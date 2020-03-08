@@ -3,187 +3,143 @@ class CreateText{
         this.urlRoot = urlRoot;
     }
 
-    // Create text for each searches
-    /**
-     * Like MBtipus, ramType (hyperX etc...)
-     * @param productType 
-     */
-    createModalText(productType, incoming = {}){
-        let output = '';
-        if (productType === 'Not Found') {
-            output = '';
-            output += '<h4 class="pl-3 m-auto">Nem található a keresett termék</h4>';
-        }else{
-            output += `
-            <div class="card m-auto pt-3 pb-3" id="ModalCard">
-                <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="" class="d-block w-100" alt="$" />
-                        </div>                                
-                    </div> <!-- CAROSEL INNER END -->
-                    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Előző</span>
-                    </a>
-                    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Következő</span>
-                  </a> <!-- CAROSEL NAVIGATOR END -->
-                </div> <!-- CAROSEL END -->
-                <div id="ModalLinkToItem">
-                    <div class="card-body">
-                        <a href="${this.urlRoot}mbs/details/" class="card-title" title="Részletek megjelenítése" id="ModalLinkToItem" target="_blank"><h3></h3></a>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Gyártó: ${incoming["man"]}</li>
-                        <li class="list-group-item">Chipset: </li>
-                        <li class="list-group-item">Foglalat: </li>
-                        <li class="list-group-item">Ár: Ft</li>
-                    </ul>
-                    <!--<a href="#" type="button" class="btn btn-success pt-2">Részletek</a>-->
-                </div>
-            </div>
-        `;
-        }
-        return output;
-    }
+    // Create output text
+    textForSearchModal(responseData, hashedEmail){
+        let allCardDiv = document.createElement('div');
+        responseData.forEach(resp => {
+            if(resp.type == 'Not Found'){
+                let h4 = document.createElement('h4');
+                h4.className = 'pl-3 m-auto';
+                h4.innerHTML = 'Nem található a keresett termék';
+                allCardDiv.append(h4);
+            }else{
+                allCardDiv.className = 'searchCarddiv mb-3';
 
-    // Creating text for Search Modal MOTHERBOARD
-    textForSearchModalMotherboard(response, email){
-        let output = '';
-        if(response.MBtipus === 'Not Found'){
-            output = '';
-            output += '<h4 class="pl-3 m-auto">Nem található a keresett termék</h4>';
-        }else{
-        response.forEach(resp => {
-            output += `
-            <div class="card m-auto pt-3 pb-3" id="ModalCard">
-                <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="${resp.picUrl[0]}" class="d-block w-100" alt="${resp.picUrl[0]}" />
-                        </div>                                
-                    </div> <!-- CAROSEL INNER END -->
-                    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Előző</span>
-                    </a>
-                    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Következő</span>
-                  </a> <!-- CAROSEL NAVIGATOR END -->
-                </div> <!-- CAROSEL END -->
-                <div id="ModalLinkToItem">
-                    <div class="card-body">
-                        <a href="${this.urlRoot}mbs/details/${resp.cikkszam}" class="card-title" title="Részletek megjelenítése" id="ModalLinkToItem" target="_blank"><h3>${resp.MBtipus}</h3></a>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Gyártó: ${resp.manufacturer}</li>
-                        <li class="list-group-item">Chipset: ${resp.chipset}</li>
-                        <li class="list-group-item">Foglalat: ${resp.foglalat}</li>
-                        <li class="list-group-item">Ár: ${resp.price} Ft</li>
-                    </ul>
-                    <button name="Cart_${email}" data-toggle="modal" data-target="#cartModal" type="button" id="addToCart" class="btn btn-dark"  value="mb_${resp.cikkszam}">Kosárba</button>
-                </div>
-            </div>
-        `;
+                //  horizontal line
+                let hr = document.createElement('hr');
+                // CARD DIV
+                let cardDiv = document.createElement('div');
+                cardDiv.className = 'card mx-auto pt-3 pb-3 searchCardColor';
+                cardDiv.id = 'ModalCard';
+                // IMG HEADER
+                let cardHead = document.createElement('div');
+                cardHead.className = 'card-head';
+                let img = document.createElement('img');
+                img.className = 'd-block w-100';
+                img.src = `${resp.picUrl[0]}`;
+
+                // anchor to details
+                let a = document.createElement('a');
+                a.className = 'card-title';
+                a.href = `${this.urlRoot}/${resp.productType}s/details/${resp.cikkszam}`;
+                a.title = `A ${resp.type} termék részleteinek megtekintése`;
+                a.id = 'ModalLinkToItem';
+                a.target = '_blank';
+                // H3 TITLE
+                let h3 = document.createElement('h3');
+                h3.innerHTML = `${resp.manufacturer} ${resp.type}`;
+                // CAR BODY
+                let cardBody = document.createElement('div');
+                cardBody.className = 'card-body';
+
+                // create list
+                let ul = document.createElement('ul');
+                ul.className = 'list-group list-group-flush';
+                // LIST ITEM 1
+                let li1 = document.createElement('li');
+                li1.className = 'list-group-item';
+                li1.innerHTML = `Gyártó: ${resp.manufacturer}`;
+                // LIST ITEM 2
+                let li2 = document.createElement('li');
+                li2.className = 'list-group-item';
+                li2.innerHTML = `Típus: ${resp.type}`;
+                // LIST ITEM 3
+                let li3 = document.createElement('li');
+                li3.className = 'list-group-item';
+                let h4 = document.createElement('h4');
+                h4.innerHTML = `Ár: ${resp.price} Ft`;
+                h4.className = 'priceColor';
+                li3.appendChild(h4);
+
+                // Create CART button
+                let button = document.createElement('button');
+                button.className = 'btn btn-dark btn-block';
+                button.type = 'button';
+                button.id = 'addToCartInSearch';
+                button.innerHTML = 'Kosárba';
+                button.name = `Cart_${hashedEmail}`;
+                button.value = `${resp.productType}_${resp.cikkszam}`;
+                // ===== THE BUTTON IS DISABLED =======
+                // if (hashedEmail === 'EmailNotSet') {
+                //     button.disabled = true;
+                //     button.title = 'Be kell jelentkezni vagy az adatokat kitölteni!';
+                // }
+
+                // CREATE FLASH MSG FOR EACH RESULT
+                let msgDiv = document.createElement('div');
+                msgDiv.id = resp.productType+'_'+resp.cikkszam;
+                msgDiv.className = 'mt-3';
+
+                // CHAIN TOGETHER
+                ul.appendChild(li1);
+                ul.appendChild(li2);
+                ul.appendChild(li3);
+
+
+                a.appendChild(h3);
+                cardBody.appendChild(a);
+                cardBody.appendChild(ul);
+                cardBody.appendChild(button);
+                cardBody.appendChild(hr);
+
+                cardHead.appendChild(img)
+                cardHead.appendChild(hr);
+
+                cardDiv.appendChild(cardHead);
+                cardDiv.appendChild(cardBody);
+                allCardDiv.append(cardDiv);  
+                allCardDiv.appendChild(msgDiv);          
+            }
         });
-        }
-        return output;
-    }
-    // CPU
-    textForSearchModalCpu(response, email){
-        let output = '';
-        if(response.tipus === 'Not Found'){
-            output = '';
-            output += '<h4 class="pl-3 mx-auto">Nem található a keresett termék</h4>';
-        }else{
-        response.forEach(resp => {
-            output += `
-            <div class="card m-auto pt-3 pb-3" id="ModalCard">
-                <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="${resp.kepurl}" class="d-block w-100" alt="${resp.kepurl}" />
-                        </div>                                
-                    </div> <!-- CAROSEL INNER END -->
-                    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Előző</span>
-                    </a>
-                    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Következő</span>
-                  </a> <!-- CAROSEL NAVIGATOR END -->
-                </div> <!-- CAROSEL END -->
-                <div id="ModalLinkToItem">
-                    <div class="card-body">
-                        <a href="${this.urlRoot}cpus/details/${resp.cikkszam}"><h3>${resp.tipus}</h3></a>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Gyártó: ${resp.gyarto}</li>
-                        <li class="list-group-item">Fogyasztás: ${resp.fogyasztas} W</li>
-                        <li class="list-group-item">Foglalat: ${resp.foglalat}</li>
-                        <li class="list-group-item">Órajel: ${resp.orajel} MHz</li>
-                        <li class="list-group-item">Turbo Órajel: ${resp.turbo_orajel} MHz</li>
-                        <li class="list-group-item">Ár: ${resp.ar} Ft</li>
-                    </ul>
-                    <a href="#" type="button" class="btn btn-dark pt-2">Kosárba</a>
-                </div>
-            </div>
-        `;
-        });
-        }
-        return output;
+        return allCardDiv;
     }
 
-
-    // RAM
-    textForSearchModalRAM(response, email){
-        let output = '';
-        if(response.ramType === 'Not Found'){
-            output = '';
-            output += '<h4 class="pl-3 m-auto">Nem található a keresett termék</h4>';
-        }else{
-        response.forEach(resp => {
-            output += `
-            <div class="card m-auto pt-3 pb-3" id="ModalCard">
-                <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="${resp.picUrl[0]}" class="d-block w-100" alt="${resp.picUrl[0]}" />
-                        </div>                                
-                    </div> <!-- CAROSEL INNER END -->
-                    <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Előző</span>
-                    </a>
-                    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Következő</span>
-                  </a> <!-- CAROSEL NAVIGATOR END -->
-                </div> <!-- CAROSEL END -->
-                <div id="ModalLinkToItem">
-                    <div class="card-body">
-                        <a href="${this.urlRoot}rams/details/${resp.cikkszam}" class="card-title" title="Részletek megjelenítése" id="ModalLinkToItem" target="_blank"><h3>${resp.manufacturer} ${resp.type}</h3></a>
- 
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Gyártó: ${resp.manufacturer}</li>
-                        <li class="list-group-item">Kapacitás: ${resp.capacity} Gb</li>
-                        <li class="list-group-item">Gyártó kód: ${resp.typeCode}</li>
-                        <li class="list-group-item">Órajel: ${resp.clock} MHz</li>
-                        <li class="list-group-item">Feszültség: ${resp.voltage} V</li>
-                        <li class="list-group-item">Ár: ${resp.ramPrice} Ft</li>
-                    </ul>
-                    <!--<a href="#" type="button" class="btn btn-success pt-2">Részletek</a>-->
-                </div>
-            </div>
-        `;
-        });
-        }
-        return output;
+    // Create a flash message in search modal
+    flashMessageInModal(incomingMess, alertColor = 'primary'){
+        let div = document.createElement('div');
+        div.id = 'flashMessage';
+        div.className = `alert alert-${alertColor}`;
+        div.role = 'alert';
+        div.setAttribute('role', 'alert');
+        div.innerHTML = incomingMess;  
+        return div;     
     }
 
+    flashMessageInModalDestroy(){
+        let div = document.querySelector('#flashMessage');
+        div.remove();     
+    }
+
+    destroyFlashMessageInSearchModal(productFlashOutput){
+        if(productFlashOutput != undefined || productFlashOutput != null){
+            setTimeout(() => {
+                this.flashMessageInModalDestroy();
+            },3000);
+        }
+    }
+
+    // Create text for product manufacturers
+    createManOptions(responseData, outputField){
+        outputField.innerHTML = '';
+        let firstOpt = document.createElement('option');
+        firstOpt.value = '';
+        firstOpt.innerText = 'Nincs Megadva';
+        outputField.appendChild(firstOpt);
+        responseData.forEach(resp => {
+            let secOutput = document.createElement('option');
+            secOutput.value = resp.man_id;
+            secOutput.innerText = resp.manufacturer;
+            outputField.appendChild(secOutput);
+        })
+    }
 }

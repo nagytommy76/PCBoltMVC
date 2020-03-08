@@ -1,6 +1,6 @@
-<?php require APPROOT . '/views/inc/header.php'; ?>
+<?php require HEADER; ?>
 
-<div class="row pt-5 pb-5">
+<div class="row pt-5 pb-5 w-100">
     <div class="col-md-5 mx-auto">
         <div class="card card-header bg-dark text-white">
             <h1>Regisztráció hitelesítése</h1>
@@ -17,4 +17,4 @@
     </div>
 </div>
 
-<?php require APPROOT . '/views/inc/footer.php'; ?>
+<?php require FOOTER; ?>

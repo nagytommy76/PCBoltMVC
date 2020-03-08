@@ -21,12 +21,13 @@
             $url = $this->getUrl();
             // megnézzük a controllerben, mi az első érték
             // ucwords: Az első karaktert negy betűsség teszi
-
-            if (file_exists('../app/controllers/' .ucwords($url[0]). '.php')) {
-                // ha létezik a file, beállítjuk kontrollerként
-                $this->currentController = ucwords($url[0]);
-                // Unset zero index
-                unset($url[0]);
+            if ($url != false) {
+                if (file_exists('../app/controllers/' .ucwords($url[0]). '.php')) {
+                    // ha létezik a file, beállítjuk kontrollerként
+                    $this->currentController = ucwords($url[0]);
+                    // Unset zero index
+                    unset($url[0]);
+                }
             }
             // Require the file (controller)
             require_once '../app/controllers/'.$this->currentController.'.php';

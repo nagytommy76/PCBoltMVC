@@ -24,7 +24,11 @@
                     $data['email_err'] = "Az email cím még nincs regisztrálva!";
                 }
 
-                if (empty($data['email_err'])) {
+                if (!$this->userModel->findUserByPassword($data['email'], $data['password'])) {
+                    $data['pass_err'] = "A jelszó helytelen";
+                }
+
+                if (empty($data['email_err']) && empty($data['pass_err'])) {
                     if (!$this->userModel->kiVanEToltve($data['email'])) {
                         // Ha nincs kitöltve a userinfo mező akkor nem kérem le a jogosultságot
                         $loggedInUser = $this->userModel->loginTwo($data['email'],$data['password']);                        
@@ -36,20 +40,14 @@
                     }else{
                         // Ha ki van töltve akkor le kérhetem a jogosutlságot is!
                         $loggedInUser = $this->userModel->login($data['email'],$data['password']);
-
                         if ($loggedInUser) {
-                            $this->createUserSession($loggedInUser); 
-                                                       
+                            $this->createUserSession($loggedInUser);                               
                         }
                     }
                                                         
                 }else{
-                    $data['pass_err'] = "A jelszó helytelen!";
                     $this->view('users/login',$data);
-                }
-                
-                //$this->view('users/login',$data);
-                
+                }               
             }else{
                 $data = [
                     'main_title' => 'Belépés',                    
@@ -94,13 +92,12 @@
                         $_SESSION["code"] = $this->mail->generateCode(10);
                         // EZT ÁTTENNI COOCKIE BA, mert ha a user nem használja fel nem törlődik??? 
                     }
-                    //die(var_dump($_SESSION['code']));
                     // Sending email to register
                     if($this->mail->confirmRegistration($data['email'],$data['username'],$_SESSION["code"])){
+                        flash('email_sent','Kérem tekintse meg az e-mail fiókját, a regisztrációs kódot elküldtük!');
                         redirect('users/login');
-
                     }else{
-                        flash('register_success','Az email nem lett elküldve, kérem     próbálja újra!!');
+                        flash('email_fail','Az email nem lett elküldve, kérem próbálja újra!!', 'alert alert-danger');
                         redirect('users/register');
                     }
                 }              
@@ -119,6 +116,12 @@
                 $this->view('users/register',$data);
             }                      
         }
+
+        // public function teszt(){
+        //     var_dump($_SESSION['code']);
+        //     var_dump($_SESSION['temp_username']);
+        //     var_dump($_SESSION['temp_password']);
+        // }
         // Register a user
         public function codeControll($incomingCodeFromEmail = ''){
             $data = [
@@ -132,18 +135,19 @@
                 
                 if ($this->confirmCode($data["fromEmailCode"])) {
                     if($this->userModel->register($_SESSION['temp_email'],$_SESSION['temp_password'], $_SESSION['temp_username'])){
-                        $this->destroyTempSessions();
                         // Ha regisztrálás sikeres
-                        flash('register_success','A regisztráció sikeres volt! És be tud jelentkezni!');
+                        $this->destroyTempSessions();
+                        flash('code_confirmed','A kód beváltása sikeres volt! És be tud jelentkezni!');
                         redirect('users/login');
                     }else{
                         $this->destroyTempSessions();
-                        flash('register_success','A regisztráció sikertelen volt!');
+                        flash('register_failed','A regisztráció sikertelen volt!');
                         redirect('users/register');
                     }
                 }else{
-                    die("Hibás kód AMI: ".$_SESSION['code']);
                     $this->destroyTempSessions();
+                    flash('code_errorr','Kérem próbálkozzon újra a regisztrálással mert helytelen a kód!', 'alert alert-danger');
+                    redirect('users/register');
                 }
             }else{
                 $this->view('users/codeControll',$data);
@@ -152,31 +156,30 @@
 
         // If $this->code === the email code
         private function confirmCode($incomingFromEmail){
-            if ($_SESSION["code"] == $incomingFromEmail) {
-                return true;
-            }else{
-                return false;
+            $result = false;
+            if (isset($_SESSION['code'])) {
+                if ($_SESSION["code"] == $incomingFromEmail) {
+                    $result = true;
+                }
             }
+            return $result;
         }
-
-       
+      
         
         public function createUserSession($user){
             $_SESSION['email'] = $user->email;
             $_SESSION['username'] = $user->username;
-            if ($user->jogosultsag == '') {
-                $_SESSION['jog'] = 'felhasználó';
+            if (isset($user->jogosultsag)) {
+                $_SESSION['jog'] = $user->jogosultsag;
             }else{
-                $_SESSION['jog'] = $user->jogosultsag; 
+                $_SESSION['jog'] = 'felhasználó';
             }
-                       
-            
-            redirect('pages/index');
+            redirect('index');
         }
+
             // Adatok beírása
         public function data(){
-            // A felhasználó további adatai
-            //$data = [];                        
+            // A felhasználó további adatai                        
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Sanitize post data
                 $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -194,31 +197,36 @@
                     'szulido' => trim($_POST['szulido']),
                     'jogosultsag' => $_SESSION['jog']              
                 ];
-                if (isset($_POST['bevitel'])) {   
-                    if($this->userModel->data($data)){
-                        // Ha regisztrálás sikeres
-                        flash('adatbevitel_siker','Az adatok bevitele sikeres volt!');
-                        redirect('users/data');
-                    }else{
-                        flash('adatbevitel_siker','Az adatok bevitele sikertelen volt! :(');
-                        redirect('users/data');
-                    }
-                } // Ha a módosítás gombot nyomod meg ez fut le
-                elseif(isset($_POST['modosit'])){
-                    if ($this->userModel->update($data)) {
-                        flash('adatbevitel_siker','A módosítás sikeres volt!');
-                        redirect('users/data');
-                    }else{
-                        flash('adatbevitel_siker','Az adatok módosítása sikertelen volt! :(');
-                        redirect('users/data');
-                    }
-                }               
+                try{
+                    if (isset($_POST['bevitel'])) {   
+                        if($this->userModel->data($data)){
+                            // Ha regisztrálás sikeres
+                            flash('adatbevitel_siker','Az adatok bevitele sikeres volt!');
+                            redirect('users/data');
+                        }else{
+                            flash('adatbevitel_fail','Az adatok bevitele sikertelen volt! :(');
+                            redirect('users/data');
+                        }
+                    } // Ha a módosítás gombot nyomod meg ez fut le
+                    elseif(isset($_POST['modosit'])){
+                        if ($this->userModel->update($data)) {
+                            flash('adatbevitel_siker','A módosítás sikeres volt!');
+                            redirect('users/data');
+                        }else{
+                            flash('adatbevitel_fail','Az adatok módosítása sikertelen volt! :(');
+                            redirect('users/data');
+                        }
+                    }  
+                }catch(PDOException $ex){
+                    flash('exception',$ex->getMessage(), 'alert alert-danger');
+                    redirect('users/data');
+                }
+
             }else{ 
                 if ($this->userModel->kiVanEToltve($_SESSION['email'])) {
                     $adatok = $this->userModel->adatok();                                 
                 $data = [
                     'main_title' => 'Adatok bevitele',
-                    /*'email' => '',*/
                     'veznev' => $adatok->vezeteknev,
                     'kernev' => $adatok->keresztnev,
                     'irszam' => $adatok->irszam,
@@ -257,15 +265,15 @@
             }
         }
 
-        public function update(){
-            if ($this->userModel->update($_SESSION['email'])) {
-                flash('modositas_siker','Az adatok módosítása sikeres volt!');
-                redirect('users/data');
-            }else{
-                die('A módosítás közben valami rosszul sült el...');
-            }
-            
-        }
+        // public function update(){
+        //     if ($this->userModel->update($_SESSION['email'])) {
+        //         flash('modositas_siker','Az adatok módosítása sikeres volt!');
+        //         redirect('users/data');
+        //     }else{
+        //         flash('modositas_fail','Az adatok módosítása közben hiba lépett fel');
+        //         redirect('users/data');
+        //     }
+        // }
 
         public function logout(){
             unset($_SESSION['email']);
@@ -281,7 +289,7 @@
             unset($_SESSION['temp_password']);
             unset($_SESSION['temp_username']);
             unset($_SESSION["code"]);
-            session_destroy();
+            //session_destroy();
         }
 
          // Set temporary session variables
@@ -291,12 +299,5 @@
                 $_SESSION['temp_email'] = $email;
                 $_SESSION['temp_password'] = $hashedPass;
             }          
-        }
-
-        // SET coockie for email
-        private function temporaryCoockie(){
-
-        }
-        
+        }        
     }
-

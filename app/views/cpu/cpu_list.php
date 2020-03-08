@@ -1,7 +1,10 @@
 <?php require HEADER; ?>
 
 <div class="container"> 
-<?php flash('delete_success'); ?>
+<?php 
+  flash('delete_success'); 
+  flash('cpu_exception');
+?>
   <div class="row">
       <?php foreach ($data['cpu'] as $cpu) : ?>
         <div class="col-md-4">
@@ -13,6 +16,7 @@
             <div class="cardListHead">
               <a class="titleLink" href="<?php echo URLROOT;?>/cpus/details/<?php echo $cpu->cikkszam?>" target="_blank"><h3><?php echo $cpu->tipus; ?></h3></a>
             </div>
+            <hr>
               <div class="row">
                 <div class="col">
                   <h6><?php echo 'Gyártó: '. $cpu->gyarto; ?></h6>
@@ -26,7 +30,9 @@
                   <p class="mb-0">GPU órajele: <?php echo $cpu->gpu_orajel; ?> MHz</p>
                   <p class="mb-0">L3Cache: <?php echo $cpu->l3cache; ?> Mb</p>
                   <p class="mb-0">L2cache: <?php echo $cpu->l2cache; ?> Mb</p>
+                  <hr>
                   <h4 class="mb-1 priceColor">Ár: <?php echo $cpu->ar; ?> Ft</h4>
+                  <hr>
                   <!-- Ha adminként vagyok belépve, tudjam módosítani a terméket --> 
 
                   <div class="form-row"> 

@@ -1,6 +1,7 @@
-<?php require APPROOT . '/views/inc/header.php'; ?>    
+<?php require HEADER; ?>    
         <div class="col-md-6 mx-auto pt-3 pb-5">       
-            <div class="card card-head bg-info pl-3 pt-3">                                               <?php flash('kitolteni'); ?>
+            <div class="card card-head bg-info pl-3 pt-3 pr-3">                                           
+                <?php flash('kitolteni'); ?>
                 <h1 class="h1">Saját adatok bevitele</h1>
                 <p>Megadhatja a szállításhoz szükséges adatokat</p>
             </div>
@@ -79,7 +80,7 @@
                     <div class="col">
                         <div class="form-group row p-3 text-white">
                             <label for="jogosultsag">Jogosultság: </label>
-                            <input type="text" value="<?php echo $_SESSION['jog']; ?>" class="form-control form-control-lg" name="jogosultsag" disabled>
+                            <input type="text" value="<?php echo (isset($_SESSION['jog']) ? $_SESSION['jog'] : 'felhasználó'); ?>" class="form-control form-control-lg" name="jogosultsag" disabled>
                         </div>
                     </div>
                     <div class="col">
@@ -98,10 +99,15 @@
             </form>
                                                 
             </div>
-            <?php flash('adatbevitel_siker'); ?>
+            <?php 
+                flash('adatbevitel_siker'); 
+                flash('adatbevitel_fail'); 
+                flash('exception'); 
+                
+            ?>
         </div>
         
     </div>
     
 
-<?php require APPROOT . '/views/inc/footer.php'; ?>
+<?php require FOOTER; ?>

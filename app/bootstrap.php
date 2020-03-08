@@ -10,7 +10,12 @@
     // Generating a random code for new users to confirm their registration
     require_once 'helpers/generate_code.php';
 
-    require_once 'helpers/email/email_sending.php';
+    //require_once 'helpers/email/email_sending.php';
+
+    // The user is admin || seller
+    require_once 'helpers/permissions.php';
+
+    require_once 'helpers/cookies_helper.php';
 
     // betöltjük a könyvtárakat
     /*require_once 'libraries/Core.php';
@@ -23,5 +28,6 @@
     spl_autoload_register(function($className){
         require_once 'libraries/'.$className.'.php';
     });
+
 
 

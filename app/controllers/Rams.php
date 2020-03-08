@@ -44,11 +44,10 @@ class Rams extends Controller{
             'main_title' => 'Részletek',
             'rams' => $rams
         ];
-        //die($rams->ManURL);
         $this->view('ram/details', $data);
     }
 
-    public function ramManufacts(){
+    public function getManufacturers(){
         $result = $this->ramModel->manufacturers();
         echo json_encode($result);
     }

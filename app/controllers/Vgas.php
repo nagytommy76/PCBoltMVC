@@ -19,7 +19,23 @@ class Vgas extends Controller{
     }
 
     public function details($cikkszam){
-        echo '<h1>'.$cikkszam.'</h1>';
+        if ($cikkszam != null || $cikkszam != '') {
+            $vgas = $this->vgaModel->getVgaByCikkszam($cikkszam);
+            splittingPictures($vgas,';');
+            $data = [
+                'main_title' => $cikkszam.' Termék módosítása',
+                'vgas' => $vgas
+            ];
+            $this->view('vga/details',$data);
+        }else{
+            redirect('index');
+        }        
+    }
+
+    // get all vga manufacturers
+    public function getManufacturers(){
+        $res = $this->vgaModel->getAllMan();
+        echo json_encode($res);
     }
 
 

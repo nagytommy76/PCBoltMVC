@@ -22,9 +22,11 @@
                 <tr class="table-warning">
                     <td>
                         <div class="form-row">
-                            <form action="<?php echo URLROOT; ?>/admins/deleteUser/<?php echo $user->email1; ?>/<?php echo $user->telefon; ?>" method="POST">
-                                <input type="submit" value="Törlés" class="btn btn-danger btn-sm">
-                            </form>
+                            <?php if($user->jogosultsag !== 'admin') : ?>
+                                <form action="<?php echo URLROOT; ?>/admins/deleteUser/<?php echo $user->email1; ?>/<?php echo $user->telefon; ?>" method="POST">
+                                    <input type="submit" value="Törlés" class="btn btn-danger btn-sm">
+                                </form>
+                            <?php endif; ?>
                             <form action="<?php echo URLROOT; ?>/admins/editUser/<?php echo $user->email1;?>/<?php echo $user->username; ?>" method="POST">
                                 <input type="submit" name="updateBTN" value="Módosítás" class="btn btn-warning btn-sm">
                             </form>

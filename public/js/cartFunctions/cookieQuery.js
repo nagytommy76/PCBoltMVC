@@ -1,6 +1,7 @@
 class CookieQuery{
+    urlRoot = 'http://localhost/PCBoltMVC/';
     static async queryCartItems(){
-        const response = await fetch(`http://localhost/PCBoltMVC/carts/getItemsCookie/`,
+        const response = await fetch(`${urlRoot}carts/getItemsCookie/`,
             {
                 headers: {
                     'Content-type': 'application/json',
@@ -17,7 +18,7 @@ class CookieQuery{
 
     // Get the session email
     static async getSessionEmail(){
-        const response = await fetch('http://localhost/PCBoltMVC/carts/getSessionEmail',{
+        const response = await fetch(`${urlRoot}carts/getSessionEmail`,{
             headers: {
                 'Content-type': 'application/json',
                 'Accept': 'application/json'
@@ -32,7 +33,7 @@ class CookieQuery{
 
     // get the current user's data
     static async getUserDeliveryData(){
-        const response = await fetch('http://localhost/PCBoltMVC/carts/getTheCurrentUserData',{
+        const response = await fetch(`${urlRoot}carts/getTheCurrentUserData`,{
             headers: {
                 'Content-type': 'application/json',
                 'Accept': 'application/json'
@@ -45,18 +46,26 @@ class CookieQuery{
         return data;
     }
 
+    // CHANGE thesession quantity
     static async changeAnItemQuantity(cikksz, quantity){
-        /*const response = */await fetch(`http://localhost/PCBoltMVC/carts/changeSessionsQuantity/?cikksz=${cikksz}&quantity=${quantity}`,{
+        await fetch(`${urlRoot}carts/changeSessionsQuantity/?cikksz=${cikksz}&quantity=${quantity}`,{
             method : 'GET',
             headers: {
                 'Content-type': 'application/json',
                 'Accept': 'application/json'
             }
         });
+    }
 
-        // const data = await response.json();
-
-        // return data;
+    // DELETE FROM $_SESSION[current]
+    static async deleteFromSession(cikkszam){
+        await fetch(`${urlRoot}carts/deleteFromSession/?cikksz=${cikkszam}`,{
+            method : 'GET',
+            headers: {
+                'Content-type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
     }
 
 }

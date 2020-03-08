@@ -26,7 +26,19 @@
                 </a>
                 </div>
             </div> <!-- CAROUSEL SLIDE END -->
-            <h1 class="pt-5">Ár: <?php echo $data['result']->ar ?> Ft</h1>
+            <h1 class="pt-5 pb-3 priceColor">Ár: <?php echo $data['result']->ar ?> Ft</h1>
+
+            <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-warning btn-block" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'cpu_'.$data['result']->cikkszam; ?> >Kosárba</button>
+
+            <?php if(isset($_SESSION['jog'])) :?>
+                <?php if(bothAdminSeller($_SESSION['jog'])) :?>
+                    <form action="<?php echo URLROOT;?>/admins/cpu_input/<?php echo $data['result']->cikkszam;?>" method="POST">
+                        <input type="hidden" name="cikkszam" value="<?php echo $data['result']->cikkszam;?>">
+                        <input type="submit" name="modifyBTN" value="Módosítás" class="btn btn-primary btn-block mr-1 mt-2">
+                    </form>
+                <?php endif; ?>
+            <?php endif; ?>
+
         </div> <!-- COL END -->
         <div class="col pt-5 pb-5">
             <h1 class="text-warning"><?php echo $data['result']->gyarto.' '.$data['result']->tipus; ?></h1>
@@ -92,7 +104,6 @@
                     </tr>
                 </tbody>
             </table>
-            <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-dark btn-block" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'cpu_'.$data['result']->cikkszam; ?> >Kosárba</button>
         </div>
     </div> <!-- ROW END -->
 </div>

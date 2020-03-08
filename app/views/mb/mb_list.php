@@ -1,13 +1,15 @@
 <?php require HEADER; ?>
-
 <div class="container">
     <div class="row pt-4 pb-4">
+    <?php require SIDEBAR; ?>
+    <main class="col-md-10 ml-sm-auto col-lg-10 px-4">
+    <div class="row">
         <?php foreach($data['motherboards'] as $mb) : ?>
         <?php $MBCikkszam = $mb->cikkszam; ?>
-            <div class="col-md-4">
+            <div class="col-md-4">                
                 <div id="mbCard" class="card mb-5">                    
                     <img src="<?php echo $mb->picUrl[0]; ?>" class="card-img-top kepek">
-                    <div class="card-body bg-info">
+                    <div class="card-body" id="itemListCardColor">
                         <div class="cardListHead">
                         <a class="titleLink" target="_blank" href="<?php echo URLROOT;?>/mbs/details/<?php echo $MBCikkszam?>"><h4 class="card-title"><?php echo $mb->MBName;?></h4></a>
                         </div>
@@ -21,10 +23,11 @@
                         <p class="mb-0">MAX RAM órajel: <?php echo $mb->maxMemMHz; ?> MHz</p>
                         <p class="mb-0">RAM Slotok: <?php echo $mb->memfoglalat; ?> Db</p>
                         <hr>
-                        <h4 class="priceColor"><?php echo $mb->price;?> Ft</h4>   
+                        <h4 class="priceColor"><?php echo $mb->price;?> Ft</h4> 
+                        <hr>  
                         <div class="form-row">    
                             <form action="<?php echo URLROOT;?>/mbs/details/<?php echo $MBCikkszam?>" method="POST">
-                                <input type="submit" value="Részletek" name="details" class="btn btn-success mr-1" title="Részletek megtekintése">
+                                <input type="submit" value="Részletek" name="details" class="btn mr-1" title="Részletek megtekintése" id="detailsButtonColor">
                             </form>
 
                             <?php if(isset($_SESSION['jog'])) : ?>                          
@@ -40,14 +43,16 @@
                                 <?php endif; ?>       
                             <?php endif; ?>
                             
-                                <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-dark mt-2" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'mb_'.$MBCikkszam; ?> >Kosárba</button> 
+                                <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn cartButtonColor" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'mb_'.$MBCikkszam; ?> >Kosárba</button> 
                                 <input type="hidden" name="CartBTN" value="<?php echo $MBCikkszam; ?>">
                                 <input type="hidden" name="mbCartQuantity" id="mbCartQuantity" value="">
                         </div><!-- FORM GROUP END -->
                     </div> <!-- CARD BODY END -->
                 </div>
-            </div> 
+             </div>  <!--  COL MD END -->
         <?php endforeach; ?>
+        </div>    <!-- INNER ROW END  -->
+        </main>
     </div>
 </div>
 

@@ -2,7 +2,7 @@
 
 <div class="container-fluid mx-auto">
 <div class="row">
-    <div class="col-lg-4 pt-4">
+    <div class="col-md-4 pt-4">
         <div class="carousel slide pb-5 mx-auto" data-ride="carousel" id="carouselExampleIndicators">
         <ol class="carousel-indicators">
             <?php for($i=0;$i<count($data['rams']->picUrl);$i++) : ?>
@@ -26,10 +26,19 @@
             </a>
             </div>
         </div>
-    </div> <!-- COL VÉGE -->
+        <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-warning btn-block" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'ram_'.$data['rams']->cikkszam; ?> >Kosárba</button>
 
+        <?php if(isset($_SESSION['jog'])) :?>
+            <?php if(bothAdminSeller($_SESSION['jog'])) :?>
+                <form action="<?php echo URLROOT;?>/admins/ram_input/<?php echo $data['rams']->cikkszam;?>" method="POST">
+                    <input type="submit" name="editRAM" value="Módosítás" class="btn btn-primary btn-block mr-1 mt-2">
+                </form>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div> <!-- COL VÉGE -->
+    
     <!-- Another COL -->
-    <div class="col-lg-8 pt-4">
+    <div class="col-md-8 pt-4">
         <h1 class="text-warning"><?php echo $data["rams"]->manufacturer.' '.$data["rams"]->type ?></h1>
         <table class="table table-hover text-white pb-5">
             <thead>
@@ -88,11 +97,7 @@
     </div>  <!-- COL END -->
 
 </div> <!-- ROW END -->
-<!-- <div class="row">
-    <div class="col pb-5">
-        <h1>Ár: <?php //echo $data["rams"]->ramPrice ?> Ft</h1>
-    </div>
-</div> -->
+
 </div>
 
 <?php require FOOTER; ?>
