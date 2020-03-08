@@ -39,4 +39,8 @@ class CartFunctions{
         let priceCounter = price * quantity;
         return parseInt(priceCounter);
     }
+
+    static createEmptyTextForSummaryPage(){
+        
+    }
 }

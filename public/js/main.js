@@ -10,6 +10,10 @@ const cText = new CreateText(urlRoot);
 // ===                                  SEARCH FUNCTIONS                                       ===
 // ===============================================================================================
 
+// ==================================================================================================
+// ------------------------------ GET THE MANUFACTURERS ---------------------------------------------
+// ==================================================================================================
+
 // Get the search modal output
 const modalOutput = document.getElementById('modalOutput');
 const searchModal = document.getElementById('searchModal');
@@ -50,10 +54,12 @@ document.getElementById("category").addEventListener('change', () => {
                 <option value="intel">Intel</option>
             `;
         break;
-
-
    }
 });
+
+// ==================================================================================================
+// ------------------------------ GET THE RESULT IN SEARCH ------------------------------------------
+// ==================================================================================================
 
 document.getElementById('modalInput').addEventListener('keyup',() => {
     // Modal inputs--------------------------
@@ -64,7 +70,7 @@ document.getElementById('modalInput').addEventListener('keyup',() => {
     search.showSearch(selectedMan,selectedCategory,input)
     .then(response => {
         CookieQuery.getSessionEmail().then(email =>{
-           console.log(response);
+           //console.log(response);
             if (input === '') {
                 modalOutput.innerHTML = '';
             }else{
@@ -90,31 +96,31 @@ document.getElementById('modalInput').addEventListener('keyup',() => {
     .catch(err => console.log(err));
 });
 
-
+// ==================================================================================================
+// ------------------------------ ADD TO CART IN SEARCH MODAL ---------------------------------------
+// ==================================================================================================
 
 searchModal.addEventListener('click', (e) =>{
-    const flashOutput = document.querySelector('.flashMessage');
     //console.log(e.target);
-    if (e.target.type === 'button') {
+    if (e.target.type === 'button' && e.target.id === 'addToCartInSearch') {
         //console.log(e.target.name);
         CookieQuery.getSessionEmail()
         .then(email => {
             if (email === e.target.name.split('_')[1]) {
-                if (email !== 'EmailNotSet') {
-                    cookie.setCookie(e.target.name,e.target.value,1);
-                    flashOutput.append(cText.flashMessageInModal('A termék sikeresen hozzáadva kosárhoz!'));
-                    //console.log('CSÁ');
-                    if(document.querySelector('#flashMessage') != undefined || document.querySelector('#flashMessage') != null){
-                        setTimeout(() => {
-                            cText.flashMessageInModalDestroy();
-                        },2500);
-                    }
-                }else{
-                    flashOutput.append(cText.flashMessageInModal('A vásárláshoz be kell jelentkezni!','danger'));
-                    if (document.querySelector('#flashMessage') != undefined || document.querySelector('#flashMessage') != null) {
-                        setTimeout(() => {
-                            cText.flashMessageInModalDestroy();
-                        },2500);
+                const productFlashOutput = document.querySelector('#'+e.target.value);
+                if (e.target.value === productFlashOutput.id) {
+                    if (document.querySelector('#flashMessage') === null) {
+                        if (email === 'EmailNotSet') {
+                            productFlashOutput.append(cText.flashMessageInModal('A vásárláshoz be kell jelentkezni!', 'danger'));
+                            cText.destroyFlashMessageInSearchModal(productFlashOutput);
+                        }else if(email === 'DataRequired'){
+                            productFlashOutput.append(cText.flashMessageInModal('A vásárláshoz ki kell tölteni az adatait!', 'danger'));
+                            cText.destroyFlashMessageInSearchModal(productFlashOutput);
+                        }else{
+                            cookie.setCookie(e.target.name,e.target.value,1);
+                            productFlashOutput.append(cText.flashMessageInModal('A termék sikeresen hozzáadva kosárhoz!'));
+                            cText.destroyFlashMessageInSearchModal(productFlashOutput);
+                        }
                     }
                 }
             }
@@ -141,11 +147,13 @@ addToCart.forEach((e) =>{
     e.addEventListener('click', () =>{  
         CookieQuery.getSessionEmail()
         .then(email => {
-            if (email !== 'EmailNotSet') {
+            if (email === 'EmailNotSet') {
+                cartOutput.append(ModalCartText.emptyCartText('A Vásárláshoz be kell jelentkezni'));
+            } else if(email === 'DataRequired'){
+                cartOutput.append(ModalCartText.emptyCartText('Vásárláshoz ki kell tölteni a szállítási adatokat'));
+            }else {
                 cookie.setCookie(e.name,e.value,1);
-                //console.log(email);
-                if (cookie.getCookie('Cart_'+email) !== undefined) {
-                    CookieQuery.queryCartItems()
+                CookieQuery.queryCartItems()
                     .then(response => {
                         cartOutput.innerHTML = '';
                         response.forEach(res =>{
@@ -156,12 +164,9 @@ addToCart.forEach((e) =>{
                         })
                         cartOutput.append(ModalCartText.showPrice(priceSum,'A Fizetendő végösszeg'));
                     }).catch(error => console.log(error))
-                }else{
-                    cartOutput.append(ModalCartText.emptyCartText('A kosár jelenleg üres!'));
-                }
-            }else{
-                cartOutput.append(ModalCartText.emptyCartText('Vásárláshoz ásárláshoz ki kell tölteni a szállítási adatokat'));
             }
+
+
         }).catch(err => console.log(err));
         
         $('#cartModal').modal('show');
@@ -234,18 +239,22 @@ numberOfItems.forEach((e,index) =>{
 // ==============================================================================================
 // -------------------------    DELETE ITEMS IN SUMMARY PAGE     -------------------------------
 // ==============================================================================================
+const sumItems = document.getElementById('summaryItems');
+
 if(summaryElements !== null){
     summaryElements.addEventListener('click', (e) =>{
         if (e.target.type === 'button' && e.target.name === 'deleteFromCart') {
             if (e.target.id === e.target.parentElement.parentElement.id) {
                 CookieQuery.getSessionEmail()
                 .then(email =>{
-                    CookieQuery.deleteFromSession(e.target.id).then(() =>{
-                        cookie.modifyNumberOfItemsCookie('Cart_'+email, e.target.value+'_'+e.target.id,1,0);
-                        e.target.parentElement.parentElement.remove();
-                        console.log(e.target.value);
-                    });
-                    
+                    CookieQuery.deleteFromSession(e.target.id);
+                    cookie.modifyNumberOfItemsCookie('Cart_'+email, e.target.value+'_'+e.target.id,1,0);
+                    e.target.parentElement.parentElement.remove();
+                    //console.log(e.target.parentElement.parentElement.remove());
+                    // if (e.target.parentElement.parentElement.remove() == null || e.target.parentElement.parentElement.remove() == undefined) {
+                    //   sumItems.innerHTML = '<h1>A kosár üres</h1>';
+                    // }
+                   
                 })                
             }            
         }
@@ -284,7 +293,7 @@ $('#cartModal').on('shown.bs.modal', (e) => {
 })
 
 // ===========================================================================================
-// --------------------    DELETE FROM MODAL CART     -------------------
+// ----------------------------    DELETE FROM MODAL CART     ------------------------------
 // ===========================================================================================
 cartModal.addEventListener('mouseup', (e) =>{
     // if the click type is button or name is deleteFromCart...
@@ -294,25 +303,37 @@ cartModal.addEventListener('mouseup', (e) =>{
             CookieQuery.getSessionEmail()
             .then(email => {
                 // TÖRLÉS
-                // CookieQuery.deleteFromSession(e.target.id)
-                // .then(() => {
-                //     cookie.modifyNumberOfItemsCookie('Cart_'+email, e.target.value+'_'+e.target.id,1,0);
-                //     e.target.parentElement.parentElement.parentElement.remove();
-                //     // Recall the whole cart text function
-                //     console.log(e.target.value);
-                //     ModalCartText.getCartTextAndData(cartOutput);
-                // })
-
                 // MEGOLDANI, HOGY TÖRLÉS UTÁN IS LEHESSEN NÖVELNI CSÖKKENTENI (VÁLTOZZON AZ ÁR)
+                // FÉLSIKER
 
                 CookieQuery.deleteFromSession(e.target.id);
                 cookie.modifyNumberOfItemsCookie('Cart_'+email, e.target.value+'_'+e.target.id,1,0);
                 e.target.parentElement.parentElement.parentElement.remove();
                 // Recall the whole cart text function
-                //console.log(e.target.value);
                 ModalCartText.getCartTextAndData(cartOutput);
 
+                $('#cartModal').modal('hide');
+                setTimeout(() => {
+                    $('#cartModal').modal('show');
+                },1000);
             });   
         }        
     }
 })
+
+// TEST
+// GET THE URL PARAMS TO MANAGE THE SIDEBAR
+if(document.querySelector('#tesztBTN') !== null){
+    document.querySelector('#tesztBTN').addEventListener('click', () =>{
+        let teszt = ''
+        console.log(window.location.pathname);
+        console.log(splitUrl(window.location.pathname));
+    })
+    
+    function splitUrl(url){
+        let array = url.split('/');
+        array.shift();
+        array.shift();
+        return array;
+    }
+}

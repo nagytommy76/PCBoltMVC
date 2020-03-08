@@ -130,26 +130,28 @@ class ModalCartText{
     let priceSum = 0;
     //let oneItemPrice = 0;
     CookieQuery.getSessionEmail()
-    .then(email => {
+    .then(email => {  
         cartOutput.innerHTML = '';
-        if (email !== 'EmailNotSet') {
-            if (cookie.getCookie('Cart_'+email) !== undefined) {
-                CookieQuery.queryCartItems()
-                .then(response => {  
+        if (email === 'EmailNotSet') {
+            cartOutput.append(ModalCartText.emptyCartText('A Vásárláshoz be kell jelentkezni'));
+        } else if(email === 'DataRequired'){
+            cartOutput.append(ModalCartText.emptyCartText('Vásárláshoz ki kell tölteni a szállítási adatokat'));
+        }else if(cookie.getCookie('Cart_'+email) !== undefined){
+            //cookie.setCookie(e.name,e.value,1);
+            CookieQuery.queryCartItems()
+                .then(response => {
+                    cartOutput.innerHTML = '';
                     response.forEach(res =>{
                         if (email === res.sessEmail) {
                             priceSum += parseInt(res.price * res.quantity);
-                            cartOutput.append(ModalCartText.TextForShowCartItems(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam,res.quantity, res.product_type));
-                        }                        
+                            cartOutput.append(ModalCartText.TextForShowCartItems(res.picUrl[0],res.manufacturer, res.product_name,res.price,res.cikkszam, res.quantity, res.product_type));
+                        }
                     })
                     cartOutput.append(this.showPrice(priceSum,'A Fizetendő végösszeg'));
                 }).catch(error => console.log(error))
-            }else{
-                cartOutput.append(ModalCartText.emptyCartText('A kosár jelenleg üres!'));
-            } 
         }else{
-            cartOutput.append(ModalCartText.emptyCartText('A vásárláshoz ki kell tölteni a szállítási adatokat'));
-        }        
+            cartOutput.append(ModalCartText.emptyCartText('A kosár jelenleg üres!'));
+        }
     }).catch(err => console.log(err));
     }
 

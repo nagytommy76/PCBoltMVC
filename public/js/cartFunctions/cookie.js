@@ -38,12 +38,14 @@ class Cookie{
                 // delete all item from cookie...
                 toModify[cValue] = numberOfItem;
                 let toStayInCookie = this.makeModifiedCookie((toModify));
-                console.log('TO toStayInCookie: '+toStayInCookie);
+                //console.log('TO toStayInCookie: '+toStayInCookie);
                 document.cookie = `${cName}=${JSON.stringify(toStayInCookie)}; expires=${days}; path=/`;
                 if (this.getCookie(cName).length == 2) {
                     this.destroyCookie(cName);
                     // REMOVE the price 
-                    document.getElementById('overallPrice').remove();
+                    if (document.getElementById('overallPrice') != null) {
+                        document.getElementById('overallPrice').remove();
+                    }
                     cartOutput.append(ModalCartText.emptyCartText());
                 }
             }  

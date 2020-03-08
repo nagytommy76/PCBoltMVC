@@ -19,7 +19,7 @@ class CreateText{
                 let hr = document.createElement('hr');
                 // CARD DIV
                 let cardDiv = document.createElement('div');
-                cardDiv.className = 'card mx-auto pt-3 pb-3';
+                cardDiv.className = 'card mx-auto pt-3 pb-3 searchCardColor';
                 cardDiv.id = 'ModalCard';
                 // IMG HEADER
                 let cardHead = document.createElement('div');
@@ -69,10 +69,16 @@ class CreateText{
                 button.innerHTML = 'Kosárba';
                 button.name = `Cart_${hashedEmail}`;
                 button.value = `${resp.productType}_${resp.cikkszam}`;
-                if (hashedEmail === 'EmailNotSet') {
-                    button.disabled = true;
-                    button.title = 'Be kell jelentkezni vagy az adatokat kitölteni!';
-                }
+                // ===== THE BUTTON IS DISABLED =======
+                // if (hashedEmail === 'EmailNotSet') {
+                //     button.disabled = true;
+                //     button.title = 'Be kell jelentkezni vagy az adatokat kitölteni!';
+                // }
+
+                // CREATE FLASH MSG FOR EACH RESULT
+                let msgDiv = document.createElement('div');
+                msgDiv.id = resp.productType+'_'+resp.cikkszam;
+                msgDiv.className = 'mt-3';
 
                 // CHAIN TOGETHER
                 ul.appendChild(li1);
@@ -91,7 +97,8 @@ class CreateText{
 
                 cardDiv.appendChild(cardHead);
                 cardDiv.appendChild(cardBody);
-                allCardDiv.append(cardDiv);            
+                allCardDiv.append(cardDiv);  
+                allCardDiv.appendChild(msgDiv);          
             }
         });
         return allCardDiv;
@@ -104,13 +111,21 @@ class CreateText{
         div.className = `alert alert-${alertColor}`;
         div.role = 'alert';
         div.setAttribute('role', 'alert');
-        div.innerHTML = incomingMess;
-        return div;
+        div.innerHTML = incomingMess;  
+        return div;     
     }
 
     flashMessageInModalDestroy(){
         let div = document.querySelector('#flashMessage');
         div.remove();     
+    }
+
+    destroyFlashMessageInSearchModal(productFlashOutput){
+        if(productFlashOutput != undefined || productFlashOutput != null){
+            setTimeout(() => {
+                this.flashMessageInModalDestroy();
+            },3000);
+        }
     }
 
     // Create text for product manufacturers
