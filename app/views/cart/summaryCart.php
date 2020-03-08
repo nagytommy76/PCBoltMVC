@@ -6,6 +6,7 @@
         <h1 class="card-title"><?php echo $_SESSION['username'] ?> összesített kosártartalma!</h1>
     </div>
 
+    <div id="summaryItems">
     <form action="<?php echo URLROOT;?>/carts/confirmOrders" method="POST">
     <div class="row"> 
     <div class="col">          
@@ -100,6 +101,7 @@
     </div>  <!-- FOOTER END -->
 
     </form>
+    </div> <!-- SUMMARYITEMS END  -->
     </div> <!-- CARD END  -->
 </div> <!-- CONTAINER END -->   
        

@@ -116,16 +116,20 @@
 
         // létezik-e az email cím?
         public function findUserByEmail($email){
-            $this->db->query('SELECT email FROM users WHERE email = :email');
+            $this->db->query('SELECT email FROM users WHERE email LIKE :email');
             $this->db->bind(':email',$email);
 
+            return $this->db->single();
+        }
+
+        public function findUserByPassword($email, $pass = ''){
+            $this->db->query('SELECT pass FROM users WHERE email LIKE :email');
+            $this->db->bind(':email',$email);
             $row = $this->db->single();
-            // Check row
-            if ($this->db->rowCount() > 0) {
-                return true;
-            }else{
-                return false;
-            }
+
+            if ($row) {
+                return password_verify($pass, $row->pass);
+            }   
         }
 
 
@@ -186,23 +190,20 @@
         public function deleteUserByAdmin0($email){            
             $this->db->query('DELETE FROM users WHERE email LIKE :email');
             $this->db->bind(':email',$email);
-            if ($this->db->execute()) {
-                return true;
-            }else{
-                return false;
-            }
+            return $this->db->execute();
         }
 
-        public function deleteUserByAdmin($email,$telefon){
-            $this->db->query('DELETE FROM userinfo WHERE telefon = :telefon AND email1 LIKE :email');            
+        public function deleteUserByAdmin($telefon){
+            $this->db->query('DELETE FROM userinfo WHERE telefon = :telefon');            
             $this->db->bind(':telefon',$telefon);            
-            $this->db->bind(':email',$email);
             
-            if ($this->db->execute()) {
-                return true;
-            }else{
-                return false;
-            }
+            return $this->db->execute();
+        }
+
+        public function deleteFromUserCartItems($email){
+            $this->db->query('DELETE FROM user_cart_item WHERE user_email LIKE :email');
+            $this->db->bind(':email',$email);
+            return $this->db->execute();
         }
 
     }

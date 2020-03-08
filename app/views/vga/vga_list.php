@@ -6,7 +6,7 @@
             <div class="col-md-4 mb-5">
                 <div class="card">
                 <img src="<?php echo $vga->picUrl[0]; ?>" class="card-img-top kepek">
-                    <div class="card card-body">
+                    <div class="card card-body" id="itemListCardColor">
                         <div class="cardListHead">
                             <a class="titleLink" target="_blank" href="<?php echo URLROOT;?>/vgas/details/<?php echo $vga->cikkszam?>"><h4 class="card-title"><?php echo $vga->type.' '.$vga->typeCode;?></h4></a>
                         </div>                        
@@ -34,7 +34,7 @@
                         <hr>
                         <h4 class="priceColor">Ár: <strong><?php echo $vga->price;?></strong> Ft</h4>
                     </div> <!-- CARD BODY END -->
-                    <div class="card card-footer">
+                    <div class="card card-footer" id="itemListCardColor">
                         <div class="form-row">
                             <form action="<?php echo URLROOT;?>/vgas/details/<?php echo $vga->cikkszam?>" method="POST">
                                 <input type="submit" value="Részletek" name="details" class="btn btn-success mr-1 mb-1" title="Részletek megtekintése">
@@ -52,7 +52,7 @@
                                 <?php endif;?>
                             <?php endif;?>
 
-                            <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-dark" <?php if(!isset($_SESSION["jog"])){ echo "disabled title='Be kell jelentkezni a vásárláshoz!'"; } ?> value="<?php echo 'vga_'.$vga->cikkszam; ?>" >Kosárba</button> 
+                            <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-dark mb-1" <?php if(!isset($_SESSION["jog"])){ echo "disabled title='Be kell jelentkezni a vásárláshoz!'"; } ?> value="<?php echo 'vga_'.$vga->cikkszam; ?>" >Kosárba</button> 
                         </div> <!-- FORM ROW END -->
                     </div>
                 </div> <!-- CARD END -->

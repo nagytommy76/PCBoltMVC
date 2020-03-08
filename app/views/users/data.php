@@ -1,6 +1,7 @@
 <?php require HEADER; ?>    
         <div class="col-md-6 mx-auto pt-3 pb-5">       
-            <div class="card card-head bg-info pl-3 pt-3">                                               <?php flash('kitolteni'); ?>
+            <div class="card card-head bg-info pl-3 pt-3 pr-3">                                           
+                <?php flash('kitolteni'); ?>
                 <h1 class="h1">Saját adatok bevitele</h1>
                 <p>Megadhatja a szállításhoz szükséges adatokat</p>
             </div>
@@ -98,7 +99,12 @@
             </form>
                                                 
             </div>
-            <?php flash('adatbevitel_siker'); ?>
+            <?php 
+                flash('adatbevitel_siker'); 
+                flash('adatbevitel_fail'); 
+                flash('exception'); 
+                
+            ?>
         </div>
         
     </div>

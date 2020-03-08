@@ -44,7 +44,6 @@ class Rams extends Controller{
             'main_title' => 'Részletek',
             'rams' => $rams
         ];
-        //die($rams->ManURL);
         $this->view('ram/details', $data);
     }
 

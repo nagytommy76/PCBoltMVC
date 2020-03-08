@@ -1,5 +1,7 @@
 <?php
 
+use PHPMailer\PHPMailer\Exception;
+
 class Carts extends Controller{
     protected $currentCartItems;
     protected $pdf;
@@ -16,28 +18,13 @@ class Carts extends Controller{
 
     public function getItemsCookie(){
         $cikkszam = $this->getCookiesCikkszam();
-        // if (isset($_COOKIE['Cart_'.sha1($_SESSION['email'])])) {
-        //     $cikkszam = json_decode($_COOKIE['Cart_'.sha1($_SESSION['email'])]);
-        // }
-        //die(var_dump($cikkszam));
+
         if (isset($_SESSION['email'])) {
             if (isset($cikkszam) && count($cikkszam) > 0 || $cikkszam != null) {
                 if ($_SERVER['REQUEST_METHOD'] === 'GET') {               
-                    // $numberOfItems = array_count_values($cikkszam);
+
                     $res = $this->createResultForCart();
 
-                    // foreach ($numberOfItems as $cikksz => $number) {
-                    //     $cikk = explode('_',$cikksz);
-                    //     $test = (object)['quantity' => $number];
-
-                    //     $temp = $this->getParametersOfAnItem($cikksz);
-                    //     foreach ($temp as $re) {
-                    //         splittingPictures($re,';');
-                    //     }
-                    //     $merged = $this->createMergedObjects($test, $temp[0]);
-                    //     $merged = $this->createMergedObjects($merged, ['sessEmail' => sha1($_SESSION['email'])]);
-                    //     $merged = $this->createMergedObjects($merged, ['product_type' => $cikk[0]]);
-                    //     array_push($res, $merged);
                     $_SESSION['current'] = $res;
                     // }
                 echo json_encode($res);
@@ -87,82 +74,90 @@ class Carts extends Controller{
     public function confirmOrders(){
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST['confirmOrder'])) {
-                if (isset($_COOKIE['Cart_'.sha1($_SESSION['email'])])) {
-                    // This is an array
-                    $anItemOverallPrice = $_POST['itemPricesHidden'];
-                    // Overall price
-                    $overallPrice = (int)$_POST['finalPriceValue'];
-                    // Billing data
-                    $billingData = [
-                        'veznev' => trim($_POST['veznev']),
-                        'kernev' => trim($_POST['kernev']),
-                        'varos' => trim($_POST['varos']),
-                        'irszam' => trim($_POST['irszam']),
-                        'utca' => trim($_POST['utca']),
-                        'hazszam' => trim($_POST['hazszam']),
-                        'emeletajto' => trim($_POST['emeletajto']),
-                        'szulido' => trim($_POST['szulido'])
-                    ];
-                    // if the delivery checkbox is set
-                    $deliveryData = [];
-                    if (!isset($_POST['deliveryAddress'])) {
-                        $deliveryData = [
-                            'veznev' => trim($_POST['Dveznev']),
-                            'kernev' => trim($_POST['Dkernev']),
-                            'varos' => trim($_POST['Dvaros']),
-                            'irszam' => trim($_POST['Dirszam']),
-                            'utca' => trim($_POST['Dutca']),
-                            'hazszam' => trim($_POST['Dhazszam']),
-                            'emeletajto' => trim($_POST['Demeletajto']),
-                            'szulido' => trim($_POST['Dszulido'])
+                if(isset($_POST['numberOfItemsInSummary'])){
+                    if (isset($_COOKIE['Cart_'.sha1($_SESSION['email'])])) {
+                        // This is an array
+                        $anItemOverallPrice = $_POST['itemPricesHidden'];
+                        // Overall price
+                        $overallPrice = (int)$_POST['finalPriceValue'];
+                        // Billing data
+                        $billingData = [
+                            'veznev' => trim($_POST['veznev']),
+                            'kernev' => trim($_POST['kernev']),
+                            'varos' => trim($_POST['varos']),
+                            'irszam' => trim($_POST['irszam']),
+                            'utca' => trim($_POST['utca']),
+                            'hazszam' => trim($_POST['hazszam']),
+                            'emeletajto' => trim($_POST['emeletajto']),
+                            'szulido' => trim($_POST['szulido'])
                         ];
-                    }
-                    $anyMessage = '';
-                    if (isset($_POST['anyMessage'])) {
-                        if (!empty($_POST['messageBox'])) {
-                            $anyMessage = $_POST['messageBox'];
+                        // if the delivery checkbox is set
+                        $deliveryData = [];
+                        if (!isset($_POST['deliveryAddress'])) {
+                            $deliveryData = [
+                                'veznev' => trim($_POST['Dveznev']),
+                                'kernev' => trim($_POST['Dkernev']),
+                                'varos' => trim($_POST['Dvaros']),
+                                'irszam' => trim($_POST['Dirszam']),
+                                'utca' => trim($_POST['Dutca']),
+                                'hazszam' => trim($_POST['Dhazszam']),
+                                'emeletajto' => trim($_POST['Demeletajto']),
+                                'szulido' => trim($_POST['Dszulido'])
+                            ];
+                        }
+                        $anyMessage = '';
+                        if (isset($_POST['anyMessage'])) {
+                            if (!empty($_POST['messageBox'])) {
+                                $anyMessage = $_POST['messageBox'];
+                            }
+                        }
+                        // VARIABLES ========================
+                        $billCode = Email::generateCode(15);
+                        // store the PDF name
+                        $pdfName = $_SESSION['username'].'_'.$billCode;
+                        // cookie name:
+                        $cookieName = 'Cart_'.sha1($_SESSION['email']);
+                        
+                        // CREATE THE PDF ============================================================++
+                        $pdfStringFormat = $this->pdf->createOrderPdf(
+                            $_SESSION['current'],
+                            $billingData,
+                            isset($_POST['deliveryAddress']),
+                            $deliveryData,
+                            isset($_POST['anyMessage']),
+                            $anyMessage,
+                            $overallPrice,
+                            $anItemOverallPrice,
+                            $pdfName,
+                            $billCode
+                        );
+                        try{
+                            if($this->email->sendOrderListPDF($_SESSION['email'],$_SESSION['username'],$pdfStringFormat, $billCode,$pdfName,$_SESSION['current'])){
+                                if ($this->cartModel->insertUserCartItem($_COOKIE[$cookieName],$_SESSION['email'],$billCode,$overallPrice)) {
+                                    if ($this->unsetCookie($cookieName)) {
+                                        $this->unsetSession('current');
+                                        flash('order_success','A számlát elküldtük az e-mail címére! Köszönjük a vásárlást! :)');
+                                        redirect('carts/orders');
+                                    }  
+                                }                 
+                            }
+                        }catch(Exception $ex){
+                            flash('mailer_exception',$ex->getMessage(),'alert alert-danger');
+                            redirect('carts/orders');
                         }
                     }
-                    // VARIABLES ========================
-                    $billCode = Email::generateCode(25);
-                    // store the PDF name
-                    $pdfName = $_SESSION['username'].'_'.$billCode;
-                    // cookie name:
-                    $cookieName = 'Cart_'.sha1($_SESSION['email']);
-                    
-                    // CREATE THE PDF ============================================================++
-                    $pdfStringFormat = $this->pdf->createOrderPdf(
-                        $_SESSION['current'],
-                        $billingData,
-                        isset($_POST['deliveryAddress']),
-                        $deliveryData,
-                        isset($_POST['anyMessage']),
-                        $anyMessage,
-                        $overallPrice,
-                        $anItemOverallPrice,
-                        $pdfName,
-                        $billCode
-                    );
-                    /**
-                     * 
-                     * FONTOS: - LEHESSEN TÖRÖLNI EGY ELEMET A KOSÁRBÓL!!!!!
-                     *         - A PICTURE SPLITTINGET JAVÍTANI,
-                     *         - FONTOS, HA NINCS KITÖLTVE AZA ADATOK REDIRECT ADATOK KITÖLT
-                     */
-                    if($this->email->sendOrderListPDF($_SESSION['email'],$_SESSION['username'],$pdfStringFormat, $billCode,$pdfName,$_SESSION['current'])){
-                        if ($this->cartModel->insertUserCartItem($_COOKIE[$cookieName],$_SESSION['email'],$billCode,$overallPrice)) {
-                            if ($this->unsetCookie($cookieName)) {
-                                $this->unsetSession('current');
-                                redirect('carts/orders');
-                            }  
-                        }                 
-                    }
+                }else{
+                    redirect('index');
                 }
             }
         }else{
-          redirect('pages/index');
+          redirect('index');
         }
         
+    }
+
+    public function test(){
+        var_dump($_SESSION['current']);
     }
 
     // USER ORDERS-------------------------------------------------------------------------------------------
@@ -226,7 +221,6 @@ class Carts extends Controller{
                     @readfile($root);
                 }
             }else{
-                //header('Location: '.$_SERVER['HTTP_REFERRER']);
                 flash('pdfNotExists','A keresett számla már sajnos nem létezik a rendszerünkben', 'alert alert-danger');
                 redirect('carts/orders');
             }
@@ -235,20 +229,22 @@ class Carts extends Controller{
         }
         
     }
-    public function test(){
-        var_dump($_SESSION['current']);
-        // unset($_SESSION['current']);
-    }
+    // public function test(){
+    //     var_dump($_SESSION['current']);
+    //     //unset($_SESSION['current']);
+    // }
     // ==================================================================================
     // ---------------------------- API FUNCTIONS  -------------------------------------
     // =================================================================================
 
     public function getSessionEmail(){
-        if (isset($_SESSION['email']) && $this->userModel->checkUserData($_SESSION['email'])) {
-            echo json_encode(sha1($_SESSION['email']));
-        }else{
+        if (!isset($_SESSION['email'])) {
             echo json_encode('EmailNotSet');
-        }        
+        }elseif (!$this->userModel->checkUserData($_SESSION['email'])) {
+            echo json_encode('DataRequired');
+        }else{
+            echo json_encode(sha1($_SESSION['email']));
+        }       
     }
 
     public function getTheCurrentUserData(){
@@ -268,18 +264,6 @@ class Carts extends Controller{
     // delete from the Session
     public function deleteFromSession(){
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-            // foreach ($_SESSION['current'] as $current) {
-            //     if ($_GET['cikksz'] == $current->cikkszam) {
-            //         //die(var_dump($current->quantity));
-            //         //if ($current->quantity == 0) {
-            //             // if (isset($_COOKIE['Cart_'.sha1($_SESSION['email'])])) {
-            //             //     $cikkszam = json_decode($_COOKIE['Cart_'.sha1($_SESSION['email'])]);
-            //             //     $_SESSION['current'] = $this->createResultForCart($cikkszam);
-            //             // }
-            //             $current = array_pop($current);                        
-            //         //}
-            //     }
-            // }
             $this->unsetSession('current');
             $_SESSION['current'] = $this->createResultForCart();
         }

@@ -1,9 +1,14 @@
 <?php require HEADER; ?>
 
-<div class="container pt-5 pb-5">
+<div class="container-fluid pt-5 pb-5">
     <div class="row">
         <div class="col">
-            <?php flash('pdfNotExists'); ?>
+            <?php
+            flash('pdfNotExists'); 
+            flash('order_success');
+            flash('mailer_exception');
+            ?>
+
     <h1><?php echo $data['page_title'] ?></h1>
     <div class="accordion" id="accordionExample">
         <?php foreach($data['allOrders'] as $key => $orders) : ?>
@@ -45,7 +50,7 @@
                             <?php endforeach; ?>
                         </tbody>
                     </table>
-                    <h5>A rendelés összértéke: <strong><?php echo ($orders->orderPrice).' Ft'; ?></strong></h5>
+                    <h3>A rendelés összértéke: <strong class="priceColor"><?php echo ($orders->orderPrice); ?></strong> Ft</h3>
                     <form action="<?php echo URLROOT?>/carts/showAnOrderPDF" method="POST">
                         <input type="hidden" name="billCode" value="<?php echo $orders->orderCode; ?>">
                         <input type="hidden" name="userName" value="<?php echo $data['username']; ?>">

@@ -2,8 +2,11 @@
 
 <div class="container pt-3 pb-5">         
     <div class="card card-head" style="background-color: #7cb342;"> 
-        <?php flash('modify_success'); ?>
-        <?php flash('input_success'); ?>    
+        <?php 
+            flash('modify_success'); 
+            flash('input_success'); 
+            flash('input_fail');
+        ?>    
         <h2 class="h2 p-3">Processzorok bevitele / módosítása:</h2>
     </div>
     <div class="card card-body" style="background-color: #cfd8dc;">

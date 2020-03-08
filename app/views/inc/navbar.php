@@ -157,7 +157,6 @@
           <span aria-hidden="true">&times;</span>
           </div>
           <div class="modal-body">
-            <h4><?php  if(!isset($_SESSION["jog"])) echo 'A vásárláshoz be kell jelentkezni'; ?></h4>
             <!-- MODAL OUTPUT -->
             <form action="<?php echo URLROOT?>/carts/summaryCartItems" method="POST">
             <div class="pt-3 pb-4" id="modalCartOutput"></div>
@@ -180,7 +179,7 @@
       <!-- SEARCH MODAL -->
     <div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog" role="document">
-        <div class="modal-content text-dark">
+        <div class="modal-content text-dark bg-light">
           <div class="modal-header">
             <h4 class="modal-title">Keresés a weboldalon!</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">

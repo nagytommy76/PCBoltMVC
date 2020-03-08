@@ -33,6 +33,10 @@
     // HEADER
     define('HEADER', APPROOT . '/views/inc/header.php');
 
+    // SIDEBAR (ORDER)
+    define('SIDEBAR', APPROOT.'/views/inc/sidebar.php');
+    
+
     // Define the cookies expire days
     define('COOKIESEXPIRE', 2);
     

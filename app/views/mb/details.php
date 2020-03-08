@@ -27,7 +27,17 @@
             </div>
         </div>
         <h1 class="pt-5 pb-3 priceColor">Ár: <?php echo $data['motherboard']->price; ?> Ft</h1>
-        <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="mt-4 mb-5 btn btn-warning btn-block" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'mb_'.$data['motherboard']->cikkszam; ?> >Kosárba</button>          
+
+        <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="mt-4 btn btn-warning btn-block" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'mb_'.$data['motherboard']->cikkszam; ?> >Kosárba</button>
+
+        <?php if(isset($_SESSION['jog'])) :?>
+            <?php if(bothAdminSeller($_SESSION['jog'])) :?>
+                <form action="<?php echo URLROOT;?>/admins/mb_input/<?php echo $data['motherboard']->cikkszam;?>" method="POST">
+                    <input type="submit" name="editMB" value="Módosítás" class="btn btn-primary btn-block mr-1 mt-2">
+                </form>
+            <?php endif; ?>
+        <?php endif; ?>
+
     </div> <!-- COL VÉGE -->
         <div class="col pt-5">
             <h1 class="text-warning"><?php echo $data['motherboard']->manufacturer.' '.$data['motherboard']->MBName;?></h1>

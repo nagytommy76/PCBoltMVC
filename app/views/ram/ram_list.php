@@ -8,14 +8,13 @@
             <div class="col-md-4 mb-5">
                 <div class="card">
                     <img src="<?php echo $ram->picUrl[0]; ?>" class="card-img-top kepek">
-                    <div class="card card-body">
+                    <div class="card card-body" id="itemListCardColor">
                         <a class="titleLink" target="_blank" href="<?php echo URLROOT;?>/rams/details/<?php echo $ram->cikkszam?>"><h4 class="card-title"><?php echo $ram->type.' '.$ram->typeCode;?></h4></a>
                         <hr>
                         <p class="mb-0 text-dark">Gyártó: <?php echo $ram->manufacturer; ?></p>
                         <p class="mb-0 text-dark">Típus: <?php echo $ram->tipus; ?></p>
                         <p class="mb-0 text-dark">Termék: <?php echo $ram->type; ?></p>
                         <p class="mb-0 text-dark notLink">Termék típus: <a target="_blank" href="<?php echo $ram->Url;?>"> <?php echo $ram->typeCode; ?></a></p>
-                        <!-- FOLYTAT... UNDEFINED URL...?????!!!??!?! -->
                         <p class="mb-0 text-dark">Kapacitás: <?php echo $ram->capacity; ?> Gb</p>
                         <p class="mb-0 text-dark">Kiszerelés (kit): <?php echo $ram->kit; ?> Db</p>
                         <p class="mb-0 text-dark">Feszültség (V): <?php echo $ram->voltage; ?> V</p>
@@ -26,7 +25,7 @@
                         <hr>
                         <div class="form-row">
                             <form action="<?php echo URLROOT;?>/rams/details/<?php echo $ram->cikkszam?>" method="POST">
-                                <input type="submit" value="Részletek" name="details" class="btn btn-success mr-1" title="Részletek megtekintése">
+                                <input type="submit" value="Részletek" id="detailsButtonColor" name="details" class="btn mr-1" title="Részletek megtekintése">
                             </form>
                             <!-- Ha  -->
 
@@ -43,7 +42,7 @@
                                         <?php endif; ?>       
                             <?php endif; ?>
 
-                            <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-dark" <?php if(!isset($_SESSION["jog"])){ echo "disabled"; } ?> title="Be kell jelentkezni a vásárláshoz!" value="<?php echo 'ram_'.$ram->cikkszam; ?>" >Kosárba</button> 
+                            <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn cartButtonColor" <?php if(!isset($_SESSION["jog"])){ echo "disabled"; } ?> title="Be kell jelentkezni a vásárláshoz!" value="<?php echo 'ram_'.$ram->cikkszam; ?>" >Kosárba</button> 
                         </div>
                     </div>
                 </div>

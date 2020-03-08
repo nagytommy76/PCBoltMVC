@@ -27,6 +27,14 @@
             </div>
         </div>
         <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-warning btn-block" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'ram_'.$data['rams']->cikkszam; ?> >Kosárba</button>
+
+        <?php if(isset($_SESSION['jog'])) :?>
+            <?php if(bothAdminSeller($_SESSION['jog'])) :?>
+                <form action="<?php echo URLROOT;?>/admins/ram_input/<?php echo $data['rams']->cikkszam;?>" method="POST">
+                    <input type="submit" name="editRAM" value="Módosítás" class="btn btn-primary btn-block mr-1 mt-2">
+                </form>
+            <?php endif; ?>
+        <?php endif; ?>
     </div> <!-- COL VÉGE -->
     
     <!-- Another COL -->
@@ -89,11 +97,7 @@
     </div>  <!-- COL END -->
 
 </div> <!-- ROW END -->
-<!-- <div class="row">
-    <div class="col pb-5">
-        <h1>Ár: <?php //echo $data["rams"]->ramPrice ?> Ft</h1>
-    </div>
-</div> -->
+
 </div>
 
 <?php require FOOTER; ?>

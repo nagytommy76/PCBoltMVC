@@ -1,7 +1,10 @@
 <?php require HEADER; ?>
 
 <div class="container"> 
-<?php flash('delete_success'); ?>
+<?php 
+  flash('delete_success'); 
+  flash('cpu_exception');
+?>
   <div class="row">
       <?php foreach ($data['cpu'] as $cpu) : ?>
         <div class="col-md-4">

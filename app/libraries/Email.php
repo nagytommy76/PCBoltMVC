@@ -65,8 +65,10 @@ class Email extends PHPMailer{
                         ".$this->createTableBody($currentItems)."
                     </tbody>
                 </table>
-                <p>Az ön rendelés száma: <strong>".$billCode."</strong></p>
-                <h4>Köszönöm, hogy megtekintette és kipróbálta a programomat. Az esetleges hibákat még javítani fogom!</h4>
+                <p>Az ön rendelés száma: <strong><a href='".URLROOT."/carts/orders'>".$billCode."</a></strong></p>
+                <small>A rendelés számra kattintva megtekintheti korábbi rendeléseit (HA BE VAN JELENTKEZVE OLDALUNKON!)</small>
+                <h2>Köszönöm, hogy megtekintette és kipróbálta a programomat.</h2>
+                <h5>Kérem vegye figyelembe, hogy valódi vásárlás nem történt! :)</h5>
             </body>
         ";
         $this->addStringAttachment($pdfInString,$pdfName.'.pdf','base64','application/pdf');
@@ -92,9 +94,9 @@ class Email extends PHPMailer{
         $result = '';
         foreach ($items as $item) {
             // create url to product
-            $productDetailsUrl = URLROOT.'/carts/'.$item->product_type.'s/'.$item->cikkszam;
+            $productDetailsUrl = URLROOT.'/'.$item->product_type.'s/details/'.$item->cikkszam;
             $result .= '<tr align="center">';
-                $result .= '<td scope="col"><img src="'.$item->picUrl[0].'" height="115rem" width="130rem"></td>';
+                $result .= '<td scope="col"><img src="'.$item->picUrl[0].'" height="115rem" width="145rem"></td>';
                 $result .= '<td scope="col"><a href="'.$productDetailsUrl.'" target="_blank">'.$item->manufacturer.' '.$item->product_name.'</td>';
                 $result .= '<td scope="col">'.((int)$item->price*(int)$item->quantity).' Ft'.'</td>';
                 $result .= '<td scope="col">'.$item->quantity.' Db.</td>';

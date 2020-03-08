@@ -1,12 +1,12 @@
 <?php require HEADER; ?>
 <div class="container">
-        <?php flash('input_success'); ?>
-        <?php flash('input_fail'); ?>
-        <?php flash('modify_success'); ?>
-        <?php flash('modify_fail'); ?>
     <div class="card mt-5 mb-5">
         <div class="card card-head p-3 text-center" id="cardHeadColor">
             <h1>VGA Termékek bevitele</h1>
+            <?php flash('input_success'); ?>
+            <?php flash('input_fail'); ?>
+            <?php flash('modify_success'); ?>
+            <?php flash('modify_fail'); ?>
         </div>
         <div class="card card-body" id="cardBodyColor">
             <form action="<?php echo URLROOT;?>/admins/vga_input/<?php echo $data["cikkszam"] ?>" method="POST">

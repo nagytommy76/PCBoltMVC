@@ -12,7 +12,7 @@ class PDF extends FPDF{
         // FONT
         $this->SetTextColor(214,137,16);
         $this->SetFontSize(30);
-        $this->Cell(0,4,utf8_decode('Computer Store Webáruház'),0,2,'R',false,'http://localhost/PCBoltMVC/index');
+        $this->Cell(0,4,utf8_decode('Computer Store Webáruház'),0,2,'R',false, URLROOT);
 
         $this->Ln();
         $this->SetTextColor(52,75,98);
@@ -33,7 +33,7 @@ class PDF extends FPDF{
     public function Footer()
     {
         $date = getdate();
-        $finalDate = $date['year'].'-'.$date['month'].'-'.$date['weekday'].'-'.$date['hours'].':'.$date['minutes'].':'.$date['seconds'];
+        $finalDate = $date['year'].'-'.$date['month'].'-'.$date['mday'].'-'.$date['hours'].':'.$date['minutes'].':'.$date['seconds'];
         $this->SetFont('Arial','',10);
         $this->SetY(-9);
         $this->Cell(0,0,utf8_decode('Készítette: Nagy Tamás, Budapest '.$finalDate.''),0,2,'C');
@@ -104,7 +104,7 @@ class PDF extends FPDF{
         }
         $this->Ln();
 
-        $this->Cell(50,40,utf8_decode('Számla sorszáma: '.$billCode),0,0,'L');
+        $this->Cell(50,40,utf8_decode('Számla sorszáma: '.$billCode),0,0,'L',false,URLROOT.'/carts/orders');
 
     }
 
@@ -136,7 +136,7 @@ class PDF extends FPDF{
         foreach ($items as $item) {
             $fill = !$fill;
             $this->Ln();
-            $this->Cell(107,5,utf8_decode($item->manufacturer.' '.$item->product_name.' '.$item->warr_months.' hónap gar.'.$item->cikkszam),0,0,'L',$fill);
+            $this->Cell(107,5,utf8_decode($item->manufacturer.' '.$item->product_name.' '.$item->warr_months.' hónap gar.'.$item->cikkszam),0,0,'L',$fill,URLROOT.'/'.$item->product_type.'s/details/'.$item->cikkszam);
             $this->Cell(30,5,utf8_decode($item->quantity.' db'),0,0,'L',$fill);
             $this->Cell(25,5,utf8_decode(self::createCurrencyHuf($item->price)),0,0,'L',$fill);
             $this->Cell(28,5,utf8_decode(self::createCurrencyHuf($oneItemPrice[$i])),0,0,'L',$fill);

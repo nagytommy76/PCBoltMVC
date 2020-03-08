@@ -60,8 +60,6 @@ class Cpus extends Controller{
         foreach ($result as $res) {
             splittingPictures($res,';');
         }     
-        //die(var_dump($result[14]));   
-        //die(var_dump($result[0]));
         $data = [
             'main_title' => 'Minden CPU termékünk',
             'cpu' => $result
@@ -77,7 +75,6 @@ class Cpus extends Controller{
             'main_title' => $cikkszam.' Részletek',
             'result' => $result
         ];
-        //(var_dump($result));
         $this->view('cpu/details',$data);
         
     }
