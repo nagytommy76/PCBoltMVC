@@ -31,7 +31,7 @@ import CartFunctions from '/PCBoltMVC/js/cartFunctions/cartFunctions.js';
 import CreateFilterOutputText from '/PCBoltMVC/js/filterFunctions/createFilterOutputText.js';
 
 
-
+// TESZT
 // ===============================================================================================
 // ===                                  SEARCH FUNCTIONS                                       ===
 // ===============================================================================================
