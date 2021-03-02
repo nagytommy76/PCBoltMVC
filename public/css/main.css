@@ -150,11 +150,7 @@ nav a {
 .intro{
     font-family: sans-serif;
     background: url("../img/background2.jpg") no-repeat center center/cover;
-    /* background-repeat: no-repeat; */
     height: 100vh;
-    /* min-height: 80rem;
-    min-width: 100%; */
-    /*position: fixed;*/
 }
 .belso{
     font-size: 250%; 
