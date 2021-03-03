@@ -43,7 +43,7 @@
                                 <?php endif; ?>       
                             <?php endif; ?>
                             
-                                <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn cartButtonColor" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'mb_'.$MBCikkszam; ?> >Kosárba</button> 
+                                <button name="Cart_<?php if($_SESSION){echo sha1($_SESSION['email']);}?>" id="addToCart" class="btn cartButtonColor" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'mb_'.$MBCikkszam; ?> >Kosárba</button> 
                                 <input type="hidden" name="CartBTN" value="<?php echo $MBCikkszam; ?>">
                                 <input type="hidden" name="mbCartQuantity" id="mbCartQuantity" value="">
                         </div><!-- FORM GROUP END -->

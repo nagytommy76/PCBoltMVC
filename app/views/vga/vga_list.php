@@ -52,7 +52,7 @@
                                 <?php endif;?>
                             <?php endif;?>
 
-                            <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-dark mb-1" <?php if(!isset($_SESSION["jog"])){ echo "disabled title='Be kell jelentkezni a vásárláshoz!'"; } ?> value="<?php echo 'vga_'.$vga->cikkszam; ?>" >Kosárba</button> 
+                            <button name="Cart_<?phpif($_SESSION){ echo sha1($_SESSION['email']);}?>" id="addToCart" class="btn btn-dark mb-1" <?php if(!isset($_SESSION["jog"])){ echo "disabled title='Be kell jelentkezni a vásárláshoz!'"; } ?> value="<?php echo 'vga_'.$vga->cikkszam; ?>" >Kosárba</button> 
                         </div> <!-- FORM ROW END -->
                     </div>
                 </div> <!-- CARD END -->

@@ -49,7 +49,7 @@
                           <input type="submit" name="deleteBTN" value="Törlés" class="btn btn-danger mr-2 mt-2" />                      
                         </form>
                     <?php endif; ?>                        
-                        <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn btn-dark mt-2" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'cpu_'.$cpu->cikkszam; ?> >Kosárba</button> 
+                        <button name="Cart_<?php if($_SESSION){ echo sha1($_SESSION['email']); }?>" id="addToCart" class="btn btn-dark mt-2" <?php if(!isset($_SESSION["jog"])){ echo "disabled ";  echo 'title="Kérem jelentkezzen be a vásárláshoz!"';}else{echo 'title="A termék kosárba helyzezése"';} ?>  value=<?php echo 'cpu_'.$cpu->cikkszam; ?> >Kosárba</button> 
 
                     </div><!-- FORM-ROW END -->
                     

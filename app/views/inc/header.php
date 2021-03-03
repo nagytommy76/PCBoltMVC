@@ -15,18 +15,7 @@
     <script src="https://kit.fontawesome.com/75af6afcaa.js" crossorigin="anonymous"></script>
 
     <!-- Saját SCRIPT JS -->
-    
-    <!-- <script defer src="<?php // echo URLROOT;?>/js/cartFunctions/modalCartText.js"></script>
-    <script defer src="<?php //echo URLROOT;?>/js/cartFunctions/cookieQuery.js"></script>
-    <script defer src="<?php //echo URLROOT;?>/js/cartFunctions/cookie.js"></script> -->
-    
-    <!-- <script defer src="<?php // echo URLROOT;?>/js/createOutputText.js"></script> -->
-    <!-- <script defer src="<?php // echo URLROOT;?>/js/search.js"></script> -->
-
-    <!-- <script defer src="<?php //echo URLROOT;?>/js/cartFunctions/cartFunctions.js"></script> -->
     <script type="module" src="<?php echo URLROOT;?>/js/main.js"></script>
-    
-
 </head>
 <body>
 <?php require APPROOT.'/views/inc/navbar.php'; ?>

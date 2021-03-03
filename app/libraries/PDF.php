@@ -152,9 +152,8 @@ class PDF extends FPDF{
         $this->Cell(120,8,utf8_decode('A vásárlás végösszege: '.self::createCurrencyHuf($finalPrice)),0,0,'R',true);
         $this->Ln();
         $this->Cell(70,8,'',0,0);
-        $this->Cell(120,8,utf8_decode('Azaz: '.NumberFormatter::create('hu', NumberFormatter::SPELLOUT)->format($finalPrice).' forint'),0,0,'R',true);
+        $this->Cell(120,8,utf8_decode('Azaz: '.\NumberFormatter::create('hu', \NumberFormatter::SPELLOUT)->format($finalPrice).' forint'),0,0,'R',true);
         $this->Ln();
-
     }
 
     // If the custumer wrote something into the message box
@@ -179,7 +178,7 @@ class PDF extends FPDF{
     // CREATE HUF CURRENCY
     private function createCurrencyHuf($number){
         $result = 0;
-        $format = new NumberFormatter('hu',NumberFormatter::CURRENCY);
+        $format = new NumberFormatter('hu',\NumberFormatter::CURRENCY);
         $result = $format->formatCurrency($number, 'HUF');
         return $result;
     }

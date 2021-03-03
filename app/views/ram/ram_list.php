@@ -41,8 +41,8 @@
                                     </form>
                                         <?php endif; ?>       
                             <?php endif; ?>
-
-                            <button name="Cart_<?php echo sha1($_SESSION['email']);?>" id="addToCart" class="btn cartButtonColor" <?php if(!isset($_SESSION["jog"])){ echo "disabled"; } ?> title="Be kell jelentkezni a vásárláshoz!" value="<?php echo 'ram_'.$ram->cikkszam; ?>" >Kosárba</button> 
+                                <button name="Cart_<?php if($_SESSION){ echo sha1($_SESSION['email']);}?>" id="addToCart" class="btn cartButtonColor" <?php if(!isset($_SESSION["jog"])){ echo "disabled"; } ?> title="Be kell jelentkezni a vásárláshoz!" value="<?php echo 'ram_'.$ram->cikkszam; ?>" >Kosárba</button>
+                            
                         </div>
                     </div>
                 </div>
