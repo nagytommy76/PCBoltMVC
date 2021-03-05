@@ -7,16 +7,20 @@
 
         // Összes alaplap listázása
         public function allMb(){
-            $result = $this->mbModel->allMB(); 
-            foreach ($result as $mb) {
-                pictureSplitting($mb,';');
-            }           
-            $data = [
-                'main_title' => 'Összes Termék',
-                'motherboards' => $result
-            ]; 
-            //die(var_dump($_COOKIE["Testing"]));
-            $this->view('mb/mb_list',$data);  
+            $this->getAllProducts(
+                'mb/mb_list',
+                $this->mbModel->allMB(),
+                'motherboards',
+            );
+            // $result = $this->mbModel->allMB(); 
+            // foreach ($result as $mb) {
+            //     pictureSplitting($mb,';');
+            // }           
+            // $data = [
+            //     'main_title' => 'Összes Termék',
+            //     'motherboards' => $result
+            // ]; 
+            // $this->view('mb/mb_list',$data);  
         }
 
         public function intelMb($foglalat){

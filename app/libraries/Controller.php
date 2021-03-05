@@ -22,6 +22,23 @@ class Controller{
             die('View does not exist');
         }
     }
+
+    /**
+     * @param $viewName mb/mb_list
+     * @param $modelName $this->mbModel->allMB()
+     * @param $transferName example: motherboards
+     * @param $mainTitle display title in tab
+     */
+    protected function getAllProducts($viewName, $modelName, $transferName, $mainTitle = "Összes Termék"){ 
+        foreach ($modelName  as $mb) {
+            pictureSplitting($mb,';');
+        }           
+        $data = [
+            'main_title' => $mainTitle,
+            $transferName => $modelName 
+        ]; 
+        $this->view($viewName,$data); 
+    }
 }
 
 
